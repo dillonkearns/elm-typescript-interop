@@ -4,12 +4,21 @@
   "description": "Code generator for type-safe elm-electron interprocess messages.",
   "main": "index.js",
   "scripts": {
-    "test": "elm test"
+    "test": "elm test",
+    "build": "webpack"
   },
   "keywords": ["elm", "electron", "ipc", "typescript"],
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "elm-test": "^0.18.7"
+    "@types/node": "^8.0.17",
+    "elm-test": "^0.18.7",
+    "elm-webpack-loader": "^4.3.1",
+    "ts-loader": "^2.3.2",
+    "typescript": "^2.4.2",
+    "webpack": "^3.4.1"
+  },
+  "bin": {
+    "elm-electron": "bin/elm-electron"
   }
 }
