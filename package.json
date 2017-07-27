@@ -8,6 +8,7 @@
     "build": "webpack"
   },
   "keywords": ["elm", "electron", "ipc", "typescript"],
+  "repository": "https://github.com/dillonkearns/elm-electron",
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
   "devDependencies": {
