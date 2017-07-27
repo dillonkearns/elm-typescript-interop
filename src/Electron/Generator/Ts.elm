@@ -52,7 +52,7 @@ toTypescriptType payloadType =
             "string"
 
         Electron.Ipc.JsonEncodeValue ->
-            "TODO"
+            "any"
 
 
 generateUnion : List Electron.Ipc.ElmIpc -> String

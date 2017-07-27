@@ -21,6 +21,17 @@ suite =
                     |> Electron.Generator.Ts.generateInterface
                     |> Expect.equal
                         "interface MakeItSo {\n  message: 'MakeItSo'\n}"
+        , test "interface with Json.Encode.Value parameter" <|
+            \() ->
+                Electron.Ipc.MsgWithData "UploadSchematic" Electron.Ipc.JsonEncodeValue
+                    |> Electron.Generator.Ts.generateInterface
+                    |> Expect.equal
+                        ("""
+interface UploadSchematic {
+  message: 'UploadSchematic',
+  data: any
+}
+                        """ |> String.trim)
         , test "interface with parameters" <|
             \() ->
                 Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
