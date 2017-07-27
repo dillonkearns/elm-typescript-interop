@@ -21,8 +21,9 @@ toElmIpc statement =
                 [ "String" ] ->
                     MsgWithData ipcMsgName String |> Result.Ok
 
-                -- ""  ->
-                --   MsgWithData ipcMsgName String |> Just
+                [ "Encode", "Value" ] ->
+                    MsgWithData ipcMsgName JsonEncodeValue |> Result.Ok
+
                 unsupportedType ->
                     "Unsupported parameter type for " ++ ipcMsgName ++ " constructor: " ++ String.join "." unsupportedType |> Result.Err
 

@@ -70,4 +70,20 @@ suite =
                             , Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
                             ]
                         )
+        , test "multiple types with a Json.Encode params" <|
+            \_ ->
+                """
+                              module Ipc exposing (..)
+
+                              type Msg
+                                  = Transport Encode.Value
+                                  | UploadSchematic Encode.Value
+                            """
+                    |> Electron.Ipc.toTypes
+                    |> Expect.equal
+                        (Ok
+                            [ Electron.Ipc.MsgWithData "Transport" Electron.Ipc.JsonEncodeValue
+                            , Electron.Ipc.MsgWithData "UploadSchematic" Electron.Ipc.JsonEncodeValue
+                            ]
+                        )
         ]
