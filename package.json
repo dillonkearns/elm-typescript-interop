@@ -1,6 +1,6 @@
 {
   "name": "elm-electron",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Code generator for type-safe elm-electron interprocess messages.",
   "main": "index.js",
   "scripts": {
