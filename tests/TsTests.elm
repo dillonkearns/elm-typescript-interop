@@ -28,7 +28,7 @@ suite =
                     |> Expect.equal
                         ("""
 interface UploadSchematic {
-  message: 'UploadSchematic',
+  message: 'UploadSchematic'
   data: any
 }
                         """ |> String.trim)
@@ -39,7 +39,7 @@ interface UploadSchematic {
                     |> Expect.equal
                         ("""
 interface SetPhasersTo {
-  message: 'SetPhasersTo',
+  message: 'SetPhasersTo'
   data: string
 }
 """ |> String.trim)

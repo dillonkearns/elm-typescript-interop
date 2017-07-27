@@ -40,7 +40,7 @@ generateInterface elmIpc =
                 ++ msgName
                 ++ " {\n  message: '"
                 ++ msgName
-                ++ "',\n  data: "
+                ++ "'\n  data: "
                 ++ toTypescriptType parameterType
                 ++ "\n}"
 
