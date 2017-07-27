@@ -56,5 +56,19 @@ toTypescriptType payloadType =
 
 
 generateUnion : List Electron.Ipc.ElmIpc -> String
-generateUnion elmIpcIpcElectronList =
-    "type ElmIpc =\n | ShowFeedbackForm"
+generateUnion ipcList =
+    "type ElmIpc = "
+        ++ (ipcList
+                |> List.map ipcName
+                |> String.join " | "
+           )
+
+
+ipcName : Electron.Ipc.ElmIpc -> String
+ipcName elmIpc =
+    case elmIpc of
+        Electron.Ipc.Msg msgName ->
+            msgName
+
+        Electron.Ipc.MsgWithData msgName payloadType ->
+            msgName

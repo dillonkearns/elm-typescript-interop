@@ -48,5 +48,14 @@ interface SetPhasersTo {
                 [ Electron.Ipc.Msg "HideWindow" ]
                     |> Electron.Generator.Ts.generateUnion
                     |> Expect.equal
-                        "type ElmIpc =\n | ShowFeedbackForm"
+                        "type ElmIpc = HideWindow"
+        , test "union with multiple types" <|
+            \() ->
+                [ Electron.Ipc.Msg "Engage"
+                , Electron.Ipc.MsgWithData "UploadSchematic" Electron.Ipc.JsonEncodeValue
+                , Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
+                ]
+                    |> Electron.Generator.Ts.generateUnion
+                    |> Expect.equal
+                        "type ElmIpc = Engage | UploadSchematic | SetPhasersTo"
         ]
