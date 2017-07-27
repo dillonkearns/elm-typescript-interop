@@ -33,9 +33,15 @@ crashOrOutputString : Result String (List ElmIpc) -> Cmd msg
 crashOrOutputString result =
     case result of
         Ok elmIpcList ->
-            elmIpcList
-                |> Electron.Generator.Ts.generate
-                |> generatedTypescript
+            let
+                tsCode =
+                    elmIpcList
+                        |> Electron.Generator.Ts.generate
+
+                elmCode =
+                    "TODO: Elm will go here"
+            in
+            generatedFiles ( tsCode, elmCode )
 
         Err errorMessage ->
             parsingError errorMessage
@@ -60,7 +66,7 @@ main =
         }
 
 
-port generatedTypescript : String -> Cmd msg
+port generatedFiles : ( String, String ) -> Cmd msg
 
 
 port parsingError : String -> Cmd msg

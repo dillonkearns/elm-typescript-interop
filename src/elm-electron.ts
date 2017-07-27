@@ -1,14 +1,19 @@
 const Elm = require('./Main.elm')
 import * as fs from 'fs'
+import * as minimist from 'minimist'
 
-const inputPath: string = process.argv[2]
+const args = minimist(process.argv.slice(2))
+const inputPath = args._[0]
+const tsPath = args.ts
+const elmPath = args.elm
 
 if (fs.existsSync(inputPath)) {
   const elmIpcFileContents = fs.readFileSync(inputPath).toString()
 
   let app = Elm.Main.worker({ elmIpcFileContents })
-  app.ports.generatedTypescript.subscribe(function(outputFile: any) {
-    console.log(outputFile)
+  app.ports.generatedFiles.subscribe(function([typescriptCode, elmCode]: any) {
+    fs.writeFileSync(tsPath, typescriptCode)
+    fs.writeFileSync(elmPath, elmCode)
   })
 
   app.ports.parsingError.subscribe(function(outputFile: any) {

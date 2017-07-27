@@ -12,6 +12,7 @@
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@types/minimist": "^1.2.0",
     "@types/node": "^8.0.17",
     "elm-test": "^0.18.7",
     "elm-webpack-loader": "^4.3.1",
@@ -21,5 +22,8 @@
   },
   "bin": {
     "elm-electron": "bin/elm-electron"
+  },
+  "dependencies": {
+    "minimist": "^1.2.0"
   }
 }
