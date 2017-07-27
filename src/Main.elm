@@ -9,6 +9,11 @@ import Json.Decode exposing (..)
 -- workaround for https://github.com/elm-lang/elm-make/issues/134
 
 
+workaround : Decoder String
+workaround =
+    Json.Decode.string
+
+
 type alias Model =
     ()
 
