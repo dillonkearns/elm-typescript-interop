@@ -13,7 +13,7 @@ fileHeader : String
 fileHeader =
     """module IpcSerializer exposing (serialize)
 
-import Json.Encode.Value as Encode
+import Json.Encode as Encode
 
 
 serialize : Msg -> ( String, Encode.Value )
