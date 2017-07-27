@@ -18,4 +18,13 @@ suite =
             ( "Engage", Encode.null )" """
                             |> String.trimRight
                         )
+        , test "case for another single msg with no parameter" <|
+            \() ->
+                Electron.Ipc.Msg "MakeItSo"
+                    |> Electron.Generator.ElmSerializer.generateCase
+                    |> Expect.equal
+                        ("""        MakeItSo ->
+            ( "MakeItSo", Encode.null )" """
+                            |> String.trimRight
+                        )
         ]

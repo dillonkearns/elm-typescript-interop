@@ -22,6 +22,15 @@ serialize msg =
 
 generateCase : Electron.Ipc.ElmIpc -> String
 generateCase something =
-    """        Engage ->
-            ( "Engage", Encode.null )" """
-        |> String.trimRight
+    case something of
+        Electron.Ipc.Msg msgName ->
+            "        "
+                ++ msgName
+                ++ """ ->
+            ( \""""
+                ++ msgName
+                ++ """", Encode.null )" """
+                |> String.trimRight
+
+        Electron.Ipc.MsgWithData msgName payloadType ->
+            "TODO: Unhandled"
