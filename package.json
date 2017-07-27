@@ -1,13 +1,18 @@
 {
   "name": "elm-electron",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Code generator for type-safe elm-electron interprocess messages.",
   "main": "index.js",
   "scripts": {
     "test": "elm test",
     "build": "webpack"
   },
-  "keywords": ["elm", "electron", "ipc", "typescript"],
+  "keywords": [
+    "elm",
+    "electron",
+    "ipc",
+    "typescript"
+  ],
   "repository": "https://github.com/dillonkearns/elm-electron",
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
