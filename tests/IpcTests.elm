@@ -43,4 +43,18 @@ suite =
                 """
                     |> Electron.Ipc.toTypes
                     |> Expect.equal [ Electron.Ipc.MsgWithData "Replicate" Electron.Ipc.String ]
+        , test "multiple types with a String param" <|
+            \_ ->
+                """
+                              module Ipc exposing (..)
+
+                              type Msg
+                                  = Transport String
+                                  | SetPhasersTo String
+                            """
+                    |> Electron.Ipc.toTypes
+                    |> Expect.equal
+                        [ Electron.Ipc.MsgWithData "Transport" Electron.Ipc.String
+                        , Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
+                        ]
         ]
