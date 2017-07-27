@@ -26,7 +26,7 @@ generate msgs =
     , generateUnion msgs
     , msgs |> List.map generateInterface |> String.join "\n\n"
     ]
-        |> String.join "\n"
+        |> String.join "\n\n"
 
 
 generateInterface : Electron.Ipc.ElmIpc -> String
