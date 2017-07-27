@@ -36,4 +36,13 @@ suite =
             ( "Transport", Encode.string string )"""
                             |> String.trimRight
                         )
+        , test "case for a single msg with an encode value parameter" <|
+            \() ->
+                Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.JsonEncodeValue
+                    |> Electron.Generator.ElmSerializer.generateCase
+                    |> Expect.equal
+                        ("""        SetPhasersTo value ->
+            ( "SetPhasersTo", value )"""
+                            |> String.trimRight
+                        )
         ]

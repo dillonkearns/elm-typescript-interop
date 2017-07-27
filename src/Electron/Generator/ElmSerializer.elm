@@ -48,4 +48,9 @@ generateCase something =
                 ++ """", Encode.null )"""
 
         Electron.Ipc.MsgWithData msgName payloadType ->
-            parameterizedCase msgName "Encode.string string" "string"
+            case payloadType of
+                Electron.Ipc.String ->
+                    parameterizedCase msgName "Encode.string string" "string"
+
+                Electron.Ipc.JsonEncodeValue ->
+                    parameterizedCase msgName "value" "value"
