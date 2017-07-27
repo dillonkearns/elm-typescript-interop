@@ -13,6 +13,7 @@ fileHeader : String
 fileHeader =
     """module IpcSerializer exposing (serialize)
 
+import Ipc exposing (Msg(..))
 import Json.Encode as Encode
 
 
