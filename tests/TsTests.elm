@@ -1,4 +1,4 @@
-module TsInterfaceTests exposing (..)
+module TsTests exposing (..)
 
 import Electron.Generator.Ts
 import Electron.Ipc
