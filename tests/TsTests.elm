@@ -15,6 +15,12 @@ suite =
                     |> Electron.Generator.Ts.generateInterface
                     |> Expect.equal
                         "interface HideWindow {\n  message: 'HideWindow'\n}"
+        , test "another interface for msg with no parameters" <|
+            \() ->
+                Electron.Ipc.Msg "MakeItSo"
+                    |> Electron.Generator.Ts.generateInterface
+                    |> Expect.equal
+                        "interface MakeItSo {\n  message: 'MakeItSo'\n}"
         , test "union" <|
             \() ->
                 [ Electron.Ipc.Msg "HideWindow" ]

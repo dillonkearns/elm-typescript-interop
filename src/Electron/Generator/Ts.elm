@@ -30,8 +30,13 @@ generate msgs =
 
 
 generateInterface : Electron.Ipc.ElmIpc -> String
-generateInterface something =
-    "interface HideWindow {\n  message: 'HideWindow'\n}"
+generateInterface elmIpc =
+    case elmIpc of
+        Electron.Ipc.Msg msgName ->
+            "interface " ++ msgName ++ " {\n  message: '" ++ msgName ++ "'\n}"
+
+        Electron.Ipc.MsgWithData string payloadType ->
+            "TODO"
 
 
 generateUnion : List Electron.Ipc.ElmIpc -> String
