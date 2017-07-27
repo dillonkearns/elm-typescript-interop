@@ -20,6 +20,20 @@ serialize msg =
 """
 
 
+parameterizedCase : String -> String -> String -> String
+parameterizedCase msgName jsonEncodeValue parameterName =
+    "        "
+        ++ msgName
+        ++ " "
+        ++ parameterName
+        ++ """ ->
+            ( \""""
+        ++ msgName
+        ++ "\", "
+        ++ jsonEncodeValue
+        ++ " )"
+
+
 generateCase : Electron.Ipc.ElmIpc -> String
 generateCase something =
     case something of
@@ -30,7 +44,8 @@ generateCase something =
             ( \""""
                 ++ msgName
                 ++ """", Encode.null )"""
-                |> String.trimRight
 
         Electron.Ipc.MsgWithData msgName payloadType ->
-            "TODO: Unhandled"
+            -- """        Transport string ->
+            -- ( "Transport", Encode.string string )"""
+            parameterizedCase msgName "Encode.string string" "string"
