@@ -35,12 +35,24 @@ generateInterface elmIpc =
         Electron.Ipc.Msg msgName ->
             "interface " ++ msgName ++ " {\n  message: '" ++ msgName ++ "'\n}"
 
-        Electron.Ipc.MsgWithData msgName Electron.Ipc.String ->
+        Electron.Ipc.MsgWithData msgName parameterType ->
             "interface "
                 ++ msgName
                 ++ " {\n  message: '"
                 ++ msgName
-                ++ "',\n  data: string\n}"
+                ++ "',\n  data: "
+                ++ toTypescriptType parameterType
+                ++ "\n}"
+
+
+toTypescriptType : Electron.Ipc.PayloadType -> String
+toTypescriptType payloadType =
+    case payloadType of
+        Electron.Ipc.String ->
+            "string"
+
+        Electron.Ipc.JsonEncodeValue ->
+            "TODO"
 
 
 generateUnion : List Electron.Ipc.ElmIpc -> String

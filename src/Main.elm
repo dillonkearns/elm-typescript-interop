@@ -1,7 +1,7 @@
 port module Main exposing (..)
 
 import Electron.Generator.Ts
-import Electron.Ipc
+import Electron.Ipc exposing (ElmIpc)
 import Json.Decode exposing (..)
 
 
@@ -22,16 +22,28 @@ type alias Flags =
     { elmIpcFileContents : String }
 
 
-output : String -> String
+output : String -> Cmd msg
 output elmIpcFileContents =
     elmIpcFileContents
         |> Electron.Ipc.toTypes
-        |> Electron.Generator.Ts.generate
+        |> crashOrOutputString
+
+
+crashOrOutputString : Result String (List ElmIpc) -> Cmd msg
+crashOrOutputString result =
+    case result of
+        Ok elmIpcList ->
+            elmIpcList
+                |> Electron.Generator.Ts.generate
+                |> generatedTypescript
+
+        Err errorMessage ->
+            parsingError errorMessage
 
 
 init : Flags -> ( Model, Cmd msg )
 init flags =
-    () ! [ generatedTypescript (output flags.elmIpcFileContents) ]
+    () ! [ output flags.elmIpcFileContents ]
 
 
 update : msg -> Model -> ( Model, Cmd msg )
@@ -49,3 +61,6 @@ main =
 
 
 port generatedTypescript : String -> Cmd msg
+
+
+port parsingError : String -> Cmd msg

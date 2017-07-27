@@ -20,7 +20,7 @@ suite =
                       = HideWindow
                 """
                     |> Electron.Ipc.toTypes
-                    |> Expect.equal [ Electron.Ipc.Msg "HideWindow" ]
+                    |> Expect.equal (Ok [ Electron.Ipc.Msg "HideWindow" ])
         , test "another single type with no data" <|
             \_ ->
                 """
@@ -32,7 +32,7 @@ suite =
                                   = Quit
                             """
                     |> Electron.Ipc.toTypes
-                    |> Expect.equal [ Electron.Ipc.Msg "Quit" ]
+                    |> Expect.equal (Ok [ Electron.Ipc.Msg "Quit" ])
         , test "a single type with a String param" <|
             \_ ->
                 """
@@ -42,19 +42,32 @@ suite =
                       = Replicate String
                 """
                     |> Electron.Ipc.toTypes
-                    |> Expect.equal [ Electron.Ipc.MsgWithData "Replicate" Electron.Ipc.String ]
-        , test "multiple types with a String param" <|
+                    |> Expect.equal (Ok [ Electron.Ipc.MsgWithData "Replicate" Electron.Ipc.String ])
+        , test "reports errors for unsupported types" <|
             \_ ->
                 """
-                              module Ipc exposing (..)
+                                          module Ipc exposing (..)
 
-                              type Msg
-                                  = Transport String
-                                  | SetPhasersTo String
-                            """
+                                          type Msg
+                                              = Transport Banana
+                                        """
                     |> Electron.Ipc.toTypes
                     |> Expect.equal
-                        [ Electron.Ipc.MsgWithData "Transport" Electron.Ipc.String
-                        , Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
-                        ]
+                        (Err "Unsupported parameter type for Transport constructor: Banana")
+        , test "multiple types with a String params" <|
+            \_ ->
+                """
+                                                          module Ipc exposing (..)
+
+                                                          type Msg
+                                                              = Transport String
+                                                              | SetPhasersTo String
+                                                        """
+                    |> Electron.Ipc.toTypes
+                    |> Expect.equal
+                        (Ok
+                            [ Electron.Ipc.MsgWithData "Transport" Electron.Ipc.String
+                            , Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
+                            ]
+                        )
         ]

@@ -10,6 +10,12 @@ if (fs.existsSync(inputPath)) {
   app.ports.generatedTypescript.subscribe(function(outputFile: any) {
     console.log(outputFile)
   })
+
+  app.ports.parsingError.subscribe(function(outputFile: any) {
+    console.log(`Error parsing input file ${inputPath}\n`)
+    console.log(outputFile)
+    process.exit(1)
+  })
 } else {
   console.log(`Could not found input file ${inputPath}`)
 }

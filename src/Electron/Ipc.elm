@@ -10,17 +10,24 @@ type ElmIpc
     | MsgWithData String PayloadType
 
 
-toElmIpc : Ast.Statement.Type -> Maybe ElmIpc
+toElmIpc : Ast.Statement.Type -> Result String ElmIpc
 toElmIpc statement =
     case statement of
         TypeConstructor [ valueName ] [] ->
-            Just (Msg valueName)
+            Result.Ok (Msg valueName)
 
-        TypeConstructor [ ipcMsgName ] [ TypeConstructor [ "String" ] [] ] ->
-            MsgWithData ipcMsgName String |> Just
+        TypeConstructor [ ipcMsgName ] [ TypeConstructor parameterType [] ] ->
+            case parameterType of
+                [ "String" ] ->
+                    MsgWithData ipcMsgName String |> Result.Ok
 
-        _ ->
-            Nothing
+                -- ""  ->
+                --   MsgWithData ipcMsgName String |> Just
+                unsupportedType ->
+                    "Unsupported parameter type for " ++ ipcMsgName ++ " constructor: " ++ String.join "." unsupportedType |> Result.Err
+
+        unhandledConstructor ->
+            "Unhandled type constructor: " ++ toString unhandledConstructor |> Result.Err
 
 
 msgValues : List Ast.Statement.Statement -> Maybe (List Ast.Statement.Type)
@@ -40,9 +47,60 @@ msgValues ast =
 
 type PayloadType
     = String
+    | JsonEncodeValue
 
 
-toTypes : String -> List ElmIpc
+compositeResult : List (Result String ElmIpc) -> Result String (List ElmIpc)
+compositeResult list =
+    if List.all isOk list then
+        list
+            |> List.filterMap Result.toMaybe
+            |> Ok
+    else
+        list
+            |> List.filterMap errorOrNothing
+            |> String.join "\n"
+            |> Err
+
+
+isOk : Result err ok -> Bool
+isOk result =
+    case result of
+        Ok _ ->
+            True
+
+        Err _ ->
+            False
+
+
+errorOrNothing : Result String ElmIpc -> Maybe String
+errorOrNothing result =
+    case result of
+        Ok _ ->
+            Nothing
+
+        Err errorString ->
+            Just errorString
+
+
+crashIfErrors : List (Result String ElmIpc) -> ()
+crashIfErrors toIpcResults =
+    let
+        errors =
+            toIpcResults
+                |> List.filterMap errorOrNothing
+
+        errorString =
+            errors
+                |> String.join "\n"
+    in
+    if List.isEmpty errors then
+        ()
+    else
+        "Got errors:\n" ++ errorString |> Debug.crash
+
+
+toTypes : String -> Result String (List ElmIpc)
 toTypes ipcFileAsString =
     case Ast.parse ipcFileAsString of
         Ok ( _, _, statements ) ->
@@ -50,7 +108,7 @@ toTypes ipcFileAsString =
                 |> msgValues
                 |> Maybe.withDefault []
                 |> List.map toElmIpc
-                |> List.filterMap identity
+                |> compositeResult
 
         err ->
-            []
+            err |> toString |> Err
