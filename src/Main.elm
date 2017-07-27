@@ -1,5 +1,6 @@
 port module Main exposing (..)
 
+import Electron.Generator.ElmSerializer
 import Electron.Generator.Ts
 import Electron.Ipc exposing (ElmIpc)
 import Json.Decode exposing (..)
@@ -39,7 +40,8 @@ crashOrOutputString result =
                         |> Electron.Generator.Ts.generate
 
                 elmCode =
-                    "TODO: Elm will go here"
+                    elmIpcList
+                        |> Electron.Generator.ElmSerializer.generate
             in
             generatedFiles ( tsCode, elmCode )
 
