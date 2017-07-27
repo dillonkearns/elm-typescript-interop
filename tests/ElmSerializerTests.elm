@@ -11,11 +11,11 @@ suite =
     describe "elm serializer"
         [ test "case for a single msg with no parameter" <|
             \() ->
-                Electron.Ipc.MsgWithData "UploadSchematic" Electron.Ipc.JsonEncodeValue
+                Electron.Ipc.Msg "Engage"
                     |> Electron.Generator.ElmSerializer.generateCase
                     |> Expect.equal
-                        ("""        ShowFeedbackForm ->
-            ( "ShowFeedbackForm", Encode.null )" """
+                        ("""        Engage ->
+            ( "Engage", Encode.null )" """
                             |> String.trimRight
                         )
         ]

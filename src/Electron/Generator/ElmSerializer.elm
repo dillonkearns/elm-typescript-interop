@@ -22,6 +22,6 @@ serialize msg =
 
 generateCase : Electron.Ipc.ElmIpc -> String
 generateCase something =
-    """        ShowFeedbackForm ->
-            ( "ShowFeedbackForm", Encode.null )" """
+    """        Engage ->
+            ( "Engage", Encode.null )" """
         |> String.trimRight
