@@ -29,7 +29,7 @@ generateCase something =
                 ++ """ ->
             ( \""""
                 ++ msgName
-                ++ """", Encode.null )" """
+                ++ """", Encode.null )"""
                 |> String.trimRight
 
         Electron.Ipc.MsgWithData msgName payloadType ->

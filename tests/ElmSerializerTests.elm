@@ -15,7 +15,7 @@ suite =
                     |> Electron.Generator.ElmSerializer.generateCase
                     |> Expect.equal
                         ("""        Engage ->
-            ( "Engage", Encode.null )" """
+            ( "Engage", Encode.null )"""
                             |> String.trimRight
                         )
         , test "case for another single msg with no parameter" <|
@@ -24,7 +24,7 @@ suite =
                     |> Electron.Generator.ElmSerializer.generateCase
                     |> Expect.equal
                         ("""        MakeItSo ->
-            ( "MakeItSo", Encode.null )" """
+            ( "MakeItSo", Encode.null )"""
                             |> String.trimRight
                         )
         ]
