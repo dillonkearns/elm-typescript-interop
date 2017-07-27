@@ -48,6 +48,4 @@ generateCase something =
                 ++ """", Encode.null )"""
 
         Electron.Ipc.MsgWithData msgName payloadType ->
-            -- """        Transport string ->
-            -- ( "Transport", Encode.string string )"""
             parameterizedCase msgName "Encode.string string" "string"
