@@ -24,13 +24,23 @@ suite =
         , test "another single type with no data" <|
             \_ ->
                 """
-                  module Ipc exposing (..)
+                              module Ipc exposing (..)
 
-                  import Json.Encode as Encode
+                              import Json.Encode as Encode
 
-                  type Msg
-                      = Quit
-                """
+                              type Msg
+                                  = Quit
+                            """
                     |> Electron.Ipc.toTypes
                     |> Expect.equal [ Electron.Ipc.Msg "Quit" ]
+        , test "a single type with a String param" <|
+            \_ ->
+                """
+                  module Ipc exposing (..)
+
+                  type Msg
+                      = Replicate String
+                """
+                    |> Electron.Ipc.toTypes
+                    |> Expect.equal [ Electron.Ipc.MsgWithData "Replicate" Electron.Ipc.String ]
         ]

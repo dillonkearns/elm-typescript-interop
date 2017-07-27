@@ -16,6 +16,9 @@ toElmIpc statement =
         TypeConstructor [ valueName ] [] ->
             Just (Msg valueName)
 
+        TypeConstructor [ ipcMsgName ] [ TypeConstructor [ "String" ] [] ] ->
+            MsgWithData "Replicate" String |> Just
+
         _ ->
             Nothing
 
