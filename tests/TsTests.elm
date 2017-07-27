@@ -21,6 +21,17 @@ suite =
                     |> Electron.Generator.Ts.generateInterface
                     |> Expect.equal
                         "interface MakeItSo {\n  message: 'MakeItSo'\n}"
+        , test "interface with parameters" <|
+            \() ->
+                Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
+                    |> Electron.Generator.Ts.generateInterface
+                    |> Expect.equal
+                        ("""
+interface SetPhasersTo {
+  message: 'SetPhasersTo',
+  data: string
+}
+""" |> String.trim)
         , test "union" <|
             \() ->
                 [ Electron.Ipc.Msg "HideWindow" ]

@@ -35,8 +35,12 @@ generateInterface elmIpc =
         Electron.Ipc.Msg msgName ->
             "interface " ++ msgName ++ " {\n  message: '" ++ msgName ++ "'\n}"
 
-        Electron.Ipc.MsgWithData string payloadType ->
-            "TODO"
+        Electron.Ipc.MsgWithData msgName Electron.Ipc.String ->
+            "interface "
+                ++ msgName
+                ++ " {\n  message: '"
+                ++ msgName
+                ++ "',\n  data: string\n}"
 
 
 generateUnion : List Electron.Ipc.ElmIpc -> String
