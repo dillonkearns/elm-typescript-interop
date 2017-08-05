@@ -5,6 +5,21 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { assert } from 'chai'
 
+class KaleidoscopeReporter {
+  public name: string = 'ksdiff'
+  canReportOn(receivedFilePath: string) {
+    return true
+  }
+  report(approvedFilePath: string, receivedFilePath: string) {
+    let commandOutput = child_process.execSync(
+      `ksdiff ${approvedFilePath} ${receivedFilePath}`
+    )
+  }
+}
+approvals.configure({
+  reporters: [new KaleidoscopeReporter()]
+})
+
 interface ExpectedStdOut {
   type: 'stdout'
   expected: string
