@@ -27,6 +27,9 @@ toElmIpc statement =
                 unsupportedType ->
                     "Unsupported parameter type for " ++ ipcMsgName ++ " constructor: " ++ String.join "." unsupportedType |> Result.Err
 
+        TypeConstructor [ ipcMsgName ] [ TypeRecord recordDetails ] ->
+            "Record constructor parameters are not yet supported: " ++ ipcMsgName ++ " constructor: " ++ toString recordDetails |> Result.Err
+
         unhandledConstructor ->
             "Unhandled type constructor: " ++ toString unhandledConstructor |> Result.Err
 
