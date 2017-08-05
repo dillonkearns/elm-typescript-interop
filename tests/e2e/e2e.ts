@@ -21,7 +21,7 @@ describe('end to end', function() {
     const command = `/usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
     expectCommandSuccess(`/usr/local/bin/npm run build`)
     assertCommandOutput(command, 'nonexistentInputFileError')
-  }).timeout(30000)
+  })
 
   it('gives error for invalid syntax input file', () => {
     const binFile = path.join(__dirname, '../../bin/elm-electron')
@@ -31,7 +31,7 @@ describe('end to end', function() {
     const command = `/usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
     expectCommandSuccess(`/usr/local/bin/npm run build`)
     assertCommandOutput(command, 'invalidSyntaxInputFileError')
-  }).timeout(30000)
+  })
 
   it('gives error for unsupported constructor parameter', () => {
     const binFile = path.join(__dirname, '../../bin/elm-electron')
@@ -41,7 +41,7 @@ describe('end to end', function() {
     const command = `/usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
     expectCommandSuccess(`/usr/local/bin/npm run build`)
     assertCommandOutput(command, 'unsupportedParameterError')
-  }).timeout(30000)
+  })
 
   it('generates ts and elm files with a valid input file', () => {
     const binFile = path.join(__dirname, '../../bin/elm-electron')
@@ -54,5 +54,5 @@ describe('end to end', function() {
     expectCommandSuccess(command)
     approveFile('validInputTs', outputTsPath)
     approveFile('validInputElm', outputElmPath)
-  }).timeout(30000)
+  })
 })

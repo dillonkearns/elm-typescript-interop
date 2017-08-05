@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run test-unit && npm run test-e2e",
     "test-unit": "elm test",
-    "test-e2e": "tsc tests/e2e/e2e.ts && mocha ./tests/e2e/e2e.js",
+    "test-e2e": "tsc tests/e2e/e2e.ts && mocha --timeout 5000 ./tests/e2e/e2e.js",
     "build": "webpack"
   },
   "keywords": ["elm", "electron", "ipc", "typescript"],
