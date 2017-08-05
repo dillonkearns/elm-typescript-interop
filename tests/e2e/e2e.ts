@@ -18,12 +18,11 @@ const approveFile = (approvalDescription: string, relativePath: string) => {
 
 describe('end to end', function() {
   it('generates ts and elm files with a valid input file', (done: any) => {
-    exec(command, (err, stdout, stderr) => {
+    exec(command, (err, stdout, stderr) => {}).on('exit', code => {
+      assert.equal(0, code)
       approveFile('validInputTs', outputTsPath)
       approveFile('validInputElm', outputElmPath)
       done()
-    }).on('exit', code => {
-      assert.equal(0, code)
     })
   }).timeout(30000)
 })
