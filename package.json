@@ -4,7 +4,9 @@
   "description": "Code generator for type-safe elm-electron interprocess messages.",
   "main": "index.js",
   "scripts": {
-    "test": "elm test",
+    "test": "npm run test-unit",
+    "test-unit": "elm test",
+    "test-e2e": "tsc && mocha ./tests/e2e/e2e.js",
     "build": "webpack"
   },
   "keywords": [
@@ -17,10 +19,15 @@
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@types/chai": "^4.0.2",
     "@types/minimist": "^1.2.0",
-    "@types/node": "^8.0.17",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.19",
+    "approvals": "^2.1.2",
+    "chai": "^4.1.0",
     "elm-test": "^0.18.7",
     "elm-webpack-loader": "^4.3.1",
+    "mocha": "^3.5.0",
     "ts-loader": "^2.3.2",
     "typescript": "^2.4.2",
     "webpack": "^3.4.1"
