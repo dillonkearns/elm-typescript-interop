@@ -91,6 +91,16 @@ describe('end to end', function() {
     assertCommandOutput(command, 'invalidSyntaxInputFileError')
   }).timeout(30000)
 
+  it('gives error for unsupported constructor parameter', () => {
+    const binFile = path.join(__dirname, '../../bin/elm-electron')
+    const ipcFile = path.join(__dirname, '../../UnsupportedParameterIpc.elm')
+    const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
+    const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
+    const command = `/usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
+    expectCommandSuccess(`/usr/local/bin/npm run build`)
+    assertCommandOutput(command, 'unsupportedParameterError')
+  }).timeout(30000)
+
   it('generates ts and elm files with a valid input file', () => {
     const binFile = path.join(__dirname, '../../bin/elm-electron')
     const ipcFile = path.join(__dirname, 'Ipc.elm')
