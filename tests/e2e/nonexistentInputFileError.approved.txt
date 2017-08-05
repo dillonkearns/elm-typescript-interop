@@ -1,0 +1,6 @@
+{
+  "type": "error-result",
+  "stderr": "Could not found input file /Users/dillon/Dropbox/opensource/elm-electron/tests/e2e/NonExistentIpc.elm\n",
+  "stdout": "",
+  "status": 1
+}

@@ -71,13 +71,24 @@ const expectCommandSuccess = (command: string) => {
 }
 
 describe('end to end', function() {
+  it('gives error for invalid input file', () => {
+    const binFile = path.join(__dirname, '../../bin/elm-electron')
+    const ipcFile = path.join(__dirname, 'NonExistentIpc.elm')
+    const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
+    const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
+    const command = `/usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
+    expectCommandSuccess(`/usr/local/bin/npm run build`)
+    assertCommandOutput(command, 'nonexistentInputFileError')
+  }).timeout(30000)
+
   it('generates ts and elm files with a valid input file', () => {
     const binFile = path.join(__dirname, '../../bin/elm-electron')
     const ipcFile = path.join(__dirname, 'Ipc.elm')
     const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
     const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
-    const command = `/usr/local/bin/npm run build && /usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
+    const command = `/usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
 
+    expectCommandSuccess(`/usr/local/bin/npm run build`)
     expectCommandSuccess(command)
     approveFile('validInputTs', outputTsPath)
     approveFile('validInputElm', outputElmPath)
