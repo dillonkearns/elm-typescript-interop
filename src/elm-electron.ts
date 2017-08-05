@@ -16,9 +16,9 @@ if (fs.existsSync(inputPath)) {
     fs.writeFileSync(elmPath, elmCode)
   })
 
-  app.ports.parsingError.subscribe(function(outputFile: any) {
-    console.log(`Error parsing input file ${inputPath}\n`)
-    console.log(outputFile)
+  app.ports.parsingError.subscribe(function(errorString: string) {
+    console.error(`Error parsing input file ${inputPath}\n`)
+    console.error(errorString)
     process.exit(1)
   })
 } else {
