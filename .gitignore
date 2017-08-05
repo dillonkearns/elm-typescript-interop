@@ -2,3 +2,5 @@
 node_modules/
 elm.js
 dist/
+generated/
+tests/e2e/e2e.js

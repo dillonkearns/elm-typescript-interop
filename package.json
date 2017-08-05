@@ -4,17 +4,12 @@
   "description": "Code generator for type-safe elm-electron interprocess messages.",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test-unit",
+    "test": "npm run test-unit && npm run test-e2e",
     "test-unit": "elm test",
-    "test-e2e": "tsc && mocha ./tests/e2e/e2e.js",
+    "test-e2e": "tsc tests/e2e/e2e.ts && mocha ./tests/e2e/e2e.js",
     "build": "webpack"
   },
-  "keywords": [
-    "elm",
-    "electron",
-    "ipc",
-    "typescript"
-  ],
+  "keywords": ["elm", "electron", "ipc", "typescript"],
   "repository": "https://github.com/dillonkearns/elm-electron",
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",

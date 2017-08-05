@@ -7,25 +7,23 @@ import { assert } from 'chai'
 
 const binFile = path.join(__dirname, '../../bin/elm-electron')
 const ipcFile = path.join(__dirname, 'Ipc.elm')
-let command = `/usr/local/bin/npm run build && /usr/local/bin/node ${binFile} ${ipcFile} --ts result.ts --elm Result.elm`
+const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
+const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
+let command = `/usr/local/bin/npm run build && /usr/local/bin/node ${binFile} ${ipcFile} --ts ${outputTsPath} --elm ${outputElmPath}`
 
 const approveFile = (approvalDescription: string, relativePath: string) => {
-  const fileBuffer = fs.readFileSync(path.join(__dirname, relativePath))
+  const fileBuffer = fs.readFileSync(path.join(relativePath))
   approvals.verify(__dirname, approvalDescription, fileBuffer.toString())
 }
 
 describe('end to end', function() {
   it('generates ts and elm files with a valid input file', (done: any) => {
     exec(command, (err, stdout, stderr) => {
-      if (err || stderr) {
-        throw err
-      } else {
-        approveFile('validInputTs', '../../result.ts')
-        approveFile('validInputElm', '../../Result.elm')
-      }
+      approveFile('validInputTs', outputTsPath)
+      approveFile('validInputElm', outputElmPath)
+      done()
     }).on('exit', code => {
       assert.equal(0, code)
-      done()
     })
   }).timeout(30000)
 })
