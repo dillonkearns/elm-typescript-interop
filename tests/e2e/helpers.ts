@@ -15,15 +15,6 @@ class KaleidoscopeReporter {
     )
   }
 }
-interface ExpectedStdOut {
-  type: 'stdout'
-  expected: string
-}
-
-interface ExpectedStdErr {
-  type: 'stderr'
-  expected: string
-}
 
 interface SuccessResult {
   type: 'success-result'
@@ -41,7 +32,6 @@ const approveFile = (approvalDescription: string, relativePath: string) => {
   approvals.verify(__dirname, approvalDescription, fileBuffer.toString())
 }
 
-type ExpectedOutput = ExpectedStdOut | ExpectedStdErr
 type CommandResult = SuccessResult | ErrorResult
 
 const assertCommandOutput = (command: string, approvalName: string) => {
