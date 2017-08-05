@@ -84,23 +84,6 @@ errorOrNothing result =
             Just errorString
 
 
-crashIfErrors : List (Result String ElmIpc) -> ()
-crashIfErrors toIpcResults =
-    let
-        errors =
-            toIpcResults
-                |> List.filterMap errorOrNothing
-
-        errorString =
-            errors
-                |> String.join "\n"
-    in
-    if List.isEmpty errors then
-        ()
-    else
-        "Got errors:\n" ++ errorString |> Debug.crash
-
-
 toTypes : String -> Result String (List ElmIpc)
 toTypes ipcFileAsString =
     case Ast.parse ipcFileAsString of
