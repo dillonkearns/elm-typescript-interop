@@ -1,6 +1,6 @@
 module IpcTests exposing (..)
 
-import Electron.Ipc
+import TypeScript.Ipc
 import Expect exposing (Expectation)
 import Test exposing (..)
 
@@ -19,8 +19,8 @@ suite =
                   type Msg
                       = HideWindow
                 """
-                    |> Electron.Ipc.toTypes
-                    |> Expect.equal (Ok [ Electron.Ipc.Msg "HideWindow" ])
+                    |> TypeScript.Ipc.toTypes
+                    |> Expect.equal (Ok [ TypeScript.Ipc.Msg "HideWindow" ])
         , test "another single type with no data" <|
             \_ ->
                 """
@@ -31,8 +31,8 @@ suite =
                               type Msg
                                   = Quit
                             """
-                    |> Electron.Ipc.toTypes
-                    |> Expect.equal (Ok [ Electron.Ipc.Msg "Quit" ])
+                    |> TypeScript.Ipc.toTypes
+                    |> Expect.equal (Ok [ TypeScript.Ipc.Msg "Quit" ])
         , test "a single type with a String param" <|
             \_ ->
                 """
@@ -41,8 +41,8 @@ suite =
                   type Msg
                       = Replicate String
                 """
-                    |> Electron.Ipc.toTypes
-                    |> Expect.equal (Ok [ Electron.Ipc.MsgWithData "Replicate" Electron.Ipc.String ])
+                    |> TypeScript.Ipc.toTypes
+                    |> Expect.equal (Ok [ TypeScript.Ipc.MsgWithData "Replicate" TypeScript.Ipc.String ])
         , test "reports errors for unsupported types" <|
             \_ ->
                 """
@@ -51,7 +51,7 @@ suite =
                                           type Msg
                                               = Transport Banana
                                         """
-                    |> Electron.Ipc.toTypes
+                    |> TypeScript.Ipc.toTypes
                     |> Expect.equal
                         (Err "Unsupported parameter type for Transport constructor: Banana")
         , test "multiple types with a String params" <|
@@ -63,11 +63,11 @@ suite =
                                                               = Transport String
                                                               | SetPhasersTo String
                                                         """
-                    |> Electron.Ipc.toTypes
+                    |> TypeScript.Ipc.toTypes
                     |> Expect.equal
                         (Ok
-                            [ Electron.Ipc.MsgWithData "Transport" Electron.Ipc.String
-                            , Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.String
+                            [ TypeScript.Ipc.MsgWithData "Transport" TypeScript.Ipc.String
+                            , TypeScript.Ipc.MsgWithData "SetPhasersTo" TypeScript.Ipc.String
                             ]
                         )
         , test "multiple types with a Json.Encode params" <|
@@ -79,11 +79,11 @@ suite =
                                   = Transport Encode.Value
                                   | UploadSchematic Encode.Value
                             """
-                    |> Electron.Ipc.toTypes
+                    |> TypeScript.Ipc.toTypes
                     |> Expect.equal
                         (Ok
-                            [ Electron.Ipc.MsgWithData "Transport" Electron.Ipc.JsonEncodeValue
-                            , Electron.Ipc.MsgWithData "UploadSchematic" Electron.Ipc.JsonEncodeValue
+                            [ TypeScript.Ipc.MsgWithData "Transport" TypeScript.Ipc.JsonEncodeValue
+                            , TypeScript.Ipc.MsgWithData "UploadSchematic" TypeScript.Ipc.JsonEncodeValue
                             ]
                         )
         ]

@@ -1,6 +1,6 @@
-module Electron.Generator.ElmSerializer exposing (..)
+module TypeScript.Generator.ElmSerializer exposing (..)
 
-import Electron.Ipc exposing (ElmIpc)
+import TypeScript.Ipc exposing (ElmIpc)
 
 
 generate : List ElmIpc -> String
@@ -37,10 +37,10 @@ parameterizedCase msgName jsonEncodeValue parameterName =
         ++ " )"
 
 
-generateCase : Electron.Ipc.ElmIpc -> String
+generateCase : TypeScript.Ipc.ElmIpc -> String
 generateCase something =
     case something of
-        Electron.Ipc.Msg msgName ->
+        TypeScript.Ipc.Msg msgName ->
             "        "
                 ++ msgName
                 ++ """ ->
@@ -48,10 +48,10 @@ generateCase something =
                 ++ msgName
                 ++ """", Encode.null )"""
 
-        Electron.Ipc.MsgWithData msgName payloadType ->
+        TypeScript.Ipc.MsgWithData msgName payloadType ->
             case payloadType of
-                Electron.Ipc.String ->
+                TypeScript.Ipc.String ->
                     parameterizedCase msgName "Encode.string string" "string"
 
-                Electron.Ipc.JsonEncodeValue ->
+                TypeScript.Ipc.JsonEncodeValue ->
                     parameterizedCase msgName "value" "value"

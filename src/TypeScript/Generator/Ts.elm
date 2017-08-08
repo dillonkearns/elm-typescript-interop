@@ -1,16 +1,16 @@
-module Electron.Generator.Ts exposing (..)
+module TypeScript.Generator.Ts exposing (..)
 
-import Electron.Ipc
+import TypeScript.Ipc
 
 
 prefix : String
 prefix =
     """
-import { ipcMain } from 'electron'
+import { ipcMain } from 'typescript'
 
 class Ipc {
   static setupIpcMessageHandler(onIpcMessage: (elmIpc: ElmIpc) => any) {
-    ipcMain.on('elm-electron-ipc', (event: any, payload: any) => {
+    ipcMain.on('elm-typescript-ipc', (event: any, payload: any) => {
       onIpcMessage(payload)
     })
   }
@@ -20,7 +20,7 @@ export { Ipc, ElmIpc }
     """
 
 
-generate : List Electron.Ipc.ElmIpc -> String
+generate : List TypeScript.Ipc.ElmIpc -> String
 generate msgs =
     [ prefix
     , generateUnion msgs
@@ -29,13 +29,13 @@ generate msgs =
         |> String.join "\n\n"
 
 
-generateInterface : Electron.Ipc.ElmIpc -> String
+generateInterface : TypeScript.Ipc.ElmIpc -> String
 generateInterface elmIpc =
     case elmIpc of
-        Electron.Ipc.Msg msgName ->
+        TypeScript.Ipc.Msg msgName ->
             "interface " ++ msgName ++ " {\n  message: '" ++ msgName ++ "'\n}"
 
-        Electron.Ipc.MsgWithData msgName parameterType ->
+        TypeScript.Ipc.MsgWithData msgName parameterType ->
             "interface "
                 ++ msgName
                 ++ " {\n  message: '"
@@ -45,17 +45,17 @@ generateInterface elmIpc =
                 ++ "\n}"
 
 
-toTypescriptType : Electron.Ipc.PayloadType -> String
+toTypescriptType : TypeScript.Ipc.PayloadType -> String
 toTypescriptType payloadType =
     case payloadType of
-        Electron.Ipc.String ->
+        TypeScript.Ipc.String ->
             "string"
 
-        Electron.Ipc.JsonEncodeValue ->
+        TypeScript.Ipc.JsonEncodeValue ->
             "any"
 
 
-generateUnion : List Electron.Ipc.ElmIpc -> String
+generateUnion : List TypeScript.Ipc.ElmIpc -> String
 generateUnion ipcList =
     "type ElmIpc = "
         ++ (ipcList
@@ -64,11 +64,11 @@ generateUnion ipcList =
            )
 
 
-ipcName : Electron.Ipc.ElmIpc -> String
+ipcName : TypeScript.Ipc.ElmIpc -> String
 ipcName elmIpc =
     case elmIpc of
-        Electron.Ipc.Msg msgName ->
+        TypeScript.Ipc.Msg msgName ->
             msgName
 
-        Electron.Ipc.MsgWithData msgName payloadType ->
+        TypeScript.Ipc.MsgWithData msgName payloadType ->
             msgName

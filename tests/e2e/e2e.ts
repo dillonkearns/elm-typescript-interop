@@ -14,7 +14,7 @@ approvals.configure({
 
 describe('end to end', function() {
   it('gives error for non-existent input file', () => {
-    const binFile = path.join(__dirname, '../../bin/elm-electron')
+    const binFile = path.join(__dirname, '../../bin/elm-typescript')
     const ipcFile = path.join(__dirname, 'NonExistentIpc.elm')
     const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
     const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
@@ -24,7 +24,7 @@ describe('end to end', function() {
   })
 
   it('gives error for invalid syntax input file', () => {
-    const binFile = path.join(__dirname, '../../bin/elm-electron')
+    const binFile = path.join(__dirname, '../../bin/elm-typescript')
     const ipcFile = path.join(__dirname, '../../InvalidIpc.elm')
     const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
     const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
@@ -34,7 +34,7 @@ describe('end to end', function() {
   })
 
   it('gives error for unsupported constructor parameter', () => {
-    const binFile = path.join(__dirname, '../../bin/elm-electron')
+    const binFile = path.join(__dirname, '../../bin/elm-typescript')
     const ipcFile = path.join(__dirname, '../../UnsupportedParameterIpc.elm')
     const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
     const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')
@@ -44,7 +44,7 @@ describe('end to end', function() {
   })
 
   it('generates ts and elm files with a valid input file', () => {
-    const binFile = path.join(__dirname, '../../bin/elm-electron')
+    const binFile = path.join(__dirname, '../../bin/elm-typescript')
     const ipcFile = path.join(__dirname, 'Ipc.elm')
     const outputElmPath = path.join(__dirname, '../../generated', 'Result.elm')
     const outputTsPath = path.join(__dirname, '../../generated', 'result.ts')

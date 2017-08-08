@@ -2,8 +2,8 @@ const webpack = require('webpack')
 const path = require('path')
 
 module.exports = {
-  entry: './src/elm-electron.ts',
-  target: 'electron-renderer',
+  entry: './src/elm-typescript.ts',
+  target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',

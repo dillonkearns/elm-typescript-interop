@@ -1,9 +1,9 @@
 
-import { ipcMain } from 'electron'
+import { ipcMain } from 'typescript'
 
 class Ipc {
   static setupIpcMessageHandler(onIpcMessage: (elmIpc: ElmIpc) => any) {
-    ipcMain.on('elm-electron-ipc', (event: any, payload: any) => {
+    ipcMain.on('elm-typescript-ipc', (event: any, payload: any) => {
       onIpcMessage(payload)
     })
   }

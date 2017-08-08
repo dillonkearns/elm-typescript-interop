@@ -1,9 +1,9 @@
 module ElmSerializerTests exposing (suite)
 
-import Electron.Generator.ElmSerializer
-import Electron.Ipc
 import Expect
 import Test exposing (Test, describe, test)
+import TypeScript.Generator.ElmSerializer
+import TypeScript.Ipc
 
 
 suite : Test
@@ -11,8 +11,8 @@ suite =
     describe "elm serializer"
         [ test "case for a single msg with no parameter" <|
             \() ->
-                Electron.Ipc.Msg "Engage"
-                    |> Electron.Generator.ElmSerializer.generateCase
+                TypeScript.Ipc.Msg "Engage"
+                    |> TypeScript.Generator.ElmSerializer.generateCase
                     |> Expect.equal
                         ("""        Engage ->
             ( "Engage", Encode.null )"""
@@ -20,8 +20,8 @@ suite =
                         )
         , test "case for another single msg with no parameter" <|
             \() ->
-                Electron.Ipc.Msg "MakeItSo"
-                    |> Electron.Generator.ElmSerializer.generateCase
+                TypeScript.Ipc.Msg "MakeItSo"
+                    |> TypeScript.Generator.ElmSerializer.generateCase
                     |> Expect.equal
                         ("""        MakeItSo ->
             ( "MakeItSo", Encode.null )"""
@@ -29,8 +29,8 @@ suite =
                         )
         , test "case for a single msg with a parameter" <|
             \() ->
-                Electron.Ipc.MsgWithData "Transport" Electron.Ipc.String
-                    |> Electron.Generator.ElmSerializer.generateCase
+                TypeScript.Ipc.MsgWithData "Transport" TypeScript.Ipc.String
+                    |> TypeScript.Generator.ElmSerializer.generateCase
                     |> Expect.equal
                         ("""        Transport string ->
             ( "Transport", Encode.string string )"""
@@ -38,8 +38,8 @@ suite =
                         )
         , test "case for a single msg with an encode value parameter" <|
             \() ->
-                Electron.Ipc.MsgWithData "SetPhasersTo" Electron.Ipc.JsonEncodeValue
-                    |> Electron.Generator.ElmSerializer.generateCase
+                TypeScript.Ipc.MsgWithData "SetPhasersTo" TypeScript.Ipc.JsonEncodeValue
+                    |> TypeScript.Generator.ElmSerializer.generateCase
                     |> Expect.equal
                         ("""        SetPhasersTo value ->
             ( "SetPhasersTo", value )"""

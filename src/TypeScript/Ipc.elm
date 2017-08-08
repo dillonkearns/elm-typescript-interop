@@ -1,4 +1,4 @@
-module Electron.Ipc exposing (..)
+module TypeScript.Ipc exposing (..)
 
 import Ast
 import Ast.Statement exposing (..)

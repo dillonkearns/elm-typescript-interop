@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "summary": "Elm Electron",
-  "repository": "https://github.com/dillonkearns/elm-electron.git",
+  "summary": "Elm TypeScript",
+  "repository": "https://github.com/dillonkearns/elm-typescript.git",
   "license": "BSD-3-Clause",
   "source-directories": ["src"],
   "exposed-modules": [],

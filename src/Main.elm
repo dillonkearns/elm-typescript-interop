@@ -1,8 +1,8 @@
 port module Main exposing (..)
 
-import Electron.Generator.ElmSerializer
-import Electron.Generator.Ts
-import Electron.Ipc exposing (ElmIpc)
+import TypeScript.Generator.ElmSerializer
+import TypeScript.Generator.Ts
+import TypeScript.Ipc exposing (ElmIpc)
 import Json.Decode exposing (..)
 
 
@@ -26,7 +26,7 @@ type alias Flags =
 output : String -> Cmd msg
 output elmIpcFileContents =
     elmIpcFileContents
-        |> Electron.Ipc.toTypes
+        |> TypeScript.Ipc.toTypes
         |> crashOrOutputString
 
 
@@ -37,11 +37,11 @@ crashOrOutputString result =
             let
                 tsCode =
                     elmIpcList
-                        |> Electron.Generator.Ts.generate
+                        |> TypeScript.Generator.Ts.generate
 
                 elmCode =
                     elmIpcList
-                        |> Electron.Generator.ElmSerializer.generate
+                        |> TypeScript.Generator.ElmSerializer.generate
             in
             generatedFiles ( tsCode, elmCode )
 
