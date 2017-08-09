@@ -7,8 +7,8 @@ import TypeScript.Data.Program
 import TypeScript.Parser
 
 
-portNameAndKind : TypeScript.Data.Port.Port -> ( String, TypeScript.Data.Port.Kind )
-portNameAndKind portValue =
+portNameAndDirection : TypeScript.Data.Port.Port -> ( String, TypeScript.Data.Port.Direction )
+portNameAndDirection portValue =
     case portValue of
         TypeScript.Data.Port.Port name kind _ ->
             ( name, kind )
@@ -38,7 +38,7 @@ suite =
                     |> (\parsed ->
                             case parsed of
                                 Ok (TypeScript.Data.Program.WithoutFlags ports) ->
-                                    List.map portNameAndKind ports
+                                    List.map portNameAndDirection ports
                                         |> Expect.equal [ ( "greet", TypeScript.Data.Port.Outbound ) ]
 
                                 actual ->
