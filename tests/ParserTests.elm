@@ -24,20 +24,27 @@ suite =
                 """
                     |> TypeScript.Parser.parse
                     |> Expect.equal (Ok (TypeScript.Data.Program.WithoutFlags []))
-        , test "program with an outbound port" <|
+        , test "program with an outbound ports" <|
             \_ ->
                 """
                   module Main exposing (main)
 
-                  thereAreNoPorts = True
-                  port greet : String -> Cmd msg
+                  port showSuccessDialog : String -> Cmd msg
+
+                  port showWarningDialog : String -> Cmd msg
                 """
                     |> TypeScript.Parser.parse
                     |> (\parsed ->
                             case parsed of
                                 Ok (TypeScript.Data.Program.WithoutFlags ports) ->
                                     List.map portNameAndDirection ports
-                                        |> Expect.equal [ ( "greet", TypeScript.Data.Port.Outbound ) ]
+                                        |> Expect.equal
+                                            [ ( "showSuccessDialog", TypeScript.Data.Port.Outbound )
+                                            , ( "showWarningDialog", TypeScript.Data.Port.Outbound )
+                                            ]
+
+                                Err err ->
+                                    Expect.fail ("Expected success, got" ++ toString parsed)
 
                                 actual ->
                                     Expect.fail "Expeted program without flags"
