@@ -1,8 +1,12 @@
-module TypeScript.Data.Port exposing (Port(Inbound, Outbound))
+module TypeScript.Data.Port exposing (Kind(Inbound, Outbound), Port(Port))
 
 import Ast.Statement
 
 
+type Kind
+    = Inbound
+    | Outbound
+
+
 type Port
-    = Inbound String Ast.Statement.Type
-    | Outbound String Ast.Statement.Type
+    = Port String Kind Ast.Statement.Type

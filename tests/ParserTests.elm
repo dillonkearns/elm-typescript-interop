@@ -1,11 +1,17 @@
 module ParserTests exposing (..)
 
-import Ast.Statement
 import Expect exposing (Expectation)
 import Test exposing (..)
 import TypeScript.Data.Port
 import TypeScript.Data.Program
 import TypeScript.Parser
+
+
+portNameAndKind : TypeScript.Data.Port.Port -> ( String, TypeScript.Data.Port.Kind )
+portNameAndKind portValue =
+    case portValue of
+        TypeScript.Data.Port.Port name kind _ ->
+            ( name, kind )
 
 
 suite : Test
@@ -31,15 +37,11 @@ suite =
                     |> TypeScript.Parser.parse
                     |> (\parsed ->
                             case parsed of
-                                Ok (TypeScript.Data.Program.WithoutFlags [ singlePort ]) ->
-                                    case singlePort of
-                                        TypeScript.Data.Port.Outbound _ _ ->
-                                            Expect.pass
-
-                                        _ ->
-                                            Expect.fail "Expected outbound port, got inbound"
+                                Ok (TypeScript.Data.Program.WithoutFlags ports) ->
+                                    List.map portNameAndKind ports
+                                        |> Expect.equal [ ( "greet", TypeScript.Data.Port.Outbound ) ]
 
                                 actual ->
-                                    Expect.fail ("Expeted single port without flags, got " ++ toString actual)
+                                    Expect.fail "Expeted program without flags"
                        )
         ]
