@@ -11,7 +11,7 @@ extractPort : Ast.Statement.Statement -> Maybe TypeScript.Data.Port.Port
 extractPort statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
-            TypeScript.Data.Port.Outbound outboundPortType |> Just
+            TypeScript.Data.Port.Outbound outboundPortName outboundPortType |> Just
 
         _ ->
             Nothing

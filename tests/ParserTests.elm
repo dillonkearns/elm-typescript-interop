@@ -33,7 +33,7 @@ suite =
                             case parsed of
                                 Ok (TypeScript.Data.Program.WithoutFlags [ singlePort ]) ->
                                     case singlePort of
-                                        TypeScript.Data.Port.Outbound _ ->
+                                        TypeScript.Data.Port.Outbound _ _ ->
                                             Expect.pass
 
                                         _ ->

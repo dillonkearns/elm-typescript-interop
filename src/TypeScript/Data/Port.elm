@@ -4,5 +4,5 @@ import Ast.Statement
 
 
 type Port
-    = Inbound Ast.Statement.Type
-    | Outbound Ast.Statement.Type
+    = Inbound String Ast.Statement.Type
+    | Outbound String Ast.Statement.Type
