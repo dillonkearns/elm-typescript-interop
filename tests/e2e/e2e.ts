@@ -41,7 +41,7 @@ describe('end to end', function() {
 
   it('generates ts definition for a valid input file file', () => {
     const binFile = path.join(__dirname, '../../bin/elm-typescript')
-    const elmInputFile = path.join(__dirname, '../../src/Main.elm')
+    const elmInputFile = path.join(__dirname, '../../test_data/Main.elm')
     const outputTsPath = path.join(__dirname, '../../generated', 'result.d.ts')
     const command = `/usr/local/bin/node ${binFile} ${elmInputFile} --output ${outputTsPath}`
 

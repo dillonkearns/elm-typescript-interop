@@ -12,6 +12,9 @@ export interface App {
     parsingError: {
       subscribe(callback: (data: string) => void): void
     }
+    inbound: {
+      send(data: number): void
+    }
   }
 }
     
