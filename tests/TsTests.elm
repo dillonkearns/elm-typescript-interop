@@ -2,8 +2,8 @@ module TsTests exposing (..)
 
 import Expect
 import Test exposing (Test, describe, test)
-import TypeScript.Generator.Ts
-import TypeScript.Ipc
+import TypeScript.Generator
+import TypeScript.Parser
 
 
 suite : Test
@@ -11,20 +11,20 @@ suite =
     describe "ts"
         [ test "interface for msg with no parameters" <|
             \() ->
-                TypeScript.Ipc.Msg "HideWindow"
-                    |> TypeScript.Generator.Ts.generateInterface
+                TypeScript.Parser.Msg "HideWindow"
+                    |> TypeScript.Generator.generateInterface
                     |> Expect.equal
                         "interface HideWindow {\n  message: 'HideWindow'\n}"
         , test "another interface for msg with no parameters" <|
             \() ->
-                TypeScript.Ipc.Msg "MakeItSo"
-                    |> TypeScript.Generator.Ts.generateInterface
+                TypeScript.Parser.Msg "MakeItSo"
+                    |> TypeScript.Generator.generateInterface
                     |> Expect.equal
                         "interface MakeItSo {\n  message: 'MakeItSo'\n}"
         , test "interface with Json.Encode.Value parameter" <|
             \() ->
-                TypeScript.Ipc.MsgWithData "UploadSchematic" TypeScript.Ipc.JsonEncodeValue
-                    |> TypeScript.Generator.Ts.generateInterface
+                TypeScript.Parser.MsgWithData "UploadSchematic" TypeScript.Parser.JsonEncodeValue
+                    |> TypeScript.Generator.generateInterface
                     |> Expect.equal
                         ("""
 interface UploadSchematic {
@@ -34,8 +34,8 @@ interface UploadSchematic {
                         """ |> String.trim)
         , test "interface with parameters" <|
             \() ->
-                TypeScript.Ipc.MsgWithData "SetPhasersTo" TypeScript.Ipc.String
-                    |> TypeScript.Generator.Ts.generateInterface
+                TypeScript.Parser.MsgWithData "SetPhasersTo" TypeScript.Parser.String
+                    |> TypeScript.Generator.generateInterface
                     |> Expect.equal
                         ("""
 interface SetPhasersTo {
@@ -45,17 +45,17 @@ interface SetPhasersTo {
 """ |> String.trim)
         , test "union" <|
             \() ->
-                [ TypeScript.Ipc.Msg "HideWindow" ]
-                    |> TypeScript.Generator.Ts.generateUnion
+                [ TypeScript.Parser.Msg "HideWindow" ]
+                    |> TypeScript.Generator.generateUnion
                     |> Expect.equal
                         "type ElmIpc = HideWindow"
         , test "union with multiple types" <|
             \() ->
-                [ TypeScript.Ipc.Msg "Engage"
-                , TypeScript.Ipc.MsgWithData "UploadSchematic" TypeScript.Ipc.JsonEncodeValue
-                , TypeScript.Ipc.MsgWithData "SetPhasersTo" TypeScript.Ipc.String
+                [ TypeScript.Parser.Msg "Engage"
+                , TypeScript.Parser.MsgWithData "UploadSchematic" TypeScript.Parser.JsonEncodeValue
+                , TypeScript.Parser.MsgWithData "SetPhasersTo" TypeScript.Parser.String
                 ]
-                    |> TypeScript.Generator.Ts.generateUnion
+                    |> TypeScript.Generator.generateUnion
                     |> Expect.equal
                         "type ElmIpc = Engage | UploadSchematic | SetPhasersTo"
         ]
