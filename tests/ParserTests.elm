@@ -8,10 +8,8 @@ import TypeScript.Parser
 
 
 portNameAndDirection : TypeScript.Data.Port.Port -> ( String, TypeScript.Data.Port.Direction )
-portNameAndDirection portValue =
-    case portValue of
-        TypeScript.Data.Port.Port name kind _ ->
-            ( name, kind )
+portNameAndDirection (TypeScript.Data.Port.Port name kind _) =
+    ( name, kind )
 
 
 suite : Test
