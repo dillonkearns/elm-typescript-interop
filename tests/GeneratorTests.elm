@@ -15,11 +15,7 @@ suite =
                 Port.Port "hello" Port.Outbound (Ast.Statement.TypeConstructor [ "String" ] [])
                     |> TypeScript.Generator.generatePort
                     |> Expect.equal
-                        (String.trim
-                            """
-hello: {
-  subscribe(callback: (data: string) => void): void
-}
-                            """
-                        )
+                        """    hello: {
+      subscribe(callback: (data: string) => void): void
+    }"""
         ]

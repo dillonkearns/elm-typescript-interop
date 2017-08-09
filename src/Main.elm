@@ -1,11 +1,11 @@
 port module Main exposing (..)
 
 import Json.Decode exposing (..)
+import TypeScript.Data.Program
 import TypeScript.Generator
 import TypeScript.Parser
 
 
---exposing (ElmIpc)
 -- Need to import Json.Decode as a
 -- workaround for https://github.com/elm-lang/elm-make/issues/134
 
@@ -20,36 +20,34 @@ type alias Model =
 
 
 type alias Flags =
-    { elmIpcFileContents : String }
+    { elmModuleFileContents : String }
 
 
+output : String -> Cmd msg
+output elmModuleFileContents =
+    elmModuleFileContents
+        |> TypeScript.Parser.parse
+        |> crashOrOutputString
 
--- output : String -> Cmd msg
--- output elmIpcFileContents =
---     elmIpcFileContents
---         |> TypeScript.Parser.toTypes
---         |> crashOrOutputString
---
---
--- crashOrOutputString : Result String (List ElmIpc) -> Cmd msg
--- crashOrOutputString result =
---     case result of
---         Ok elmIpcList ->
---             let
---                 tsCode =
---                     elmIpcList
---                         |> TypeScript.Generator.generate
---             in
---             generatedFiles tsCode
---
---         Err errorMessage ->
---             parsingError errorMessage
+
+crashOrOutputString : Result String TypeScript.Data.Program.Program -> Cmd msg
+crashOrOutputString result =
+    case result of
+        Ok elmProgram ->
+            let
+                tsCode =
+                    elmProgram
+                        |> TypeScript.Generator.generate
+            in
+            generatedFiles tsCode
+
+        Err errorMessage ->
+            parsingError errorMessage
 
 
 init : Flags -> ( Model, Cmd msg )
 init flags =
-    -- () ! [ output flags.elmIpcFileContents ]
-    () ! []
+    () ! [ output flags.elmModuleFileContents ]
 
 
 update : msg -> Model -> ( Model, Cmd msg )

@@ -1,82 +1,64 @@
 module TypeScript.Generator exposing (..)
 
 import TypeScript.Data.Port as Port
-import TypeScript.Parser
+import TypeScript.Data.Program as Program
 
 
 generatePort : Port.Port -> String
 generatePort portPort =
-    """hello: {
-  subscribe(callback: (data: string) => void): void
-}"""
+    "    hello" ++ """: {
+      subscribe(callback: (data: string) => void): void
+    }"""
 
 
 prefix : String
 prefix =
-    """
-import { ipcMain } from 'typescript'
+    """// Type definitions for Elm
+// Project: https://github.com/dillonkearns/elm-typescript
+// Definitions by: Dillon Kearns <https://github.com/dillonkearns>
+export as namespace Elm"""
 
-class Ipc {
-  static setupIpcMessageHandler(onIpcMessage: (elmIpc: ElmIpc) => any) {
-    ipcMain.on('elm-typescript-ipc', (event: any, payload: any) => {
-      onIpcMessage(payload)
-    })
+
+elmModuleNamespace : String
+elmModuleNamespace =
+    """export namespace Main {
+  // TODO: type-safe flags (check if Program Never Model Msg or Program FlagsType Model Msg)
+  export function fullscreen(): App
+  export function embed(node: HTMLElement | null): App
+}"""
+
+
+generatePorts : List Port.Port -> String
+generatePorts ports =
+    ports
+        |> List.map generatePort
+        |> String.join "\n"
+        |> wrapPorts
+
+
+wrapPorts : String -> String
+wrapPorts portsString =
+    """
+export interface App {
+  ports: {
+"""
+        ++ portsString
+        ++ """
+    }
   }
 }
-
-export { Ipc, ElmIpc }
     """
 
 
-generate : List TypeScript.Parser.ElmIpc -> String
-generate msgs =
-    [ prefix
-    , generateUnion msgs
-    , msgs |> List.map generateInterface |> String.join "\n\n"
-    ]
-        |> String.join "\n\n"
+generate : Program.Program -> String
+generate program =
+    case program of
+        Program.WithFlags flagType ports ->
+            "Not implemented"
 
-
-generateInterface : TypeScript.Parser.ElmIpc -> String
-generateInterface elmIpc =
-    case elmIpc of
-        TypeScript.Parser.Msg msgName ->
-            "interface " ++ msgName ++ " {\n  message: '" ++ msgName ++ "'\n}"
-
-        TypeScript.Parser.MsgWithData msgName parameterType ->
-            "interface "
-                ++ msgName
-                ++ " {\n  message: '"
-                ++ msgName
-                ++ "'\n  data: "
-                ++ toTypescriptType parameterType
-                ++ "\n}"
-
-
-toTypescriptType : TypeScript.Parser.PayloadType -> String
-toTypescriptType payloadType =
-    case payloadType of
-        TypeScript.Parser.String ->
-            "string"
-
-        TypeScript.Parser.JsonEncodeValue ->
-            "any"
-
-
-generateUnion : List TypeScript.Parser.ElmIpc -> String
-generateUnion ipcList =
-    "type ElmIpc = "
-        ++ (ipcList
-                |> List.map ipcName
-                |> String.join " | "
-           )
-
-
-ipcName : TypeScript.Parser.ElmIpc -> String
-ipcName elmIpc =
-    case elmIpc of
-        TypeScript.Parser.Msg msgName ->
-            msgName
-
-        TypeScript.Parser.MsgWithData msgName payloadType ->
-            msgName
+        Program.WithoutFlags ports ->
+            [ prefix
+            , generatePorts ports
+            , elmModuleNamespace
+            ]
+                |> String.join "\n\n"

@@ -4,16 +4,14 @@ import * as minimist from 'minimist'
 
 const args = minimist(process.argv.slice(2))
 const inputPath = args._[0]
-const tsPath = args.ts
-const elmPath = args.elm
+const tsDeclarationPath = args.output
 
 if (fs.existsSync(inputPath)) {
-  const elmIpcFileContents = fs.readFileSync(inputPath).toString()
+  const elmModuleFileContents = fs.readFileSync(inputPath).toString()
 
-  let app = Elm.Main.worker({ elmIpcFileContents })
-  app.ports.generatedFiles.subscribe(function([typescriptCode, elmCode]: any) {
-    fs.writeFileSync(tsPath, typescriptCode)
-    fs.writeFileSync(elmPath, elmCode)
+  let app = Elm.Main.worker({ elmModuleFileContents })
+  app.ports.generatedFiles.subscribe(function(typescriptDeclarationFile: any) {
+    fs.writeFileSync(tsDeclarationPath, typescriptDeclarationFile)
   })
 
   app.ports.parsingError.subscribe(function(errorString: string) {
