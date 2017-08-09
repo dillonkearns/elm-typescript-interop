@@ -10,12 +10,36 @@ import TypeScript.Generator
 suite : Test
 suite =
     describe "generator"
-        [ test "outbound port" <|
-            \() ->
-                Port.Port "hello" Port.Outbound (Ast.Statement.TypeConstructor [ "String" ] [])
-                    |> TypeScript.Generator.generatePort
-                    |> Expect.equal
-                        """    hello: {
+        [ describe "port"
+            [ test "outbound port" <|
+                \() ->
+                    Port.Port "hello" Port.Outbound (Ast.Statement.TypeConstructor [ "String" ] [])
+                        |> TypeScript.Generator.generatePort
+                        |> Expect.equal
+                            """    hello: {
       subscribe(callback: (data: string) => void): void
     }"""
+            ]
+        , describe "type"
+            [ test "String" <|
+                \() ->
+                    Ast.Statement.TypeConstructor [ "String" ] []
+                        |> TypeScript.Generator.toTypescriptType
+                        |> Expect.equal "string"
+            , test "Float" <|
+                \() ->
+                    Ast.Statement.TypeConstructor [ "Float" ] []
+                        |> TypeScript.Generator.toTypescriptType
+                        |> Expect.equal "number"
+            , test "Int" <|
+                \() ->
+                    Ast.Statement.TypeConstructor [ "Int" ] []
+                        |> TypeScript.Generator.toTypescriptType
+                        |> Expect.equal "number"
+            , test "Bool" <|
+                \() ->
+                    Ast.Statement.TypeConstructor [ "Bool" ] []
+                        |> TypeScript.Generator.toTypescriptType
+                        |> Expect.equal "boolean"
+            ]
         ]

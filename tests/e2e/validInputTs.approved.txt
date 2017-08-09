@@ -6,10 +6,10 @@ export as namespace Elm
 
 export interface App {
   ports: {
-    hello: {
+    generatedFiles: {
       subscribe(callback: (data: string) => void): void
     }
-    hello: {
+    parsingError: {
       subscribe(callback: (data: string) => void): void
     }
     }
