@@ -19,6 +19,14 @@ suite =
                             """    hello: {
       subscribe(callback: (data: string) => void): void
     }"""
+            , test "inbound port" <|
+                \() ->
+                    Port.Port "reply" Port.Inbound (Ast.Statement.TypeConstructor [ "Int" ] [])
+                        |> TypeScript.Generator.generatePort
+                        |> Expect.equal
+                            """    reply: {
+      send(data: number): void
+    }"""
             ]
         , describe "type"
             [ test "String" <|

@@ -8,8 +8,17 @@ import TypeScript.Data.Program as Program
 
 generatePort : Port.Port -> String
 generatePort (Port.Port name direction portType) =
+    let
+        inner =
+            case direction of
+                Port.Outbound ->
+                    "subscribe(callback: (data: " ++ toTypescriptType portType ++ ") => void)"
+
+                Port.Inbound ->
+                    "send(data: " ++ toTypescriptType portType ++ ")"
+    in
     "    " ++ name ++ """: {
-      subscribe(callback: (data: """ ++ toTypescriptType portType ++ """) => void): void
+      """ ++ inner ++ """: void
     }"""
 
 
