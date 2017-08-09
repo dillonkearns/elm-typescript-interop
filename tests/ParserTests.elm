@@ -49,4 +49,29 @@ suite =
                                 actual ->
                                     Expect.fail "Expeted program without flags"
                        )
+        , test "program with an inbound ports" <|
+            \_ ->
+                """
+                  module Main exposing (main)
+
+                  port localStorageReceived : (String -> msg) -> Sub msg
+
+                  port suggestionsReceived : (String -> msg) -> Sub msg
+                """
+                    |> TypeScript.Parser.parse
+                    |> (\parsed ->
+                            case parsed of
+                                Ok (TypeScript.Data.Program.WithoutFlags ports) ->
+                                    List.map portNameAndDirection ports
+                                        |> Expect.equal
+                                            [ ( "localStorageReceived", TypeScript.Data.Port.Inbound )
+                                            , ( "suggestionsReceived", TypeScript.Data.Port.Inbound )
+                                            ]
+
+                                Err err ->
+                                    Expect.fail ("Expected success, got" ++ toString parsed)
+
+                                actual ->
+                                    Expect.fail "Expeted program without flags"
+                       )
         ]
