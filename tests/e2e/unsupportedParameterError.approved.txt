@@ -1,6 +1,0 @@
-{
-  "type": "error-result",
-  "stderr": "Error parsing input file /Users/dillon/Dropbox/opensource/elm-typescript/UnsupportedParameterIpc.elm\n\nRecord constructor parameters are not yet supported: IpcWithUnsupportedParam constructor: [(\"recordKey\",TypeConstructor [\"String\"] [])]\n",
-  "stdout": "",
-  "status": 1
-}

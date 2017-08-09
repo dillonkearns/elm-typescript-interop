@@ -1,60 +1,24 @@
+// Type definitions for Elm
+// Project: https://github.com/dillonkearns/elm-typescript
+// Definitions by: Dillon Kearns <https://github.com/dillonkearns>
+export as namespace Elm
 
-import { ipcMain } from 'typescript'
 
-class Ipc {
-  static setupIpcMessageHandler(onIpcMessage: (elmIpc: ElmIpc) => any) {
-    ipcMain.on('elm-typescript-ipc', (event: any, payload: any) => {
-      onIpcMessage(payload)
-    })
+export interface App {
+  ports: {
+    hello: {
+      subscribe(callback: (data: string) => void): void
+    }
+    hello: {
+      subscribe(callback: (data: string) => void): void
+    }
+    }
   }
 }
-
-export { Ipc, ElmIpc }
     
 
-type ElmIpc = ShowFeedbackForm | ShowScriptInstallInstructions | Hide | Quit | QuitAndInstall | ChangeShortcut | OpenExternalUrl | StartTimer | SaveActiveMobstersFile | NotifySettingsDecodeFailed
-
-interface ShowFeedbackForm {
-  message: 'ShowFeedbackForm'
-}
-
-interface ShowScriptInstallInstructions {
-  message: 'ShowScriptInstallInstructions'
-}
-
-interface Hide {
-  message: 'Hide'
-}
-
-interface Quit {
-  message: 'Quit'
-}
-
-interface QuitAndInstall {
-  message: 'QuitAndInstall'
-}
-
-interface ChangeShortcut {
-  message: 'ChangeShortcut'
-  data: string
-}
-
-interface OpenExternalUrl {
-  message: 'OpenExternalUrl'
-  data: string
-}
-
-interface StartTimer {
-  message: 'StartTimer'
-  data: any
-}
-
-interface SaveActiveMobstersFile {
-  message: 'SaveActiveMobstersFile'
-  data: string
-}
-
-interface NotifySettingsDecodeFailed {
-  message: 'NotifySettingsDecodeFailed'
-  data: string
+export namespace Main {
+  // TODO: type-safe flags (check if Program Never Model Msg or Program FlagsType Model Msg)
+  export function fullscreen(): App
+  export function embed(node: HTMLElement | null): App
 }

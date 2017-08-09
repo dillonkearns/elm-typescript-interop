@@ -1,6 +1,0 @@
-{
-  "type": "error-result",
-  "stderr": "Error parsing input file /Users/dillon/Dropbox/opensource/elm-typescript/InvalidIpc.elm\n\nErr ((),{ data = \"This is not a valid elm file.\\n\", input = \"This is not a valid elm file.\\n\", position = 0 },[\"expected end of input\"])\n",
-  "stdout": "",
-  "status": 1
-}
