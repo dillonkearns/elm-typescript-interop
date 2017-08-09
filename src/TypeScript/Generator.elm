@@ -1,6 +1,14 @@
 module TypeScript.Generator exposing (..)
 
+import TypeScript.Data.Port as Port
 import TypeScript.Parser
+
+
+generatePort : Port.Port -> String
+generatePort portPort =
+    """hello: {
+  subscribe(callback: (data: string) => void): void
+}"""
 
 
 prefix : String
