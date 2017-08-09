@@ -1,89 +1,45 @@
 module ParserTests exposing (..)
 
+import Ast.Statement
 import Expect exposing (Expectation)
 import Test exposing (..)
+import TypeScript.Data.Port
+import TypeScript.Data.Program
 import TypeScript.Parser
 
 
 suite : Test
 suite =
     describe "parser"
-        [ test "single type with no data" <|
+        [ test "program with no ports" <|
             \_ ->
                 """
-                  module Ipc exposing (..)
+                  module Main exposing (main)
 
-                  import Json.Encode as Encode
-
-
-                  type Msg
-                      = HideWindow
+                  thereAreNoPorts = True
                 """
-                    |> TypeScript.Parser.toTypes
-                    |> Expect.equal (Ok [ TypeScript.Parser.Msg "HideWindow" ])
-        , test "another single type with no data" <|
+                    |> TypeScript.Parser.parse
+                    |> Expect.equal (Ok (TypeScript.Data.Program.WithoutFlags []))
+        , test "program with an outbound port" <|
             \_ ->
                 """
-                              module Ipc exposing (..)
+                  module Main exposing (main)
 
-                              import Json.Encode as Encode
-
-                              type Msg
-                                  = Quit
-                            """
-                    |> TypeScript.Parser.toTypes
-                    |> Expect.equal (Ok [ TypeScript.Parser.Msg "Quit" ])
-        , test "a single type with a String param" <|
-            \_ ->
+                  thereAreNoPorts = True
+                  port greet : String -> Cmd msg
                 """
-                  module Ipc exposing (..)
+                    |> TypeScript.Parser.parse
+                    |> (\parsed ->
+                            case parsed of
+                                Ok (TypeScript.Data.Program.WithoutFlags [ singlePort ]) ->
+                                    case singlePort of
+                                        TypeScript.Data.Port.Outbound _ ->
+                                            Expect.pass
 
-                  type Msg
-                      = Replicate String
-                """
-                    |> TypeScript.Parser.toTypes
-                    |> Expect.equal (Ok [ TypeScript.Parser.MsgWithData "Replicate" TypeScript.Parser.String ])
-        , test "reports errors for unsupported types" <|
-            \_ ->
-                """
-                                          module Ipc exposing (..)
+                                        _ ->
+                                            Expect.fail "Expected outbound port, got inbound"
 
-                                          type Msg
-                                              = Transport Banana
-                                        """
-                    |> TypeScript.Parser.toTypes
-                    |> Expect.equal
-                        (Err "Unsupported parameter type for Transport constructor: Banana")
-        , test "multiple types with a String params" <|
-            \_ ->
-                """
-                                                          module Ipc exposing (..)
-
-                                                          type Msg
-                                                              = Transport String
-                                                              | SetPhasersTo String
-                                                        """
-                    |> TypeScript.Parser.toTypes
-                    |> Expect.equal
-                        (Ok
-                            [ TypeScript.Parser.MsgWithData "Transport" TypeScript.Parser.String
-                            , TypeScript.Parser.MsgWithData "SetPhasersTo" TypeScript.Parser.String
-                            ]
-                        )
-        , test "multiple types with a Json.Encode params" <|
-            \_ ->
-                """
-                              module Ipc exposing (..)
-
-                              type Msg
-                                  = Transport Encode.Value
-                                  | UploadSchematic Encode.Value
-                            """
-                    |> TypeScript.Parser.toTypes
-                    |> Expect.equal
-                        (Ok
-                            [ TypeScript.Parser.MsgWithData "Transport" TypeScript.Parser.JsonEncodeValue
-                            , TypeScript.Parser.MsgWithData "UploadSchematic" TypeScript.Parser.JsonEncodeValue
-                            ]
-                        )
+                                actual ->
+                                    Expect.fail ("Expeted single port without flags, got " ++ toString actual)
+                       )
         ]

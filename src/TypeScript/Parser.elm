@@ -3,6 +3,39 @@ module TypeScript.Parser exposing (..)
 import Ast
 import Ast.Statement exposing (..)
 import List.Extra
+import TypeScript.Data.Port
+import TypeScript.Data.Program
+
+
+extractPort : Ast.Statement.Statement -> Maybe TypeScript.Data.Port.Port
+extractPort statement =
+    case statement of
+        PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
+            TypeScript.Data.Port.Outbound outboundPortType |> Just
+
+        _ ->
+            Nothing
+
+
+toProgram : List Ast.Statement.Statement -> TypeScript.Data.Program.Program
+toProgram statements =
+    let
+        ports =
+            List.filterMap extractPort statements
+    in
+    TypeScript.Data.Program.WithoutFlags ports
+
+
+parse : String -> Result String TypeScript.Data.Program.Program
+parse ipcFileAsString =
+    case Ast.parse ipcFileAsString of
+        Ok ( _, _, statements ) ->
+            statements
+                |> toProgram
+                |> Ok
+
+        err ->
+            err |> toString |> Err
 
 
 type ElmIpc
