@@ -30,11 +30,25 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : String
-elmModuleNamespace =
+elmModuleNamespace : Maybe Ast.Statement.Type -> String
+elmModuleNamespace maybeFlagsType =
+    let
+        fullscreenParam =
+            maybeFlagsType
+                |> Maybe.map toTypescriptType
+                |> Maybe.withDefault ""
+
+        embedAppendParam =
+            case maybeFlagsType of
+                Nothing ->
+                    ""
+
+                Just flagsType ->
+                    ", " ++ toTypescriptType flagsType
+    in
     """export namespace Main {
-  export function fullscreen(): App
-  export function embed(node: HTMLElement | null): App
+  export function fullscreen(""" ++ fullscreenParam ++ """): App
+  export function embed(node: HTMLElement | null""" ++ embedAppendParam ++ """): App
 }"""
 
 
@@ -105,6 +119,6 @@ generate program =
         Program.ElmProgram flagsType ports ->
             [ prefix
             , generatePorts ports
-            , elmModuleNamespace
+            , elmModuleNamespace flagsType
             ]
                 |> String.join "\n\n"
