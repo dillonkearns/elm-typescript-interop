@@ -5,5 +5,4 @@ import TypeScript.Data.Port exposing (Port)
 
 
 type Program
-    = WithFlags Ast.Statement.Type (List Port)
-    | WithoutFlags (List Port)
+    = ElmProgram (Maybe Ast.Statement.Type) (List Port)

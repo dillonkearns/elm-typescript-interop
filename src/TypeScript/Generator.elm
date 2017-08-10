@@ -102,10 +102,7 @@ toElmType payloadType =
 generate : Program.Program -> String
 generate program =
     case program of
-        Program.WithFlags flagType ports ->
-            "Not implemented"
-
-        Program.WithoutFlags ports ->
+        Program.ElmProgram flagsType ports ->
             [ prefix
             , generatePorts ports
             , elmModuleNamespace

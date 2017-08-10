@@ -23,7 +23,7 @@ suite =
                   thereAreNoPorts = True
                 """
                     |> TypeScript.Parser.parse
-                    |> Expect.equal (Ok (TypeScript.Data.Program.WithoutFlags []))
+                    |> Expect.equal (Ok (TypeScript.Data.Program.ElmProgram Nothing []))
         , test "program with flags" <|
             \_ ->
                 """
@@ -69,7 +69,7 @@ main =
                     |> TypeScript.Parser.parse
                     |> (\parsedProgram ->
                             case parsedProgram of
-                                Ok (TypeScript.Data.Program.WithFlags flagsType ports) ->
+                                Ok (TypeScript.Data.Program.ElmProgram (Just flagsType) ports) ->
                                     Expect.pass
 
                                 unexpected ->
@@ -120,7 +120,7 @@ main =
                     |> TypeScript.Parser.parse
                     |> (\parsedProgram ->
                             case parsedProgram of
-                                Ok (TypeScript.Data.Program.WithoutFlags ports) ->
+                                Ok (TypeScript.Data.Program.ElmProgram Nothing ports) ->
                                     Expect.pass
 
                                 unexpected ->
@@ -138,7 +138,7 @@ main =
                     |> TypeScript.Parser.parse
                     |> (\parsed ->
                             case parsed of
-                                Ok (TypeScript.Data.Program.WithoutFlags ports) ->
+                                Ok (TypeScript.Data.Program.ElmProgram Nothing ports) ->
                                     List.map portNameAndDirection ports
                                         |> Expect.equal
                                             [ ( "showSuccessDialog", TypeScript.Data.Port.Outbound )
@@ -163,7 +163,7 @@ main =
                     |> TypeScript.Parser.parse
                     |> (\parsed ->
                             case parsed of
-                                Ok (TypeScript.Data.Program.WithoutFlags ports) ->
+                                Ok (TypeScript.Data.Program.ElmProgram Nothing ports) ->
                                     List.map portNameAndDirection ports
                                         |> Expect.equal
                                             [ ( "localStorageReceived", TypeScript.Data.Port.Inbound )

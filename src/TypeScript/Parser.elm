@@ -25,17 +25,12 @@ toProgram statements =
         ports =
             List.filterMap extractPort statements
 
-        maybeFlagsType =
+        flagsType =
             statements
                 |> List.filterMap programFlagType
                 |> List.head
     in
-    case maybeFlagsType of
-        Nothing ->
-            TypeScript.Data.Program.WithoutFlags ports
-
-        Just flagsType ->
-            TypeScript.Data.Program.WithFlags flagsType ports
+    TypeScript.Data.Program.ElmProgram flagsType ports
 
 
 programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type
