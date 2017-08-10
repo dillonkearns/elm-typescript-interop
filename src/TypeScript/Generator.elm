@@ -33,7 +33,6 @@ export as namespace Elm"""
 elmModuleNamespace : String
 elmModuleNamespace =
     """export namespace Main {
-  // TODO: type-safe flags (check if Program Never Model Msg or Program FlagsType Model Msg)
   export function fullscreen(): App
   export function embed(node: HTMLElement | null): App
 }"""
