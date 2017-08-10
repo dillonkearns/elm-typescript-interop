@@ -24,6 +24,108 @@ suite =
                 """
                     |> TypeScript.Parser.parse
                     |> Expect.equal (Ok (TypeScript.Data.Program.WithoutFlags []))
+        , test "program with flags" <|
+            \_ ->
+                """
+port module Main exposing (main)
+
+import Html exposing (..)
+
+type Msg
+    = NoOp
+
+
+type alias Model =
+    Int
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ text (toString model) ]
+
+
+init : String -> ( Model, Cmd Msg )
+init flags =
+    ( 0, Cmd.none )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+
+main : Program String Model Msg
+main =
+    Html.programWithFlags
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = \\_ -> Sub.none
+        }
+                """
+                    |> TypeScript.Parser.parse
+                    |> (\parsedProgram ->
+                            case parsedProgram of
+                                Ok (TypeScript.Data.Program.WithFlags flagsType ports) ->
+                                    Expect.pass
+
+                                unexpected ->
+                                    Expect.fail ("Expected program with flags, got " ++ toString unexpected)
+                       )
+        , test "program without flags" <|
+            \_ ->
+                """
+port module Main exposing (main)
+
+import Html exposing (..)
+
+type Msg
+    = NoOp
+
+
+type alias Model =
+    Int
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ text (toString model) ]
+
+
+init : ( Model, Cmd Msg )
+init flags =
+    ( 0, Cmd.none )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+
+main : Program Never Model Msg
+main =
+    Html.program
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = \\_ -> Sub.none
+        }
+                """
+                    |> TypeScript.Parser.parse
+                    |> (\parsedProgram ->
+                            case parsedProgram of
+                                Ok (TypeScript.Data.Program.WithoutFlags ports) ->
+                                    Expect.pass
+
+                                unexpected ->
+                                    Expect.fail ("Expected program without flags, got " ++ toString unexpected)
+                       )
         , test "program with an outbound ports" <|
             \_ ->
                 """

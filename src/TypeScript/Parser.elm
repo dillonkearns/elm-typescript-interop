@@ -24,8 +24,33 @@ toProgram statements =
     let
         ports =
             List.filterMap extractPort statements
+
+        maybeFlagsType =
+            statements
+                |> List.filterMap programFlagType
+                |> List.head
     in
-    TypeScript.Data.Program.WithoutFlags ports
+    case maybeFlagsType of
+        Nothing ->
+            TypeScript.Data.Program.WithoutFlags ports
+
+        Just flagsType ->
+            TypeScript.Data.Program.WithFlags flagsType ports
+
+
+programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type
+programFlagType statement =
+    case statement of
+        FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] [ flagsType, TypeConstructor [ modelType ] [], TypeConstructor [ msgType ] [] ]) ->
+            case flagsType of
+                TypeConstructor [ "Never" ] [] ->
+                    Nothing
+
+                _ ->
+                    Just flagsType
+
+        _ ->
+            Nothing
 
 
 parse : String -> Result String TypeScript.Data.Program.Program
