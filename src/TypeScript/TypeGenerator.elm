@@ -9,6 +9,9 @@ toTsType elmType =
         Ast.Statement.TypeConstructor [ primitiveType ] [] ->
             elmPrimitiveToTs primitiveType
 
+        Ast.Statement.TypeConstructor [ "Maybe" ] [ maybeType ] ->
+            toTsType maybeType ++ " | null"
+
         _ ->
             "Unhandled"
 
