@@ -1,7 +1,6 @@
 module TypeScript.Generator exposing (..)
 
 import Ast.Statement
-import TypeScript.Data.ElmType
 import TypeScript.Data.Port as Port
 import TypeScript.Data.Program as Program
 import TypeScript.TypeGenerator exposing (toTsType)
