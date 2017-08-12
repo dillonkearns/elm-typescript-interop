@@ -41,3 +41,6 @@ port getMaybe : (Maybe Bool -> thisIsAMsg) -> Sub thisIsAMsg
 
 
 port sendTuple : Maybe ( String, Int, Int ) -> Cmd msg
+
+
+port outgoingList : List ( Int, Int ) -> Cmd msg

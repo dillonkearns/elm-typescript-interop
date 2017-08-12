@@ -42,5 +42,10 @@ suite =
                     TypeTuple [ TypeConstructor [ "Int" ] [], TypeConstructor [ "String" ] [], TypeConstructor [ "Bool" ] [] ]
                         |> TypeScript.TypeGenerator.toTsType
                         |> Expect.equal "[number, string, boolean]"
+            , test "List" <|
+                \() ->
+                    TypeConstructor [ "List" ] [ TypeConstructor [ "Int" ] [] ]
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "number[]"
             ]
         ]

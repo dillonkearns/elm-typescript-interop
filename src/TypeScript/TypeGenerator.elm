@@ -20,6 +20,9 @@ toTsType elmType =
                    )
                 ++ "]"
 
+        TypeConstructor [ "List" ] [ listType ] ->
+            toTsType listType ++ "[]"
+
         _ ->
             "Unhandled"
 
