@@ -36,6 +36,7 @@ elmModuleNamespace maybeFlagsType =
         fullscreenParam =
             maybeFlagsType
                 |> Maybe.map toTypescriptType
+                |> Maybe.map (\tsType -> "flags: " ++ tsType)
                 |> Maybe.withDefault ""
 
         embedAppendParam =
@@ -44,7 +45,7 @@ elmModuleNamespace maybeFlagsType =
                     ""
 
                 Just flagsType ->
-                    ", " ++ toTypescriptType flagsType
+                    ", flags: " ++ toTypescriptType flagsType
     in
     """export namespace Main {
   export function fullscreen(""" ++ fullscreenParam ++ """): App
