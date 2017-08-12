@@ -35,3 +35,9 @@ port parsingError : String -> Cmd msg
 
 
 port inbound : (Int -> msg) -> Sub msg
+
+
+port getMaybe : (Maybe Bool -> thisIsAMsg) -> Sub thisIsAMsg
+
+
+port sendTuple : Maybe ( String, Int, Int ) -> Cmd msg
