@@ -1,6 +1,6 @@
 module TypeGeneratorTests exposing (..)
 
-import Ast.Statement
+import Ast.Statement exposing (..)
 import Expect
 import Test exposing (Test, describe, test)
 import TypeScript.TypeGenerator
@@ -37,5 +37,10 @@ suite =
                     Ast.Statement.TypeConstructor [ "Maybe" ] [ Ast.Statement.TypeConstructor [ "String" ] [] ]
                         |> TypeScript.TypeGenerator.toTsType
                         |> Expect.equal "string | null"
+            , test "tuple" <|
+                \() ->
+                    TypeTuple [ TypeConstructor [ "Int" ] [], TypeConstructor [ "String" ] [], TypeConstructor [ "Bool" ] [] ]
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "[number, string, boolean]"
             ]
         ]

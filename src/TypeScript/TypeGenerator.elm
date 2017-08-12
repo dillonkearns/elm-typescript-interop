@@ -1,6 +1,6 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
-import Ast.Statement
+import Ast.Statement exposing (..)
 
 
 toTsType : Ast.Statement.Type -> String
@@ -11,6 +11,14 @@ toTsType elmType =
 
         Ast.Statement.TypeConstructor [ "Maybe" ] [ maybeType ] ->
             toTsType maybeType ++ " | null"
+
+        TypeTuple tupleTypes ->
+            "["
+                ++ (tupleTypes
+                        |> List.map toTsType
+                        |> String.join ", "
+                   )
+                ++ "]"
 
         _ ->
             "Unhandled"
