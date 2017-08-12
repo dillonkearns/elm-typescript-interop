@@ -28,26 +28,4 @@ suite =
       send(data: number): void
     }"""
             ]
-        , describe "type"
-            [ test "String" <|
-                \() ->
-                    Ast.Statement.TypeConstructor [ "String" ] []
-                        |> TypeScript.Generator.toTypescriptType
-                        |> Expect.equal "string"
-            , test "Float" <|
-                \() ->
-                    Ast.Statement.TypeConstructor [ "Float" ] []
-                        |> TypeScript.Generator.toTypescriptType
-                        |> Expect.equal "number"
-            , test "Int" <|
-                \() ->
-                    Ast.Statement.TypeConstructor [ "Int" ] []
-                        |> TypeScript.Generator.toTypescriptType
-                        |> Expect.equal "number"
-            , test "Bool" <|
-                \() ->
-                    Ast.Statement.TypeConstructor [ "Bool" ] []
-                        |> TypeScript.Generator.toTypescriptType
-                        |> Expect.equal "boolean"
-            ]
         ]
