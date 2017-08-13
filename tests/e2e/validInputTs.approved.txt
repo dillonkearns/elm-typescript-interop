@@ -24,6 +24,9 @@ export interface App {
     outgoingList: {
       subscribe(callback: (data: [number, number][]) => void): void
     }
+    outgoingArray: {
+      subscribe(callback: (data: string[]) => void): void
+    }
   }
 }
     

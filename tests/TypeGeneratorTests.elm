@@ -47,5 +47,15 @@ suite =
                     TypeConstructor [ "List" ] [ TypeConstructor [ "Int" ] [] ]
                         |> TypeScript.TypeGenerator.toTsType
                         |> Expect.equal "number[]"
+            , test "Array" <|
+                \() ->
+                    TypeConstructor [ "Array", "Array" ] [ TypeConstructor [ "String" ] [] ]
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "string[]"
+            , test "unqualified Array" <|
+                \() ->
+                    TypeConstructor [ "Array" ] [ TypeConstructor [ "String" ] [] ]
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "string[]"
             ]
         ]

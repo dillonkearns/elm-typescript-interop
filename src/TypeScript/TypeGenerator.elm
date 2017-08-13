@@ -21,10 +21,21 @@ toTsType elmType =
                 ++ "]"
 
         TypeConstructor [ "List" ] [ listType ] ->
-            toTsType listType ++ "[]"
+            listTypeString listType
+
+        TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
+            listTypeString arrayType
+
+        TypeConstructor [ "Array" ] [ arrayType ] ->
+            listTypeString arrayType
 
         _ ->
             "Unhandled"
+
+
+listTypeString : Ast.Statement.Type -> String
+listTypeString listType =
+    toTsType listType ++ "[]"
 
 
 elmPrimitiveToTs : String -> String

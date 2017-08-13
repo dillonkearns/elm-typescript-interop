@@ -1,5 +1,7 @@
 port module Main exposing (..)
 
+import Array
+
 
 type alias Model =
     ()
@@ -44,3 +46,6 @@ port sendTuple : Maybe ( String, Int, Int ) -> Cmd msg
 
 
 port outgoingList : List ( Int, Int ) -> Cmd msg
+
+
+port outgoingArray : Array.Array String -> Cmd msg
