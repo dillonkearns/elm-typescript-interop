@@ -22,7 +22,7 @@ suite =
 
                   thereAreNoPorts = True
                 """
-                    |> TypeScript.Parser.parse
+                    |> TypeScript.Parser.parseSingle
                     |> Expect.equal (Ok (TypeScript.Data.Program.ElmProgram Nothing []))
         , test "program with flags" <|
             \_ ->
@@ -66,7 +66,7 @@ main =
         , subscriptions = \\_ -> Sub.none
         }
                 """
-                    |> TypeScript.Parser.parse
+                    |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
                                 Ok (TypeScript.Data.Program.ElmProgram (Just flagsType) ports) ->
@@ -117,7 +117,7 @@ main =
         , subscriptions = \\_ -> Sub.none
         }
                 """
-                    |> TypeScript.Parser.parse
+                    |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
                                 Ok (TypeScript.Data.Program.ElmProgram Nothing ports) ->
@@ -135,7 +135,7 @@ main =
 
                   port showWarningDialog : String -> Cmd msg
                 """
-                    |> TypeScript.Parser.parse
+                    |> TypeScript.Parser.parseSingle
                     |> (\parsed ->
                             case parsed of
                                 Ok (TypeScript.Data.Program.ElmProgram Nothing ports) ->
@@ -160,7 +160,7 @@ main =
 
                   port suggestionsReceived : (String -> msg) -> Sub msg
                 """
-                    |> TypeScript.Parser.parse
+                    |> TypeScript.Parser.parseSingle
                     |> (\parsed ->
                             case parsed of
                                 Ok (TypeScript.Data.Program.ElmProgram Nothing ports) ->

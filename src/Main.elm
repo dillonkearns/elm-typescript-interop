@@ -20,10 +20,10 @@ type alias Model =
 
 
 type alias Flags =
-    { elmModuleFileContents : String }
+    { elmModuleFileContents : List String }
 
 
-output : String -> Cmd msg
+output : List String -> Cmd msg
 output elmModuleFileContents =
     elmModuleFileContents
         |> TypeScript.Parser.parse
