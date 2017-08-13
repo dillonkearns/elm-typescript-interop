@@ -31,7 +31,8 @@ toProgram statements =
                 |> List.filterMap programFlagType
                 |> List.head
     in
-    TypeScript.Data.Program.ElmProgram flagsType ports
+    -- TODO: extract aliases
+    TypeScript.Data.Program.ElmProgram flagsType [] ports
 
 
 programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type

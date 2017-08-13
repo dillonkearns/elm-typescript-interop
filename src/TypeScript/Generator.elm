@@ -77,7 +77,7 @@ export interface App {
 generate : Program.Program -> String
 generate program =
     case program of
-        Program.ElmProgram flagsType ports ->
+        Program.ElmProgram flagsType aliases ports ->
             [ prefix
             , generatePorts ports
             , elmModuleNamespace flagsType
