@@ -4,6 +4,7 @@ import Ast
 import Ast.Statement exposing (..)
 import Dict
 import Result.Extra
+import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program
 
@@ -31,9 +32,28 @@ toProgram statements =
             statements
                 |> List.filterMap programFlagType
                 |> List.head
+
+        aliases =
+            extractAliases statements
     in
-    -- TODO: extract aliases
-    TypeScript.Data.Program.ElmProgram flagsType Dict.empty ports
+    TypeScript.Data.Program.ElmProgram flagsType aliases ports
+
+
+extractAliases : List Ast.Statement.Statement -> Aliases
+extractAliases statements =
+    statements
+        |> List.filterMap aliasOrNothing
+        |> Dict.fromList
+
+
+aliasOrNothing : Ast.Statement.Statement -> Maybe ( List String, Ast.Statement.Type )
+aliasOrNothing statement =
+    case statement of
+        TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
+            Just ( aliasName, aliasType )
+
+        _ ->
+            Nothing
 
 
 programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type

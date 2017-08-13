@@ -1,5 +1,6 @@
 module ParserTests exposing (..)
 
+import Ast.Statement exposing (Type(TypeConstructor))
 import Dict
 import Expect exposing (Expectation)
 import Test exposing (..)
@@ -155,12 +156,12 @@ main =
         , test "program with an inbound ports" <|
             \_ ->
                 """
-                  module Main exposing (main)
+                                 module Main exposing (main)
 
-                  port localStorageReceived : (String -> msg) -> Sub msg
+                                 port localStorageReceived : (String -> msg) -> Sub msg
 
-                  port suggestionsReceived : (String -> msg) -> Sub msg
-                """
+                                 port suggestionsReceived : (String -> msg) -> Sub msg
+                               """
                     |> TypeScript.Parser.parseSingle
                     |> (\parsed ->
                             case parsed of
@@ -170,6 +171,35 @@ main =
                                             [ ( "localStorageReceived", TypeScript.Data.Port.Inbound )
                                             , ( "suggestionsReceived", TypeScript.Data.Port.Inbound )
                                             ]
+
+                                Err err ->
+                                    Expect.fail ("Expected success, got" ++ toString parsed)
+
+                                actual ->
+                                    Expect.fail "Expeted program without flags"
+                       )
+        , test "program with aliases" <|
+            \_ ->
+                """
+                  module Main exposing (main)
+
+                  type alias AliasForString =
+                    String
+
+                  port outboundWithAlias : AliasForString -> Cmd msg
+                """
+                    |> TypeScript.Parser.parseSingle
+                    |> (\parsed ->
+                            case parsed of
+                                Ok (TypeScript.Data.Program.ElmProgram Nothing aliases ports) ->
+                                    aliases
+                                        |> Expect.equal
+                                            (Dict.fromList
+                                                [ ( [ "AliasForString" ]
+                                                  , TypeConstructor [ "String" ] []
+                                                  )
+                                                ]
+                                            )
 
                                 Err err ->
                                     Expect.fail ("Expected success, got" ++ toString parsed)
