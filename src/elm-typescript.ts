@@ -20,6 +20,6 @@ if (fs.existsSync(inputPath)) {
     process.exit(1)
   })
 } else {
-  console.error(`Could not found input file ${inputPath}`)
+  console.error(`Could not find input file ${inputPath}`)
   process.exit(1)
 }
