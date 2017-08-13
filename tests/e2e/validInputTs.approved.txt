@@ -33,6 +33,9 @@ export interface App {
     outgoingJsonValues: {
       subscribe(callback: (data: any[]) => void): void
     }
+    incomingJsonValue: {
+      send(data: any): void
+    }
   }
 }
     

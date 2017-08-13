@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Array
+import Json.Decode as Decode
 import Json.Encode
 
 
@@ -56,3 +57,6 @@ port outgoingRecord : { id : Int, username : String, avatarUrl : String } -> Cmd
 
 
 port outgoingJsonValues : List Json.Encode.Value -> Cmd msg
+
+
+port incomingJsonValue : (Decode.Value -> msg) -> Sub msg
