@@ -1,10 +1,11 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
 import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
+import TypeScript.Data.Alias exposing (Alias)
 
 
-toTsType : Ast.Statement.Type -> String
-toTsType elmType =
+toTsType : List Alias -> Ast.Statement.Type -> String
+toTsType aliases elmType =
     case elmType of
         TypeConstructor typeName [] ->
             case typeName of
@@ -24,16 +25,16 @@ toTsType elmType =
                     primitiveOrTypeAlias primitiveOrAliasTypeName
 
         TypeConstructor [ "List" ] [ listType ] ->
-            listTypeString listType
+            listTypeString aliases listType
 
         TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
-            listTypeString arrayType
+            listTypeString aliases arrayType
 
         TypeConstructor [ "Array" ] [ arrayType ] ->
-            listTypeString arrayType
+            listTypeString aliases arrayType
 
         TypeConstructor [ "Maybe" ] [ maybeType ] ->
-            toTsType maybeType ++ " | null"
+            toTsType aliases maybeType ++ " | null"
 
         TypeTuple [] ->
             "null"
@@ -41,7 +42,7 @@ toTsType elmType =
         TypeTuple tupleTypes ->
             "["
                 ++ (tupleTypes
-                        |> List.map toTsType
+                        |> List.map (toTsType aliases)
                         |> String.join ", "
                    )
                 ++ "]"
@@ -50,7 +51,7 @@ toTsType elmType =
             let
                 something =
                     recordPairs
-                        |> List.map generateRecordPair
+                        |> List.map (generateRecordPair aliases)
                         |> String.join "; "
             in
             "{ "
@@ -61,14 +62,14 @@ toTsType elmType =
             "Unhandled"
 
 
-generateRecordPair : ( String, Ast.Statement.Type ) -> String
-generateRecordPair ( recordKey, recordType ) =
-    recordKey ++ ": " ++ toTsType recordType
+generateRecordPair : List Alias -> ( String, Ast.Statement.Type ) -> String
+generateRecordPair aliases ( recordKey, recordType ) =
+    recordKey ++ ": " ++ toTsType aliases recordType
 
 
-listTypeString : Ast.Statement.Type -> String
-listTypeString listType =
-    toTsType listType ++ "[]"
+listTypeString : List Alias -> Ast.Statement.Type -> String
+listTypeString aliases listType =
+    toTsType aliases listType ++ "[]"
 
 
 primitiveOrTypeAlias : List String -> String

@@ -14,7 +14,7 @@ suite =
             [ test "outbound port" <|
                 \() ->
                     Port.Port "hello" Port.Outbound (Ast.Statement.TypeConstructor [ "String" ] [])
-                        |> TypeScript.Generator.generatePort
+                        |> TypeScript.Generator.generatePort []
                         |> Expect.equal
                             """    hello: {
       subscribe(callback: (data: string) => void): void
@@ -22,7 +22,7 @@ suite =
             , test "inbound port" <|
                 \() ->
                     Port.Port "reply" Port.Inbound (Ast.Statement.TypeConstructor [ "Int" ] [])
-                        |> TypeScript.Generator.generatePort
+                        |> TypeScript.Generator.generatePort []
                         |> Expect.equal
                             """    reply: {
       send(data: number): void

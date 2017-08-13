@@ -1,21 +1,22 @@
 module TypeScript.Generator exposing (..)
 
 import Ast.Statement
+import TypeScript.Data.Alias exposing (Alias)
 import TypeScript.Data.Port as Port
 import TypeScript.Data.Program as Program
 import TypeScript.TypeGenerator exposing (toTsType)
 
 
-generatePort : Port.Port -> String
-generatePort (Port.Port name direction portType) =
+generatePort : List Alias -> Port.Port -> String
+generatePort aliases (Port.Port name direction portType) =
     let
         inner =
             case direction of
                 Port.Outbound ->
-                    "subscribe(callback: (data: " ++ toTsType portType ++ ") => void)"
+                    "subscribe(callback: (data: " ++ toTsType aliases portType ++ ") => void)"
 
                 Port.Inbound ->
-                    "send(data: " ++ toTsType portType ++ ")"
+                    "send(data: " ++ toTsType aliases portType ++ ")"
     in
     "    " ++ name ++ """: {
       """ ++ inner ++ """: void
@@ -30,12 +31,12 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : Maybe Ast.Statement.Type -> String
-elmModuleNamespace maybeFlagsType =
+elmModuleNamespace : List Alias -> Maybe Ast.Statement.Type -> String
+elmModuleNamespace aliases maybeFlagsType =
     let
         fullscreenParam =
             maybeFlagsType
-                |> Maybe.map toTsType
+                |> Maybe.map (toTsType aliases)
                 |> Maybe.map (\tsType -> "flags: " ++ tsType)
                 |> Maybe.withDefault ""
 
@@ -45,7 +46,7 @@ elmModuleNamespace maybeFlagsType =
                     ""
 
                 Just flagsType ->
-                    ", flags: " ++ toTsType flagsType
+                    ", flags: " ++ toTsType aliases flagsType
     in
     """export namespace Main {
   export function fullscreen(""" ++ fullscreenParam ++ """): App
@@ -53,10 +54,10 @@ elmModuleNamespace maybeFlagsType =
 }"""
 
 
-generatePorts : List Port.Port -> String
-generatePorts ports =
+generatePorts : List Alias -> List Port.Port -> String
+generatePorts aliases ports =
     ports
-        |> List.map generatePort
+        |> List.map (generatePort aliases)
         |> String.join "\n"
         |> wrapPorts
 
@@ -79,7 +80,7 @@ generate program =
     case program of
         Program.ElmProgram flagsType aliases ports ->
             [ prefix
-            , generatePorts ports
-            , elmModuleNamespace flagsType
+            , generatePorts aliases ports
+            , elmModuleNamespace aliases flagsType
             ]
                 |> String.join "\n\n"

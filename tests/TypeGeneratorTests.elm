@@ -13,74 +13,79 @@ suite =
             [ test "String" <|
                 \() ->
                     Ast.Statement.TypeConstructor [ "String" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "string"
             , test "Float" <|
                 \() ->
                     Ast.Statement.TypeConstructor [ "Float" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "number"
             , test "Int" <|
                 \() ->
                     Ast.Statement.TypeConstructor [ "Int" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "number"
             , test "Bool" <|
                 \() ->
                     Ast.Statement.TypeConstructor [ "Bool" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "boolean"
             ]
         , describe "compound types"
             [ test "Maybe" <|
                 \() ->
                     Ast.Statement.TypeConstructor [ "Maybe" ] [ Ast.Statement.TypeConstructor [ "String" ] [] ]
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "string | null"
             , test "tuple" <|
                 \() ->
                     TypeTuple [ TypeConstructor [ "Int" ] [], TypeConstructor [ "String" ] [], TypeConstructor [ "Bool" ] [] ]
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "[number, string, boolean]"
             , test "unit type" <|
                 \() ->
                     TypeTuple []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "null"
             , test "List" <|
                 \() ->
                     TypeConstructor [ "List" ] [ TypeConstructor [ "Int" ] [] ]
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "number[]"
             , test "Array" <|
                 \() ->
                     TypeConstructor [ "Array", "Array" ] [ TypeConstructor [ "String" ] [] ]
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "string[]"
             , test "unqualified Array" <|
                 \() ->
                     TypeConstructor [ "Array" ] [ TypeConstructor [ "String" ] [] ]
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "string[]"
             , test "record literal" <|
                 \() ->
                     TypeRecord [ ( "first", TypeConstructor [ "String" ] [] ), ( "last", TypeConstructor [ "String" ] [] ) ]
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "{ first: string; last: string }"
             , test "Json.Decode.Value" <|
                 \() ->
                     TypeConstructor [ "Json", "Decode", "Value" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "any"
             , test "Json.Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Json", "Encode", "Value" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "any"
             , test "aliased Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Encode", "Value" ] []
-                        |> TypeScript.TypeGenerator.toTsType
+                        |> toTsTypeNoAlias
                         |> Expect.equal "any"
             ]
         ]
+
+
+toTsTypeNoAlias : Type -> String
+toTsTypeNoAlias =
+    TypeScript.TypeGenerator.toTsType []
