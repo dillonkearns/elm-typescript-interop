@@ -29,8 +29,24 @@ toTsType elmType =
         TypeConstructor [ "Array" ] [ arrayType ] ->
             listTypeString arrayType
 
+        TypeRecord recordPairs ->
+            let
+                something =
+                    recordPairs
+                        |> List.map generateRecordPair
+                        |> String.join "; "
+            in
+            "{ "
+                ++ something
+                ++ " }"
+
         _ ->
             "Unhandled"
+
+
+generateRecordPair : ( String, Ast.Statement.Type ) -> String
+generateRecordPair ( recordKey, recordType ) =
+    recordKey ++ ": " ++ toTsType recordType
 
 
 listTypeString : Ast.Statement.Type -> String

@@ -57,5 +57,10 @@ suite =
                     TypeConstructor [ "Array" ] [ TypeConstructor [ "String" ] [] ]
                         |> TypeScript.TypeGenerator.toTsType
                         |> Expect.equal "string[]"
+            , test "record literal" <|
+                \() ->
+                    TypeRecord [ ( "first", TypeConstructor [ "String" ] [] ), ( "last", TypeConstructor [ "String" ] [] ) ]
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "{ first: string; last: string }"
             ]
         ]

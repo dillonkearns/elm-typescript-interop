@@ -49,3 +49,6 @@ port outgoingList : List ( Int, Int ) -> Cmd msg
 
 
 port outgoingArray : Array.Array String -> Cmd msg
+
+
+port outgoingRecord : { id : Int, username : String, avatarUrl : String } -> Cmd msg
