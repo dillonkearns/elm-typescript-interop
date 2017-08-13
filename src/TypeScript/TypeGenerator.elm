@@ -1,6 +1,6 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
-import Ast.Statement exposing (..)
+import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 
 
 toTsType : Ast.Statement.Type -> String
@@ -18,10 +18,19 @@ toTsType elmType =
         TypeConstructor [ "Encode", "Value" ] [] ->
             "any"
 
-        Ast.Statement.TypeConstructor [ primitiveType ] [] ->
+        TypeConstructor [ "List" ] [ listType ] ->
+            listTypeString listType
+
+        TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
+            listTypeString arrayType
+
+        TypeConstructor [ "Array" ] [ arrayType ] ->
+            listTypeString arrayType
+
+        TypeConstructor [ primitiveType ] [] ->
             elmPrimitiveToTs primitiveType
 
-        Ast.Statement.TypeConstructor [ "Maybe" ] [ maybeType ] ->
+        TypeConstructor [ "Maybe" ] [ maybeType ] ->
             toTsType maybeType ++ " | null"
 
         TypeTuple [] ->
@@ -34,15 +43,6 @@ toTsType elmType =
                         |> String.join ", "
                    )
                 ++ "]"
-
-        TypeConstructor [ "List" ] [ listType ] ->
-            listTypeString listType
-
-        TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
-            listTypeString arrayType
-
-        TypeConstructor [ "Array" ] [ arrayType ] ->
-            listTypeString arrayType
 
         TypeRecord recordPairs ->
             let
