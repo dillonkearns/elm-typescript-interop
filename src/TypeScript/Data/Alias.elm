@@ -1,12 +1,7 @@
-module TypeScript.Data.Alias exposing (Alias(Alias), Direction(Inbound, Outbound))
+module TypeScript.Data.Alias exposing (Alias(Alias))
 
 import Ast.Statement
 
 
-type Direction
-    = Inbound
-    | Outbound
-
-
 type Alias
-    = Alias String Ast.Statement.Type
+    = Alias (List String) Ast.Statement.Type
