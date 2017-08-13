@@ -30,6 +30,9 @@ export interface App {
     outgoingRecord: {
       subscribe(callback: (data: { id: number; username: string; avatarUrl: string }) => void): void
     }
+    outgoingJsonValues: {
+      subscribe(callback: (data: any[]) => void): void
+    }
   }
 }
     

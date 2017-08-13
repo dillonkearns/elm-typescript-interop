@@ -6,6 +6,12 @@ import Ast.Statement exposing (..)
 toTsType : Ast.Statement.Type -> String
 toTsType elmType =
     case elmType of
+        TypeConstructor [ "Json", "Encode", "Value" ] [] ->
+            "any"
+
+        TypeConstructor [ "Encode", "Value" ] [] ->
+            "any"
+
         Ast.Statement.TypeConstructor [ primitiveType ] [] ->
             elmPrimitiveToTs primitiveType
 

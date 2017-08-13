@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Array
+import Json.Encode
 
 
 type alias Model =
@@ -52,3 +53,6 @@ port outgoingArray : Array.Array String -> Cmd msg
 
 
 port outgoingRecord : { id : Int, username : String, avatarUrl : String } -> Cmd msg
+
+
+port outgoingJsonValues : List Json.Encode.Value -> Cmd msg

@@ -62,5 +62,15 @@ suite =
                     TypeRecord [ ( "first", TypeConstructor [ "String" ] [] ), ( "last", TypeConstructor [ "String" ] [] ) ]
                         |> TypeScript.TypeGenerator.toTsType
                         |> Expect.equal "{ first: string; last: string }"
+            , test "Json.Encode.Value" <|
+                \() ->
+                    TypeConstructor [ "Json", "Encode", "Value" ] []
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "any"
+            , test "aliased Encode.Value" <|
+                \() ->
+                    TypeConstructor [ "Encode", "Value" ] []
+                        |> TypeScript.TypeGenerator.toTsType
+                        |> Expect.equal "any"
             ]
         ]
