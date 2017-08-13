@@ -9,6 +9,10 @@ type alias Model =
     ()
 
 
+type alias AliasForBool =
+    Bool
+
+
 type alias Flags =
     { elmModuleFileContents : String }
 
@@ -63,3 +67,6 @@ port incomingJsonValue : (Decode.Value -> msg) -> Sub msg
 
 
 port emptyIncomingMessage : (() -> msg) -> Sub msg
+
+
+port outgoingBoolAlias : AliasForBool -> Cmd msg

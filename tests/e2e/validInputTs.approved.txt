@@ -39,6 +39,9 @@ export interface App {
     emptyIncomingMessage: {
       send(data: null): void
     }
+    outgoingBoolAlias: {
+      subscribe(callback: (data: boolean) => void): void
+    }
   }
 }
     
