@@ -1,6 +1,7 @@
 module TypeGeneratorTests exposing (..)
 
-import Ast.Statement exposing (..)
+import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
+import Dict
 import Expect
 import Test exposing (Test, describe, test)
 import TypeScript.TypeGenerator
@@ -12,29 +13,29 @@ suite =
         [ describe "primitives types"
             [ test "String" <|
                 \() ->
-                    Ast.Statement.TypeConstructor [ "String" ] []
+                    TypeConstructor [ "String" ] []
                         |> toTsTypeNoAlias
                         |> Expect.equal "string"
             , test "Float" <|
                 \() ->
-                    Ast.Statement.TypeConstructor [ "Float" ] []
+                    TypeConstructor [ "Float" ] []
                         |> toTsTypeNoAlias
                         |> Expect.equal "number"
             , test "Int" <|
                 \() ->
-                    Ast.Statement.TypeConstructor [ "Int" ] []
+                    TypeConstructor [ "Int" ] []
                         |> toTsTypeNoAlias
                         |> Expect.equal "number"
             , test "Bool" <|
                 \() ->
-                    Ast.Statement.TypeConstructor [ "Bool" ] []
+                    TypeConstructor [ "Bool" ] []
                         |> toTsTypeNoAlias
                         |> Expect.equal "boolean"
             ]
         , describe "compound types"
             [ test "Maybe" <|
                 \() ->
-                    Ast.Statement.TypeConstructor [ "Maybe" ] [ Ast.Statement.TypeConstructor [ "String" ] [] ]
+                    TypeConstructor [ "Maybe" ] [ TypeConstructor [ "String" ] [] ]
                         |> toTsTypeNoAlias
                         |> Expect.equal "string | null"
             , test "tuple" <|
@@ -88,4 +89,4 @@ suite =
 
 toTsTypeNoAlias : Type -> String
 toTsTypeNoAlias =
-    TypeScript.TypeGenerator.toTsType []
+    TypeScript.TypeGenerator.toTsType Dict.empty

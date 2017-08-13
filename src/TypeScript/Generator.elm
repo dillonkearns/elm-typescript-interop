@@ -1,13 +1,13 @@
 module TypeScript.Generator exposing (..)
 
 import Ast.Statement
-import TypeScript.Data.Alias exposing (Alias)
+import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port
 import TypeScript.Data.Program as Program
 import TypeScript.TypeGenerator exposing (toTsType)
 
 
-generatePort : List Alias -> Port.Port -> String
+generatePort : Aliases -> Port.Port -> String
 generatePort aliases (Port.Port name direction portType) =
     let
         inner =
@@ -31,7 +31,7 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : List Alias -> Maybe Ast.Statement.Type -> String
+elmModuleNamespace : Aliases -> Maybe Ast.Statement.Type -> String
 elmModuleNamespace aliases maybeFlagsType =
     let
         fullscreenParam =
@@ -54,7 +54,7 @@ elmModuleNamespace aliases maybeFlagsType =
 }"""
 
 
-generatePorts : List Alias -> List Port.Port -> String
+generatePorts : Aliases -> List Port.Port -> String
 generatePorts aliases ports =
     ports
         |> List.map (generatePort aliases)

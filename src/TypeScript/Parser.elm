@@ -2,6 +2,7 @@ module TypeScript.Parser exposing (..)
 
 import Ast
 import Ast.Statement exposing (..)
+import Dict
 import Result.Extra
 import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program
@@ -32,7 +33,7 @@ toProgram statements =
                 |> List.head
     in
     -- TODO: extract aliases
-    TypeScript.Data.Program.ElmProgram flagsType [] ports
+    TypeScript.Data.Program.ElmProgram flagsType Dict.empty ports
 
 
 programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type
