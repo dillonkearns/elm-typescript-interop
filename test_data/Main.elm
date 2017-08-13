@@ -60,3 +60,6 @@ port outgoingJsonValues : List Json.Encode.Value -> Cmd msg
 
 
 port incomingJsonValue : (Decode.Value -> msg) -> Sub msg
+
+
+port emptyIncomingMessage : (() -> msg) -> Sub msg

@@ -24,6 +24,9 @@ toTsType elmType =
         Ast.Statement.TypeConstructor [ "Maybe" ] [ maybeType ] ->
             toTsType maybeType ++ " | null"
 
+        TypeTuple [] ->
+            "null"
+
         TypeTuple tupleTypes ->
             "["
                 ++ (tupleTypes

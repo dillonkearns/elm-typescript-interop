@@ -36,6 +36,9 @@ export interface App {
     incomingJsonValue: {
       send(data: any): void
     }
+    emptyIncomingMessage: {
+      send(data: null): void
+    }
   }
 }
     
