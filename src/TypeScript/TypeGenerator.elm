@@ -6,17 +6,22 @@ import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 toTsType : Ast.Statement.Type -> String
 toTsType elmType =
     case elmType of
-        TypeConstructor [ "Json", "Decode", "Value" ] [] ->
-            "any"
+        TypeConstructor typeName [] ->
+            case typeName of
+                [ "Json", "Decode", "Value" ] ->
+                    "any"
 
-        TypeConstructor [ "Decode", "Value" ] [] ->
-            "any"
+                [ "Decode", "Value" ] ->
+                    "any"
 
-        TypeConstructor [ "Json", "Encode", "Value" ] [] ->
-            "any"
+                [ "Json", "Encode", "Value" ] ->
+                    "any"
 
-        TypeConstructor [ "Encode", "Value" ] [] ->
-            "any"
+                [ "Encode", "Value" ] ->
+                    "any"
+
+                primitiveOrAliasTypeName ->
+                    primitiveOrTypeAlias primitiveOrAliasTypeName
 
         TypeConstructor [ "List" ] [ listType ] ->
             listTypeString listType
@@ -26,9 +31,6 @@ toTsType elmType =
 
         TypeConstructor [ "Array" ] [ arrayType ] ->
             listTypeString arrayType
-
-        TypeConstructor [ primitiveType ] [] ->
-            elmPrimitiveToTs primitiveType
 
         TypeConstructor [ "Maybe" ] [ maybeType ] ->
             toTsType maybeType ++ " | null"
@@ -69,20 +71,36 @@ listTypeString listType =
     toTsType listType ++ "[]"
 
 
-elmPrimitiveToTs : String -> String
+primitiveOrTypeAlias : List String -> String
+primitiveOrTypeAlias primitiveOrAliasTypeName =
+    case primitiveOrAliasTypeName of
+        [ singleName ] ->
+            elmPrimitiveToTs singleName
+                |> Maybe.withDefault (lookupAlias [ singleName ])
+
+        listName ->
+            lookupAlias listName
+
+
+lookupAlias : List String -> String
+lookupAlias aliasName =
+    ""
+
+
+elmPrimitiveToTs : String -> Maybe String
 elmPrimitiveToTs elmPrimitive =
     case elmPrimitive of
         "String" ->
-            "string"
+            Just "string"
 
         "Int" ->
-            "number"
+            Just "number"
 
         "Float" ->
-            "number"
+            Just "number"
 
         "Bool" ->
-            "boolean"
+            Just "boolean"
 
         _ ->
-            "Unhandled"
+            Nothing
