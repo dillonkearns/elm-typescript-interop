@@ -86,12 +86,10 @@ primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
 
 lookupAlias : Aliases -> List String -> String
 lookupAlias aliases aliasName =
-    -- ""
-    toString <| Dict.fromList [ ( [ "a", "b", "c" ], 123 ) ]
-
-
-
--- "Looking up " ++ toString aliasName ++ " with aliases:\n" ++ toString aliases
+    aliases
+        |> Dict.get aliasName
+        |> Maybe.map (toTsType aliases)
+        |> Maybe.withDefault "Alias not found"
 
 
 elmPrimitiveToTs : String -> Maybe String

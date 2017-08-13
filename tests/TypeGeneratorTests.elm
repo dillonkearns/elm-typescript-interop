@@ -84,6 +84,14 @@ suite =
                         |> toTsTypeNoAlias
                         |> Expect.equal "any"
             ]
+        , describe "alias lookup"
+            [ test "single string alias" <|
+                \() ->
+                    TypeConstructor [ "MyAlias" ]
+                        []
+                        |> TypeScript.TypeGenerator.toTsType (Dict.fromList [ ( [ "MyAlias" ], TypeConstructor [ "Bool" ] [] ) ])
+                        |> Expect.equal "boolean"
+            ]
         ]
 
 
