@@ -84,8 +84,8 @@ parse ipcFilesAsStrings =
                 |> Result.Extra.combine
     in
     case statements of
-        Ok fileStatementsList ->
-            fileStatementsList
+        Ok fileAsts ->
+            fileAsts
                 |> List.map (\( _, _, statements ) -> statements)
                 |> List.concat
                 |> toProgram
