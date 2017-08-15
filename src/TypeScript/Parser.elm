@@ -45,15 +45,15 @@ toProgram statements =
 extractMain : List Ast.Statement.Statement -> Maybe Main
 extractMain statements =
     let
-        main =
+        maybeFlagsType =
             statements
-                |> List.filterMap (programFlagType moduleName)
+                |> List.filterMap programFlagType
                 |> List.head
 
         moduleName =
             extractModuleName statements
     in
-    main
+    maybeFlagsType |> Maybe.map (\flagsType -> { moduleName = moduleName, flagsType = flagsType })
 
 
 extractModuleName : List Ast.Statement.Statement -> List String
@@ -97,16 +97,16 @@ aliasOrNothing statement =
             Nothing
 
 
-programFlagType : List String -> Ast.Statement.Statement -> Maybe Main
-programFlagType moduleName statement =
+programFlagType : Ast.Statement.Statement -> Maybe (Maybe Ast.Statement.Type)
+programFlagType statement =
     case statement of
         FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] (flagsType :: _)) ->
             case flagsType of
                 TypeConstructor [ "Never" ] [] ->
-                    Just { moduleName = moduleName, flagsType = Nothing }
+                    Just Nothing
 
                 _ ->
-                    Just { moduleName = moduleName, flagsType = Just flagsType }
+                    Just (Just flagsType)
 
         _ ->
             Nothing
