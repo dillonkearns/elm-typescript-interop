@@ -6,7 +6,7 @@ import Dict
 import Result.Extra
 import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port exposing (Port(Port))
-import TypeScript.Data.Program
+import TypeScript.Data.Program exposing (Main)
 
 
 extractPort : Ast.Statement.Statement -> Maybe Port
@@ -56,7 +56,7 @@ aliasOrNothing statement =
             Nothing
 
 
-programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type
+programFlagType : Ast.Statement.Statement -> Maybe Main
 programFlagType statement =
     case statement of
         FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] [ flagsType, TypeConstructor [ modelType ] [], TypeConstructor [ msgType ] [] ]) ->
@@ -65,7 +65,7 @@ programFlagType statement =
                     Nothing
 
                 _ ->
-                    Just flagsType
+                    Just { moduleName = [], flagsType = flagsType }
 
         _ ->
             Nothing

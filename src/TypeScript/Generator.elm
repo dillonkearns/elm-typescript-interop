@@ -1,9 +1,8 @@
 module TypeScript.Generator exposing (..)
 
-import Ast.Statement
 import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port
-import TypeScript.Data.Program as Program
+import TypeScript.Data.Program as Program exposing (Main)
 import TypeScript.TypeGenerator exposing (toTsType)
 
 
@@ -31,11 +30,12 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : Aliases -> Maybe Ast.Statement.Type -> String
+elmModuleNamespace : Aliases -> Maybe Main -> String
 elmModuleNamespace aliases maybeFlagsType =
     let
         fullscreenParam =
             maybeFlagsType
+                |> Maybe.map .flagsType
                 |> Maybe.map (toTsType aliases)
                 |> Maybe.map (\tsType -> "flags: " ++ tsType)
                 |> Maybe.withDefault ""
@@ -45,7 +45,7 @@ elmModuleNamespace aliases maybeFlagsType =
                 Nothing ->
                     ""
 
-                Just flagsType ->
+                Just { flagsType } ->
                     ", flags: " ++ toTsType aliases flagsType
     in
     """export namespace Main {
