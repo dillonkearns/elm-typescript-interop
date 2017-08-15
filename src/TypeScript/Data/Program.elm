@@ -7,7 +7,7 @@ import TypeScript.Data.Port exposing (Port)
 
 type alias Main =
     { moduleName : List String
-    , flagsType : Ast.Statement.Type
+    , flagsType : Maybe Ast.Statement.Type
     }
 
 

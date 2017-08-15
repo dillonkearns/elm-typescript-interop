@@ -11,7 +11,7 @@ export interface App {
 }
     
 
-export namespace Main {
+export namespace WithFlags {
   export function fullscreen(flags: string): App
   export function embed(node: HTMLElement | null, flags: string): App
 }

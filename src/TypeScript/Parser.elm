@@ -45,20 +45,39 @@ toProgram statements =
 extractMain : List Ast.Statement.Statement -> Maybe Main
 extractMain statements =
     let
-        maybeFlagsType =
+        main =
             statements
-                |> List.filterMap programFlagType
+                |> List.filterMap (programFlagType moduleName)
                 |> List.head
 
         moduleName =
             extractModuleName statements
     in
-    Maybe.map (\flagsType -> { moduleName = moduleName, flagsType = flagsType }) maybeFlagsType
+    main
 
 
 extractModuleName : List Ast.Statement.Statement -> List String
-extractModuleName statementStatementAstList =
-    []
+extractModuleName statements =
+    statements
+        |> List.filterMap moduleDeclaration
+        |> List.head
+        |> Maybe.withDefault []
+
+
+moduleDeclaration : Ast.Statement.Statement -> Maybe (List String)
+moduleDeclaration statement =
+    case statement of
+        ModuleDeclaration moduleName _ ->
+            Just moduleName
+
+        PortModuleDeclaration moduleName _ ->
+            Just moduleName
+
+        EffectModuleDeclaration moduleName _ _ ->
+            Just moduleName
+
+        _ ->
+            Nothing
 
 
 extractAliases : List Ast.Statement.Statement -> Aliases
@@ -78,16 +97,16 @@ aliasOrNothing statement =
             Nothing
 
 
-programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type
-programFlagType statement =
+programFlagType : List String -> Ast.Statement.Statement -> Maybe Main
+programFlagType moduleName statement =
     case statement of
-        FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] [ flagsType, TypeConstructor [ modelType ] [], TypeConstructor [ msgType ] [] ]) ->
+        FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] (flagsType :: _)) ->
             case flagsType of
                 TypeConstructor [ "Never" ] [] ->
-                    Nothing
+                    Just { moduleName = moduleName, flagsType = Nothing }
 
                 _ ->
-                    Just flagsType
+                    Just { moduleName = moduleName, flagsType = Just flagsType }
 
         _ ->
             Nothing

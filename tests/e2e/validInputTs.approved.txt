@@ -47,6 +47,6 @@ export interface App {
     
 
 export namespace Main {
-  export function fullscreen(): App
-  export function embed(node: HTMLElement | null): App
+  export function fullscreen(flags: { elmModuleFileContents: string }): App
+  export function embed(node: HTMLElement | null, flags: { elmModuleFileContents: string }): App
 }

@@ -122,8 +122,9 @@ main =
                     |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
-                                Ok (TypeScript.Data.Program.ElmProgram Nothing _ ports) ->
-                                    Expect.pass
+                                Ok (TypeScript.Data.Program.ElmProgram (Just { flagsType }) _ ports) ->
+                                    flagsType
+                                        |> Expect.equal Nothing
 
                                 unexpected ->
                                     Expect.fail ("Expected program without flags, got " ++ toString unexpected)

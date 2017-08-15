@@ -30,25 +30,27 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : Aliases -> Maybe Main -> String
-elmModuleNamespace aliases maybeFlagsType =
+elmModuleNamespace : Aliases -> Main -> String
+elmModuleNamespace aliases main =
     let
         fullscreenParam =
-            maybeFlagsType
-                |> Maybe.map .flagsType
+            main.flagsType
                 |> Maybe.map (toTsType aliases)
                 |> Maybe.map (\tsType -> "flags: " ++ tsType)
                 |> Maybe.withDefault ""
 
+        moduleName =
+            String.join "." main.moduleName
+
         embedAppendParam =
-            case maybeFlagsType of
+            case main.flagsType of
                 Nothing ->
                     ""
 
-                Just { flagsType } ->
+                Just flagsType ->
                     ", flags: " ++ toTsType aliases flagsType
     in
-    """export namespace Main {
+    "export namespace " ++ moduleName ++ """ {
   export function fullscreen(""" ++ fullscreenParam ++ """): App
   export function embed(node: HTMLElement | null""" ++ embedAppendParam ++ """): App
 }"""
@@ -78,9 +80,9 @@ export interface App {
 generate : Program.Program -> String
 generate program =
     case program of
-        Program.ElmProgram flagsType aliases ports ->
+        Program.ElmProgram main aliases ports ->
             [ prefix
             , generatePorts aliases ports
-            , elmModuleNamespace aliases flagsType
+            , elmModuleNamespace aliases (main |> Maybe.withDefault { moduleName = [ "NOT FOUND" ], flagsType = Nothing })
             ]
                 |> String.join "\n\n"
