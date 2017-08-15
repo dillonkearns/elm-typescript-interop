@@ -22,21 +22,43 @@ extractPort statement =
             Nothing
 
 
-toProgram : List Ast.Statement.Statement -> TypeScript.Data.Program.Program
+toProgram : List (List Ast.Statement.Statement) -> TypeScript.Data.Program.Program
 toProgram statements =
     let
         ports =
-            List.filterMap extractPort statements
+            List.filterMap extractPort flatStatements
 
         flagsType =
+            statements
+                |> List.filterMap extractMain
+                |> List.head
+
+        aliases =
+            extractAliases flatStatements
+
+        flatStatements =
+            List.concat statements
+    in
+    TypeScript.Data.Program.ElmProgram flagsType aliases ports
+
+
+extractMain : List Ast.Statement.Statement -> Maybe Main
+extractMain statements =
+    let
+        maybeFlagsType =
             statements
                 |> List.filterMap programFlagType
                 |> List.head
 
-        aliases =
-            extractAliases statements
+        moduleName =
+            extractModuleName statements
     in
-    TypeScript.Data.Program.ElmProgram flagsType aliases ports
+    Maybe.map (\flagsType -> { moduleName = moduleName, flagsType = flagsType }) maybeFlagsType
+
+
+extractModuleName : List Ast.Statement.Statement -> List String
+extractModuleName statementStatementAstList =
+    []
 
 
 extractAliases : List Ast.Statement.Statement -> Aliases
@@ -56,7 +78,7 @@ aliasOrNothing statement =
             Nothing
 
 
-programFlagType : Ast.Statement.Statement -> Maybe Main
+programFlagType : Ast.Statement.Statement -> Maybe Ast.Statement.Type
 programFlagType statement =
     case statement of
         FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] [ flagsType, TypeConstructor [ modelType ] [], TypeConstructor [ msgType ] [] ]) ->
@@ -65,7 +87,7 @@ programFlagType statement =
                     Nothing
 
                 _ ->
-                    Just { moduleName = [], flagsType = flagsType }
+                    Just flagsType
 
         _ ->
             Nothing
@@ -87,7 +109,6 @@ parse ipcFilesAsStrings =
         Ok fileAsts ->
             fileAsts
                 |> List.map (\( _, _, statements ) -> statements)
-                |> List.concat
                 |> toProgram
                 |> Ok
 
