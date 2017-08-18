@@ -24,9 +24,9 @@ generatePort aliases (Port.Port name direction portType) =
 
 prefix : String
 prefix =
-    """// Type definitions for Elm
-// Project: https://github.com/dillonkearns/elm-typescript
-// Definitions by: Dillon Kearns <https://github.com/dillonkearns>
+    """// WARNING: Do not manually modify this file. It was generated using:
+// https://github.com/dillonkearns/elm-typescript-interop
+// Type definitions for Elm ports
 export as namespace Elm"""
 
 

@@ -1,5 +1,5 @@
 {
-  "name": "elm-typescript",
+  "name": "elm-typescript-interop",
   "version": "0.0.1",
   "description": "Code generator for type-safe elm-typescript interprocess messages.",
   "main": "index.js",
@@ -10,7 +10,7 @@
     "build": "webpack"
   },
   "keywords": ["elm", "typescript", "ipc", "typescript"],
-  "repository": "https://github.com/dillonkearns/elm-typescript",
+  "repository": "https://github.com/dillonkearns/elm-typescript-interop",
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
   "devDependencies": {
@@ -28,7 +28,7 @@
     "webpack": "^3.4.1"
   },
   "bin": {
-    "elm-typescript": "bin/elm-typescript"
+    "elm-typescript-interop": "bin/elm-typescript-interop"
   },
   "dependencies": {
     "minimist": "^1.2.0"
