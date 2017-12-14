@@ -133,6 +133,28 @@ main =
                                 unexpected ->
                                     Expect.fail ("Expected program without flags, got " ++ toString unexpected)
                        )
+        , test "main with simple Html return value" <|
+            \_ ->
+                """
+port module Main exposing (main)
+
+import Html exposing (..)
+
+
+main : Html msg
+main =
+    text "Hello World!"
+                                       """
+                    |> TypeScript.Parser.parseSingle
+                    |> (\parsedProgram ->
+                            case parsedProgram of
+                                Ok (TypeScript.Data.Program.ElmProgram { flagsType } _ ports) ->
+                                    flagsType
+                                        |> Expect.equal Nothing
+
+                                unexpected ->
+                                    Expect.fail ("Expected program without flags, got " ++ toString unexpected)
+                       )
         , test "program with an outbound ports" <|
             \_ ->
                 [ """

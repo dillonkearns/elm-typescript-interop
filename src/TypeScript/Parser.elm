@@ -114,13 +114,21 @@ aliasOrNothing statement =
 programFlagType : Ast.Statement.Statement -> Maybe (Maybe Ast.Statement.Type)
 programFlagType statement =
     case statement of
-        FunctionTypeDeclaration "main" (TypeConstructor [ "Program" ] (flagsType :: _)) ->
-            case flagsType of
-                TypeConstructor [ "Never" ] [] ->
+        FunctionTypeDeclaration "main" mainSubtree ->
+            case mainSubtree of
+                TypeConstructor [ "Program" ] (flagsType :: _) ->
+                    case flagsType of
+                        TypeConstructor [ "Never" ] [] ->
+                            Just Nothing
+
+                        _ ->
+                            Just (Just flagsType)
+
+                TypeConstructor [ "Html" ] _ ->
                     Just Nothing
 
                 _ ->
-                    Just (Just flagsType)
+                    Nothing
 
         _ ->
             Nothing
