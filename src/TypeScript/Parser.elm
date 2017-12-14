@@ -127,6 +127,9 @@ programFlagType statement =
                 TypeConstructor [ "Html" ] _ ->
                     Just Nothing
 
+                TypeConstructor [ "Html.Html" ] _ ->
+                    Just Nothing
+
                 _ ->
                     Nothing
 
