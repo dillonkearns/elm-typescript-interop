@@ -12,4 +12,4 @@ type alias Main =
 
 
 type Program
-    = ElmProgram (Maybe Main) Aliases (List Port)
+    = ElmProgram Main Aliases (List Port)

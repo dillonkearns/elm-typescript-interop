@@ -34,7 +34,7 @@ toProgram statements =
         flatStatements =
             List.concat statements
     in
-    Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram (Just mainFlagType) aliases ports)
+    Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
         (flagsType statements)
 
 

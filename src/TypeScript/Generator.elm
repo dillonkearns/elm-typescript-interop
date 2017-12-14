@@ -83,6 +83,6 @@ generate program =
         Program.ElmProgram main aliases ports ->
             [ prefix
             , generatePorts aliases ports
-            , elmModuleNamespace aliases (main |> Maybe.withDefault { moduleName = [ "NOT FOUND" ], flagsType = Nothing })
+            , elmModuleNamespace aliases main
             ]
                 |> String.join "\n\n"
