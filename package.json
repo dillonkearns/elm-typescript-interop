@@ -1,6 +1,6 @@
 {
   "name": "elm-typescript-interop",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Code generator for type-safe elm-typescript interprocess messages.",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,12 @@
     "test-e2e": "tsc tests/e2e/e2e.ts && mocha --timeout 5000 ./tests/e2e/e2e.js",
     "build": "webpack"
   },
-  "keywords": ["elm", "typescript", "ipc", "typescript"],
+  "keywords": [
+    "elm",
+    "typescript",
+    "ipc",
+    "typescript"
+  ],
   "repository": "https://github.com/dillonkearns/elm-typescript-interop",
   "author": "Dillon Kearns",
   "license": "BSD-3-Clause",
