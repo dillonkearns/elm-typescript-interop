@@ -42,6 +42,24 @@ toProgram statements =
     TypeScript.Data.Program.ElmProgram flagsType aliases ports
 
 
+flagsType : List (List Ast.Statement.Statement) -> Result String Main
+flagsType statements =
+    let
+        mainCandidates =
+            statements
+                |> List.filterMap extractMain
+    in
+    case mainCandidates of
+        [] ->
+            Err "No main type annotation found"
+
+        [ singleMain ] ->
+            Ok singleMain
+
+        multipleMains ->
+            Err ("Multiple mains with type annotations found: " ++ toString multipleMains)
+
+
 extractMain : List Ast.Statement.Statement -> Maybe Main
 extractMain statements =
     let
