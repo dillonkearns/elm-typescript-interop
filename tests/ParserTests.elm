@@ -19,13 +19,17 @@ suite =
     describe "parser"
         [ test "program with no ports" <|
             \_ ->
-                """
+                [ """
                   module Main exposing (main)
 
                   thereAreNoPorts = True
                 """
-                    |> TypeScript.Parser.parseSingle
-                    |> Expect.equal (Ok (TypeScript.Data.Program.ElmProgram Nothing Dict.empty []))
+                ]
+                    |> TypeScript.Parser.statements
+                    |> Result.map List.concat
+                    |> Result.map (List.filterMap TypeScript.Parser.extractPort)
+                    |> Result.map (List.map portNameAndDirection)
+                    |> Expect.equal (Ok [])
         , test "program with flags" <|
             \_ ->
                 """
@@ -131,57 +135,47 @@ main =
                        )
         , test "program with an outbound ports" <|
             \_ ->
-                """
+                [ """
                   module Main exposing (main)
 
                   port showSuccessDialog : String -> Cmd msg
 
                   port showWarningDialog : String -> Cmd msg
                 """
-                    |> TypeScript.Parser.parseSingle
-                    |> (\parsed ->
-                            case parsed of
-                                Ok (TypeScript.Data.Program.ElmProgram Nothing _ ports) ->
-                                    List.map portNameAndDirection ports
-                                        |> Expect.equal
-                                            [ ( "showSuccessDialog", TypeScript.Data.Port.Outbound )
-                                            , ( "showWarningDialog", TypeScript.Data.Port.Outbound )
-                                            ]
-
-                                Err err ->
-                                    Expect.fail ("Expected success, got" ++ toString parsed)
-
-                                actual ->
-                                    Expect.fail "Expeted program without flags"
-                       )
+                ]
+                    |> TypeScript.Parser.statements
+                    |> Result.map List.concat
+                    |> Result.map (List.filterMap TypeScript.Parser.extractPort)
+                    |> Result.map (List.map portNameAndDirection)
+                    |> Expect.equal
+                        (Ok
+                            [ ( "showSuccessDialog", TypeScript.Data.Port.Outbound )
+                            , ( "showWarningDialog", TypeScript.Data.Port.Outbound )
+                            ]
+                        )
         , test "program with an inbound ports" <|
             \_ ->
-                """
+                [ """
                                  module Main exposing (main)
 
                                  port localStorageReceived : (String -> msg) -> Sub msg
 
                                  port suggestionsReceived : (String -> msg) -> Sub msg
                                """
-                    |> TypeScript.Parser.parseSingle
-                    |> (\parsed ->
-                            case parsed of
-                                Ok (TypeScript.Data.Program.ElmProgram Nothing _ ports) ->
-                                    List.map portNameAndDirection ports
-                                        |> Expect.equal
-                                            [ ( "localStorageReceived", TypeScript.Data.Port.Inbound )
-                                            , ( "suggestionsReceived", TypeScript.Data.Port.Inbound )
-                                            ]
-
-                                Err err ->
-                                    Expect.fail ("Expected success, got" ++ toString parsed)
-
-                                actual ->
-                                    Expect.fail "Expeted program without flags"
-                       )
+                ]
+                    |> TypeScript.Parser.statements
+                    |> Result.map List.concat
+                    |> Result.map (List.filterMap TypeScript.Parser.extractPort)
+                    |> Result.map (List.map portNameAndDirection)
+                    |> Expect.equal
+                        (Ok
+                            [ ( "localStorageReceived", TypeScript.Data.Port.Inbound )
+                            , ( "suggestionsReceived", TypeScript.Data.Port.Inbound )
+                            ]
+                        )
         , test "program with aliases" <|
             \_ ->
-                """
+                [ """
                   module Main exposing (main)
 
                   type alias AliasForString =
@@ -189,23 +183,17 @@ main =
 
                   port outboundWithAlias : AliasForString -> Cmd msg
                 """
-                    |> TypeScript.Parser.parseSingle
-                    |> (\parsed ->
-                            case parsed of
-                                Ok (TypeScript.Data.Program.ElmProgram Nothing aliases ports) ->
-                                    aliases
-                                        |> Expect.equal
-                                            (Dict.fromList
-                                                [ ( [ "AliasForString" ]
-                                                  , TypeConstructor [ "String" ] []
-                                                  )
-                                                ]
-                                            )
-
-                                Err err ->
-                                    Expect.fail ("Expected success, got" ++ toString parsed)
-
-                                actual ->
-                                    Expect.fail "Expeted program without flags"
-                       )
+                ]
+                    |> TypeScript.Parser.statements
+                    |> Result.map List.concat
+                    |> Result.map TypeScript.Parser.extractAliases
+                    |> Expect.equal
+                        (Ok
+                            (Dict.fromList
+                                [ ( [ "AliasForString" ]
+                                  , TypeConstructor [ "String" ] []
+                                  )
+                                ]
+                            )
+                        )
         ]

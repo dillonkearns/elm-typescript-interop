@@ -22,16 +22,11 @@ extractPort statement =
             Nothing
 
 
-toProgram : List (List Ast.Statement.Statement) -> TypeScript.Data.Program.Program
+toProgram : List (List Ast.Statement.Statement) -> Result String TypeScript.Data.Program.Program
 toProgram statements =
     let
         ports =
             List.filterMap extractPort flatStatements
-
-        flagsType =
-            statements
-                |> List.filterMap extractMain
-                |> List.head
 
         aliases =
             extractAliases flatStatements
@@ -39,7 +34,8 @@ toProgram statements =
         flatStatements =
             List.concat statements
     in
-    TypeScript.Data.Program.ElmProgram flagsType aliases ports
+    Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram (Just mainFlagType) aliases ports)
+        (flagsType statements)
 
 
 flagsType : List (List Ast.Statement.Statement) -> Result String Main
@@ -51,7 +47,7 @@ flagsType statements =
     in
     case mainCandidates of
         [] ->
-            Err "No main type annotation found"
+            Err "No main function with type annotation found."
 
         [ singleMain ] ->
             Ok singleMain
@@ -135,19 +131,20 @@ parseSingle ipcFileAsString =
     parse [ ipcFileAsString ]
 
 
+statements : List String -> Result String (List (List Statement))
+statements ipcFilesAsStrings =
+    List.map Ast.parse ipcFilesAsStrings
+        |> Result.Extra.combine
+        |> Result.map (List.map (\( _, _, statements ) -> statements))
+        |> Result.mapError toString
+
+
 parse : List String -> Result String TypeScript.Data.Program.Program
 parse ipcFilesAsStrings =
-    let
-        statements =
-            List.map Ast.parse ipcFilesAsStrings
-                |> Result.Extra.combine
-    in
-    case statements of
+    case statements ipcFilesAsStrings of
         Ok fileAsts ->
             fileAsts
-                |> List.map (\( _, _, statements ) -> statements)
                 |> toProgram
-                |> Ok
 
-        err ->
-            err |> toString |> Err
+        Err err ->
+            Err err
