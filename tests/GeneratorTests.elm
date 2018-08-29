@@ -1,4 +1,4 @@
-module GeneratorTests exposing (..)
+module GeneratorTests exposing (suite)
 
 import Ast.Statement
 import Dict

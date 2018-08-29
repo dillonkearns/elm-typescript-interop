@@ -1,9 +1,10 @@
-port module Main exposing (..)
+port module Main exposing (Flags, Model, crashOrOutputString, generatedFiles, init, main, output, parsingError, update, workaround)
 
 import Json.Decode exposing (..)
 import TypeScript.Data.Program
 import TypeScript.Generator
 import TypeScript.Parser
+
 
 
 -- Need to import Json.Decode as a

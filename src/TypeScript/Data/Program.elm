@@ -1,4 +1,4 @@
-module TypeScript.Data.Program exposing (..)
+module TypeScript.Data.Program exposing (Main, Program(..))
 
 import Ast.Statement
 import TypeScript.Data.Aliases exposing (Aliases)

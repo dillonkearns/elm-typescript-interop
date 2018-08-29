@@ -1,4 +1,4 @@
-module ParserTests exposing (..)
+module ParserTests exposing (portNameAndDirection, suite)
 
 import Ast.Statement exposing (Type(TypeConstructor))
 import Dict

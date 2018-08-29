@@ -1,4 +1,4 @@
-module TypeScript.Generator exposing (..)
+module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
 
 import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port

@@ -1,4 +1,4 @@
-module TypeScript.Parser exposing (..)
+module TypeScript.Parser exposing (aliasOrNothing, extractAliases, extractMain, extractModuleName, extractPort, flagsType, moduleDeclaration, parse, parseSingle, programFlagType, statements, toProgram)
 
 import Ast
 import Ast.Statement exposing (..)

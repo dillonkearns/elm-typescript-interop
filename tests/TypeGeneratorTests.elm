@@ -1,4 +1,4 @@
-module TypeGeneratorTests exposing (..)
+module TypeGeneratorTests exposing (suite, toTsTypeNoAlias)
 
 import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Dict
