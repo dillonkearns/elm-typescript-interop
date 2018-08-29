@@ -25,7 +25,7 @@
     "@types/node": "^8.0.19",
     "approvals": "^2.1.2",
     "chai": "^4.1.0",
-    "elm-test": "^0.18.7",
+    "elm-test": "^0.18.12",
     "elm-webpack-loader": "^4.3.1",
     "mocha": "^3.5.0",
     "ts-loader": "^2.3.2",
@@ -36,6 +36,7 @@
     "elm-typescript-interop": "bin/elm-typescript-interop"
   },
   "dependencies": {
+    "elm": "^0.18.0",
     "minimist": "^1.2.0"
   }
 }
