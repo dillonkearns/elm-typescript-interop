@@ -40,7 +40,12 @@ crashOrOutputString result =
                     elmProgram
                         |> TypeScript.Generator.generate
             in
-            generatedFiles tsCode
+            case tsCode of
+                Ok generatedTsCode ->
+                    generatedFiles generatedTsCode
+
+                Err errorMessage ->
+                    parsingError errorMessage
 
         Err errorMessage ->
             parsingError errorMessage

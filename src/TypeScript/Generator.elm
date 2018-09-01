@@ -1,5 +1,6 @@
 module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
 
+import Result.Extra
 import String.Interpolate
 import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port
@@ -7,7 +8,7 @@ import TypeScript.Data.Program as Program exposing (Main)
 import TypeScript.TypeGenerator exposing (toTsType)
 
 
-generatePort : Aliases -> Port.Port -> String
+generatePort : Aliases -> Port.Port -> Result String String
 generatePort aliases (Port.Port name direction portType) =
     let
         inner =
@@ -23,6 +24,7 @@ generatePort aliases (Port.Port name direction portType) =
       {1}: void
     }"""
         [ name, inner ]
+        |> Ok
 
 
 prefix : String
@@ -59,12 +61,13 @@ elmModuleNamespace aliases main =
 }"""
 
 
-generatePorts : Aliases -> List Port.Port -> String
+generatePorts : Aliases -> List Port.Port -> Result String String
 generatePorts aliases ports =
     ports
         |> List.map (generatePort aliases)
-        |> String.join "\n"
-        |> wrapPorts
+        |> Result.Extra.combine
+        |> Result.map (String.join "\n")
+        |> Result.map wrapPorts
 
 
 wrapPorts : String -> String
@@ -80,12 +83,20 @@ export interface App {
     """
 
 
-generate : Program.Program -> String
+generate : Program.Program -> Result String String
 generate program =
     case program of
         Program.ElmProgram main aliases ports ->
-            [ prefix
-            , generatePorts aliases ports
-            , elmModuleNamespace aliases main
-            ]
-                |> String.join "\n\n"
+            let
+                generatePortsResult =
+                    generatePorts aliases ports
+            in
+            Result.map
+                (\generatedPorts ->
+                    [ prefix
+                    , generatedPorts
+                    , elmModuleNamespace aliases main
+                    ]
+                        |> String.join "\n\n"
+                )
+                generatePortsResult
