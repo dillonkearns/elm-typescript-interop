@@ -1,0 +1,24 @@
+sudo: false
+
+language: node_js
+node_js: node
+
+os: linux
+
+env: ELM_VERSION=0.18.0
+
+install:
+  - npm ci
+
+script:
+  - npm test
+  - npm run approve
+
+deploy:
+  provider: npm
+  email: dillon@dillonkearns.com
+  api_key: $NPM_TOKEN
+  skip_cleanup: true
+  on:
+    all_branches: true
+    condition: $TRAVIS_TAG =~ ^v
