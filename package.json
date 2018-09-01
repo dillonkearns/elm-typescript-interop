@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "elm-test",
+    "approve": "./approve",
     "build": "webpack"
   },
   "keywords": [
