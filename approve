@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+npm run build
+binary=./bin/elm-typescript-interop
+
+$binary ./test_data/Main.elm --output tests/e2e/output/Main.d.ts
+
+# echo 'Ensuring documentation is valid...'
+# elm make --docs=documentation.json
+
+echo 'Confirming that generated code is unchanged...'
+changed_files=$(git diff --name-only -- tests/e2e/output)
+
+if [[ -n $changed_files ]]; then
+  echo 'FAILURE'
+  echo 'Generated code has changed. Commit changes to approve.'
+  echo $changed_files
+  exit 1;
+fi
+
+# npm run approve-compilation
+
+echo 'SUCCESS'
