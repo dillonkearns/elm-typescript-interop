@@ -1,5 +1,6 @@
 module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
 
+import String.Interpolate
 import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port
 import TypeScript.Data.Program as Program exposing (Main)
@@ -17,9 +18,11 @@ generatePort aliases (Port.Port name direction portType) =
                 Port.Inbound ->
                     "send(data: " ++ toTsType aliases portType ++ ")"
     in
-    "    " ++ name ++ """: {
-      """ ++ inner ++ """: void
+    String.Interpolate.interpolate
+        """    {0}: {
+      {1}: void
     }"""
+        [ name, inner ]
 
 
 prefix : String
