@@ -3,6 +3,7 @@ module TypeScript.TypeGenerator exposing (toTsType)
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Dict
 import Result.Extra
+import String.Interpolate
 import TypeScript.Data.Aliases exposing (Aliases)
 
 
@@ -112,7 +113,13 @@ lookupAlias aliases aliasName =
             foundTsTypeName
 
         Nothing ->
-            Err "Alias not found"
+            [ String.join "." aliasName
+            , Dict.keys aliases
+                |> List.map (String.join ".")
+                |> String.join ", "
+            ]
+                |> String.Interpolate.interpolate "Alias `{0}` not found. Known aliases:\n{1}"
+                |> Err
 
 
 elmPrimitiveToTs : String -> Maybe String
