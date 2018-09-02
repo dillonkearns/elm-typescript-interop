@@ -6,6 +6,7 @@
   "scripts": {
     "test": "elm-test",
     "approve": "./approve",
+    "all": "npm test && ./approve",
     "build": "webpack"
   },
   "keywords": [
