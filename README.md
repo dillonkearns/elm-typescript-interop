@@ -1,5 +1,6 @@
 # Elm TypeScript Interop
 [![Build Status](https://travis-ci.org/dillonkearns/elm-typescript-interop.svg?branch=master)](https://travis-ci.org/dillonkearns/elm-typescript-interop)
+[![npm version](https://badge.fury.io/js/elm-typescript-interop.svg)](https://badge.fury.io/js/elm-typescript-interop)
 
 Use type-safe ports between Elm and TypeScript for end-to-end type-safety!
 
