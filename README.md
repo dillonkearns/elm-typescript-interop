@@ -2,6 +2,9 @@
 [![Build Status](https://travis-ci.org/dillonkearns/elm-typescript-interop.svg?branch=master)](https://travis-ci.org/dillonkearns/elm-typescript-interop)
 [![npm version](https://badge.fury.io/js/elm-typescript-interop.svg)](https://badge.fury.io/js/elm-typescript-interop)
 
+Watch this short video tutorial to see `elm-typescript-interop` in action!
+[![Video tutorial](https://img.youtube.com/vi/xyWAlmNMz1A/0.jpg)](https://www.youtube.com/watch?v=xyWAlmNMz1A)
+
 Use type-safe ports between Elm and TypeScript for end-to-end type-safety!
 
 We love the safety and guarantees that Elm gives us. But we accept that we must give those up in our native javascript code for our Elm applications and the seams between the two languages. `elm-typescript-interop` gives the same guarantees of no runtime exceptions for sending and receiving data between Elm and TypeScript. If your code compiles, you have the guarantee that the data you're sending will be what Elm is expecting. No more unexpected data runtime errors from Elm!
