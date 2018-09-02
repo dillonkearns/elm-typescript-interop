@@ -10,21 +10,24 @@ import TypeScript.TypeGenerator exposing (toTsType)
 
 generatePort : Aliases -> Port.Port -> Result String String
 generatePort aliases (Port.Port name direction portType) =
-    let
-        inner =
-            case direction of
-                Port.Outbound ->
-                    "subscribe(callback: (data: " ++ toTsType aliases portType ++ ") => void)"
+    (case direction of
+        Port.Outbound ->
+            toTsType aliases portType
+                |> Result.map
+                    (\tsType -> "subscribe(callback: (data: " ++ tsType ++ ") => void)")
 
-                Port.Inbound ->
-                    "send(data: " ++ toTsType aliases portType ++ ")"
-    in
-    String.Interpolate.interpolate
-        """    {0}: {
+        Port.Inbound ->
+            toTsType aliases portType
+                |> Result.map (\tsType -> "send(data: " ++ tsType ++ ")")
+    )
+        |> Result.map
+            (\inner ->
+                String.Interpolate.interpolate
+                    """    {0}: {
       {1}: void
     }"""
-        [ name, inner ]
-        |> Ok
+                    [ name, inner ]
+            )
 
 
 prefix : String
@@ -35,30 +38,47 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : Aliases -> Main -> String
+elmModuleNamespace : Aliases -> Main -> Result String String
 elmModuleNamespace aliases main =
     let
-        fullscreenParam =
-            main.flagsType
-                |> Maybe.map (toTsType aliases)
-                |> Maybe.map (\tsType -> "flags: " ++ tsType)
-                |> Maybe.withDefault ""
+        fullscreenParamResult =
+            case main.flagsType of
+                Nothing ->
+                    Ok ""
+
+                Just flagsType ->
+                    toTsType aliases flagsType
+                        |> Result.map
+                            (\flagsTsType -> "flags: " ++ flagsTsType)
 
         moduleName =
             String.join "." main.moduleName
 
-        embedAppendParam =
+        embedAppendParamResult =
             case main.flagsType of
                 Nothing ->
-                    ""
+                    Ok ""
 
                 Just flagsType ->
-                    ", flags: " ++ toTsType aliases flagsType
+                    toTsType aliases flagsType
+                        |> Result.map (\tsFlagsType -> ", flags: " ++ tsFlagsType)
     in
-    "export namespace " ++ moduleName ++ """ {
-  export function fullscreen(""" ++ fullscreenParam ++ """): App
-  export function embed(node: HTMLElement | null""" ++ embedAppendParam ++ """): App
+    case ( embedAppendParamResult, fullscreenParamResult ) of
+        ( Ok embedAppendParam, Ok fullscreenParam ) ->
+            "export namespace "
+                ++ moduleName
+                ++ """ {
+  export function fullscreen("""
+                ++ fullscreenParam
+                ++ """): App
+  export function embed(node: HTMLElement | null"""
+                ++ embedAppendParam
+                ++ """): App
 }"""
+                |> Ok
+
+        _ ->
+            Err "Error"
 
 
 generatePorts : Aliases -> List Port.Port -> Result String String
@@ -87,16 +107,17 @@ generate : Program.Program -> Result String String
 generate program =
     case program of
         Program.ElmProgram main aliases ports ->
-            let
-                generatePortsResult =
-                    generatePorts aliases ports
-            in
-            Result.map
-                (\generatedPorts ->
-                    [ prefix
-                    , generatedPorts
-                    , elmModuleNamespace aliases main
-                    ]
+            case
+                [ Ok prefix
+                , generatePorts aliases ports
+                , elmModuleNamespace aliases main
+                ]
+                    |> Result.Extra.combine
+            of
+                Ok list ->
+                    list
                         |> String.join "\n\n"
-                )
-                generatePortsResult
+                        |> Ok
+
+                Err errorMessage ->
+                    Err errorMessage

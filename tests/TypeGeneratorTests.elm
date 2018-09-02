@@ -15,74 +15,74 @@ suite =
                 \() ->
                     TypeConstructor [ "String" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "string"
+                        |> expectOkValue "string"
             , test "Float" <|
                 \() ->
                     TypeConstructor [ "Float" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "number"
+                        |> expectOkValue "number"
             , test "Int" <|
                 \() ->
                     TypeConstructor [ "Int" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "number"
+                        |> expectOkValue "number"
             , test "Bool" <|
                 \() ->
                     TypeConstructor [ "Bool" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "boolean"
+                        |> expectOkValue "boolean"
             ]
         , describe "compound types"
             [ test "Maybe" <|
                 \() ->
                     TypeConstructor [ "Maybe" ] [ TypeConstructor [ "String" ] [] ]
                         |> toTsTypeNoAlias
-                        |> Expect.equal "string | null"
+                        |> expectOkValue "string | null"
             , test "tuple" <|
                 \() ->
                     TypeTuple [ TypeConstructor [ "Int" ] [], TypeConstructor [ "String" ] [], TypeConstructor [ "Bool" ] [] ]
                         |> toTsTypeNoAlias
-                        |> Expect.equal "[number, string, boolean]"
+                        |> expectOkValue "[number, string, boolean]"
             , test "unit type" <|
                 \() ->
                     TypeTuple []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "null"
+                        |> expectOkValue "null"
             , test "List" <|
                 \() ->
                     TypeConstructor [ "List" ] [ TypeConstructor [ "Int" ] [] ]
                         |> toTsTypeNoAlias
-                        |> Expect.equal "number[]"
+                        |> expectOkValue "number[]"
             , test "Array" <|
                 \() ->
                     TypeConstructor [ "Array", "Array" ] [ TypeConstructor [ "String" ] [] ]
                         |> toTsTypeNoAlias
-                        |> Expect.equal "string[]"
+                        |> expectOkValue "string[]"
             , test "unqualified Array" <|
                 \() ->
                     TypeConstructor [ "Array" ] [ TypeConstructor [ "String" ] [] ]
                         |> toTsTypeNoAlias
-                        |> Expect.equal "string[]"
+                        |> expectOkValue "string[]"
             , test "record literal" <|
                 \() ->
                     TypeRecord [ ( "first", TypeConstructor [ "String" ] [] ), ( "last", TypeConstructor [ "String" ] [] ) ]
                         |> toTsTypeNoAlias
-                        |> Expect.equal "{ first: string; last: string }"
+                        |> expectOkValue "{ first: string; last: string }"
             , test "Json.Decode.Value" <|
                 \() ->
                     TypeConstructor [ "Json", "Decode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "any"
+                        |> expectOkValue "any"
             , test "Json.Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Json", "Encode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "any"
+                        |> expectOkValue "any"
             , test "aliased Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Encode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal "any"
+                        |> Expect.equal (Ok "any")
             ]
         , describe "alias lookup"
             [ test "single string alias" <|
@@ -90,11 +90,15 @@ suite =
                     TypeConstructor [ "MyAlias" ]
                         []
                         |> TypeScript.TypeGenerator.toTsType (Dict.fromList [ ( [ "MyAlias" ], TypeConstructor [ "Bool" ] [] ) ])
-                        |> Expect.equal "boolean"
+                        |> expectOkValue "boolean"
             ]
         ]
 
 
-toTsTypeNoAlias : Type -> String
+expectOkValue value =
+    Expect.equal (Ok value)
+
+
+toTsTypeNoAlias : Type -> Result String String
 toTsTypeNoAlias =
     TypeScript.TypeGenerator.toTsType Dict.empty

@@ -2,25 +2,26 @@ module TypeScript.TypeGenerator exposing (toTsType)
 
 import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Dict
+import Result.Extra
 import TypeScript.Data.Aliases exposing (Aliases)
 
 
-toTsType : Aliases -> Ast.Statement.Type -> String
+toTsType : Aliases -> Ast.Statement.Type -> Result String String
 toTsType aliases elmType =
     case elmType of
         TypeConstructor typeName [] ->
             case typeName of
                 [ "Json", "Decode", "Value" ] ->
-                    "any"
+                    Ok "any"
 
                 [ "Decode", "Value" ] ->
-                    "any"
+                    Ok "any"
 
                 [ "Json", "Encode", "Value" ] ->
-                    "any"
+                    Ok "any"
 
                 [ "Encode", "Value" ] ->
-                    "any"
+                    Ok "any"
 
                 primitiveOrAliasTypeName ->
                     primitiveOrTypeAlias aliases primitiveOrAliasTypeName
@@ -35,61 +36,83 @@ toTsType aliases elmType =
             listTypeString aliases arrayType
 
         TypeConstructor [ "Maybe" ] [ maybeType ] ->
-            toTsType aliases maybeType ++ " | null"
+            toTsType aliases maybeType |> appendStringIfOk " | null"
 
         TypeTuple [] ->
-            "null"
+            Ok "null"
 
         TypeTuple tupleTypes ->
-            "["
-                ++ (tupleTypes
-                        |> List.map (toTsType aliases)
-                        |> String.join ", "
-                   )
-                ++ "]"
+            tupleTypes
+                |> List.map (toTsType aliases)
+                |> Result.Extra.combine
+                |> Result.map (String.join ", ")
+                |> Result.map
+                    (\middle ->
+                        "["
+                            ++ middle
+                            ++ "]"
+                    )
 
         TypeRecord recordPairs ->
-            let
-                something =
-                    recordPairs
-                        |> List.map (generateRecordPair aliases)
-                        |> String.join "; "
-            in
-            "{ "
-                ++ something
-                ++ " }"
+            recordPairs
+                |> List.map (generateRecordPair aliases)
+                |> Result.Extra.combine
+                |> Result.map (String.join "; ")
+                |> Result.map
+                    (\middle ->
+                        "{ "
+                            ++ middle
+                            ++ " }"
+                    )
 
         _ ->
-            "Unhandled"
+            Err "Unhandled"
 
 
-generateRecordPair : Aliases -> ( String, Ast.Statement.Type ) -> String
+generateRecordPair : Aliases -> ( String, Ast.Statement.Type ) -> Result String String
 generateRecordPair aliases ( recordKey, recordType ) =
-    recordKey ++ ": " ++ toTsType aliases recordType
+    toTsType aliases recordType
+        |> Result.map (\value -> recordKey ++ ": " ++ value)
 
 
-listTypeString : Aliases -> Ast.Statement.Type -> String
+listTypeString : Aliases -> Ast.Statement.Type -> Result String String
 listTypeString aliases listType =
-    toTsType aliases listType ++ "[]"
+    toTsType aliases listType
+        |> appendStringIfOk "[]"
 
 
-primitiveOrTypeAlias : Aliases -> List String -> String
+appendStringIfOk : String -> Result String String -> Result String String
+appendStringIfOk stringToAppend result =
+    result |> Result.map (\okResult -> okResult ++ stringToAppend)
+
+
+primitiveOrTypeAlias : Aliases -> List String -> Result String String
 primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
     case primitiveOrAliasTypeName of
         [ singleName ] ->
-            elmPrimitiveToTs singleName
-                |> Maybe.withDefault (lookupAlias aliases [ singleName ])
+            case elmPrimitiveToTs singleName of
+                Just primitiveNameForTs ->
+                    Ok primitiveNameForTs
+
+                Nothing ->
+                    lookupAlias aliases [ singleName ]
 
         listName ->
             lookupAlias aliases listName
 
 
-lookupAlias : Aliases -> List String -> String
+lookupAlias : Aliases -> List String -> Result String String
 lookupAlias aliases aliasName =
-    aliases
-        |> Dict.get aliasName
-        |> Maybe.map (toTsType aliases)
-        |> Maybe.withDefault "Alias not found"
+    case
+        aliases
+            |> Dict.get aliasName
+            |> Maybe.map (toTsType aliases)
+    of
+        Just foundTsTypeName ->
+            foundTsTypeName
+
+        Nothing ->
+            Err "Alias not found"
 
 
 elmPrimitiveToTs : String -> Maybe String
