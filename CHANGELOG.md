@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.5] - 2018-09-02
+
 ### Fixed
 
 - Moved to [`tunguski/elm-ast`](https://github.com/tunguski/elm-ast) to avoid some parsing issues for valid Elm syntax (see [551199](https://github.com/dillonkearns/elm-typescript-interop/commit/551199dd12087ad965df3b4e57d985854b3f2eac)). This fixes [#3](https://github.com/dillonkearns/elm-typescript-interop/issues/3), [#7](https://github.com/dillonkearns/elm-typescript-interop/issues/7).
