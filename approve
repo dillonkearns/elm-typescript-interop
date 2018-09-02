@@ -19,14 +19,8 @@ done
 # elm make --docs=documentation.json
 
 echo 'Confirming that generated code is unchanged...'
-changed_files=$(git diff --name-only -- tests/e2e/output)
+git diff --exit-code -- tests/e2e/output || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
 
-if [[ -n $changed_files ]]; then
-  echo 'FAILURE'
-  echo 'Generated code has changed. Commit changes to approve.'
-  echo $changed_files
-  exit 1;
-fi
 
 # npm run approve-compilation
 
