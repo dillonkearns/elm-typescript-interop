@@ -1,28 +1,41 @@
 const Elm = require("./Main.elm");
 import * as fs from "fs";
-import * as minimist from "minimist";
 
-const args = minimist(process.argv.slice(2));
-const inputPaths = args._;
-const tsDeclarationPath = args.output;
-const missingFiles = inputPaths.filter(inputPath => !fs.existsSync(inputPath));
+const program: any = Elm.Main.worker({ argv: process.argv });
+program.ports.print.subscribe((message: string) => console.log(message));
+program.ports.printAndExitFailure.subscribe((message: string) => {
+  console.log(message);
+  process.exit(1);
+});
 
-if (missingFiles !== []) {
-  const elmModuleFileContents = inputPaths.map(inputPath =>
-    fs.readFileSync(inputPath).toString()
+program.ports.printAndExitSuccess.subscribe((message: string) => {
+  console.log(message);
+  process.exit(0);
+});
+program.ports.generatedFiles.subscribe(function(object: any) {
+  const path = object.path;
+  const contents = object.contents;
+
+  fs.writeFileSync(path, contents);
+});
+
+program.ports.parsingError.subscribe(function(errorString: string) {
+  console.error(errorString);
+  process.exit(1);
+});
+
+program.ports.requestReadSourceFiles.subscribe((sourceFilePaths: string[]) => {
+  const missingFiles = sourceFilePaths.filter(
+    sourcePath => !fs.existsSync(sourcePath)
   );
 
-  let app = Elm.Main.worker({ elmModuleFileContents });
-  app.ports.generatedFiles.subscribe(function(typescriptDeclarationFile: any) {
-    fs.writeFileSync(tsDeclarationPath, typescriptDeclarationFile);
-  });
-
-  app.ports.parsingError.subscribe(function(errorString: string) {
-    console.error(`Error parsing input file ${inputPaths}\n`);
-    console.error(errorString);
+  if (missingFiles !== []) {
+    const elmModuleFileContents = sourceFilePaths.map(sourcePath =>
+      fs.readFileSync(sourcePath).toString()
+    );
+    program.ports.readSourceFiles.send(elmModuleFileContents);
+  } else {
+    console.error(`Could not find input file(s) ${missingFiles}`);
     process.exit(1);
-  });
-} else {
-  console.error(`Could not find input file(s) ${missingFiles}`);
-  process.exit(1);
-}
+  }
+});

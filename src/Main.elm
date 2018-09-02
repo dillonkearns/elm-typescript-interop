@@ -1,9 +1,31 @@
 port module Main exposing (Flags, Model, crashOrOutputString, generatedFiles, init, main, output, parsingError, update, workaround)
 
+import Cli.Option as Option
+import Cli.OptionsParser as OptionsParser exposing (with)
+import Cli.Program
 import Json.Decode exposing (..)
 import TypeScript.Data.Program
 import TypeScript.Generator
 import TypeScript.Parser
+
+
+type alias CliOptions =
+    { outputPath : String
+    , sourceFilePaths : List String
+    }
+
+
+programConfig : Cli.Program.Config CliOptions
+programConfig =
+    Cli.Program.config { version = "0.0.4" }
+        |> Cli.Program.add
+            (OptionsParser.build CliOptions
+                |> with
+                    (Option.requiredKeywordArg "output")
+                |> OptionsParser.withDoc "initialize a git repository"
+                |> OptionsParser.withRestArgs
+                    (Option.restArgs "SOURCE FILES")
+            )
 
 
 
@@ -20,19 +42,15 @@ type alias Model =
     ()
 
 
-type alias Flags =
-    { elmModuleFileContents : List String }
-
-
-output : List String -> Cmd msg
-output elmModuleFileContents =
+output : List String -> String -> Cmd msg
+output elmModuleFileContents tsDeclarationPath =
     elmModuleFileContents
         |> TypeScript.Parser.parse
-        |> crashOrOutputString
+        |> crashOrOutputString tsDeclarationPath
 
 
-crashOrOutputString : Result String TypeScript.Data.Program.Program -> Cmd msg
-crashOrOutputString result =
+crashOrOutputString : String -> Result String TypeScript.Data.Program.Program -> Cmd msg
+crashOrOutputString tsDeclarationPath result =
     case result of
         Ok elmProgram ->
             let
@@ -42,7 +60,10 @@ crashOrOutputString result =
             in
             case tsCode of
                 Ok generatedTsCode ->
-                    generatedFiles generatedTsCode
+                    generatedFiles
+                        { path = tsDeclarationPath
+                        , contents = generatedTsCode
+                        }
 
                 Err errorMessage ->
                     parsingError errorMessage
@@ -51,26 +72,54 @@ crashOrOutputString result =
             parsingError errorMessage
 
 
-init : Flags -> ( Model, Cmd msg )
-init flags =
-    () ! [ output flags.elmModuleFileContents ]
+init : Flags -> CliOptions -> ( Model, Cmd msg )
+init flags cliOptions =
+    ( (), requestReadSourceFiles cliOptions.sourceFilePaths )
 
 
-update : msg -> Model -> ( Model, Cmd msg )
-update msg model =
-    model ! []
+update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
+update cliOptions msg model =
+    case msg of
+        ReadSourceFiles sourceFileContents ->
+            ( model, output sourceFileContents cliOptions.outputPath )
 
 
-main : Program Flags Model msg
+type Msg
+    = ReadSourceFiles (List String)
+
+
+type alias Flags =
+    Cli.Program.FlagsIncludingArgv {}
+
+
+main : Cli.Program.StatefulProgram Model Msg CliOptions {}
 main =
-    Platform.programWithFlags
-        { init = init
+    Cli.Program.stateful
+        { printAndExitFailure = printAndExitFailure
+        , printAndExitSuccess = printAndExitSuccess
+        , init = init
+        , config = programConfig
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = \_ -> readSourceFiles ReadSourceFiles
         }
 
 
-port generatedFiles : String -> Cmd msg
+port generatedFiles : { path : String, contents : String } -> Cmd msg
 
 
 port parsingError : String -> Cmd msg
+
+
+port requestReadSourceFiles : List String -> Cmd msg
+
+
+port readSourceFiles : (List String -> msg) -> Sub msg
+
+
+port print : String -> Cmd msg
+
+
+port printAndExitFailure : String -> Cmd msg
+
+
+port printAndExitSuccess : String -> Cmd msg
