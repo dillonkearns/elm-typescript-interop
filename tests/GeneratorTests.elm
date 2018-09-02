@@ -1,6 +1,6 @@
 module GeneratorTests exposing (suite)
 
-import Ast.Statement
+import Ast.Expression
 import Dict
 import Expect
 import Test exposing (Test, describe, test)
@@ -14,7 +14,7 @@ suite =
         [ describe "port"
             [ test "outbound port" <|
                 \() ->
-                    Port.Port "hello" Port.Outbound (Ast.Statement.TypeConstructor [ "String" ] [])
+                    Port.Port "hello" Port.Outbound (Ast.Expression.TypeConstructor [ "String" ] [])
                         |> TypeScript.Generator.generatePort Dict.empty
                         |> Expect.equal
                             (Ok
@@ -24,7 +24,7 @@ suite =
                             )
             , test "inbound port" <|
                 \() ->
-                    Port.Port "reply" Port.Inbound (Ast.Statement.TypeConstructor [ "Int" ] [])
+                    Port.Port "reply" Port.Inbound (Ast.Expression.TypeConstructor [ "Int" ] [])
                         |> TypeScript.Generator.generatePort Dict.empty
                         |> Expect.equal
                             (Ok

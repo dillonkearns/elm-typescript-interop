@@ -1,8 +1,13 @@
-port module Main exposing (..)
+port module Main exposing (AliasForBool, Flags, Model, emptyIncomingMessage, generatedFiles, getMaybe, inbound, incomingJsonValue, init, main, outgoingArray, outgoingBoolAlias, outgoingJsonValues, outgoingList, outgoingRecord, parsingError, sendTuple, update)
 
 import Array
 import Json.Decode as Decode
 import Json.Encode
+
+
+
+-- it shouldn't fail because there are line-comments
+{- or block comments -}
 
 
 type alias Model =
@@ -19,6 +24,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd msg )
 init flags =
+    -- this shouldn't cause parsing to fail!
     () ! []
 
 

@@ -3,6 +3,11 @@ port module WithFlags exposing (main)
 import Html exposing (..)
 
 
+
+-- it shouldn't fail because there are line-comments
+{- or block comments -}
+
+
 type Msg
     = NoOp
 

@@ -1,6 +1,6 @@
 module TypeScript.Data.Port exposing (Direction(Inbound, Outbound), Port(Port))
 
-import Ast.Statement
+import Ast.Expression
 
 
 type Direction
@@ -9,4 +9,4 @@ type Direction
 
 
 type Port
-    = Port String Direction Ast.Statement.Type
+    = Port String Direction Ast.Expression.Type

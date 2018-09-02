@@ -1,8 +1,8 @@
 module TypeScript.Data.Aliases exposing (Aliases)
 
-import Ast.Statement
+import Ast.Expression
 import Dict exposing (Dict)
 
 
 type alias Aliases =
-    Dict (List String) Ast.Statement.Type
+    Dict (List String) Ast.Expression.Type

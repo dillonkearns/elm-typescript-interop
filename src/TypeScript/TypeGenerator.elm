@@ -1,15 +1,27 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
-import Ast.Statement exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
+import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Dict
 import Result.Extra
 import TypeScript.Data.Aliases exposing (Aliases)
 
 
-toTsType : Aliases -> Ast.Statement.Type -> Result String String
+toTsType : Aliases -> Ast.Expression.Type -> Result String String
 toTsType aliases elmType =
     case elmType of
-        TypeConstructor typeName [] ->
+        TypeConstructor [ "List" ] [ listType ] ->
+            listTypeString aliases listType
+
+        TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
+            listTypeString aliases arrayType
+
+        TypeConstructor [ "Array" ] [ arrayType ] ->
+            listTypeString aliases arrayType
+
+        TypeConstructor [ "Maybe" ] [ maybeType ] ->
+            toTsType aliases maybeType |> appendStringIfOk " | null"
+
+        TypeConstructor typeName _ ->
             case typeName of
                 [ "Json", "Decode", "Value" ] ->
                     Ok "any"
@@ -25,18 +37,6 @@ toTsType aliases elmType =
 
                 primitiveOrAliasTypeName ->
                     primitiveOrTypeAlias aliases primitiveOrAliasTypeName
-
-        TypeConstructor [ "List" ] [ listType ] ->
-            listTypeString aliases listType
-
-        TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
-            listTypeString aliases arrayType
-
-        TypeConstructor [ "Array" ] [ arrayType ] ->
-            listTypeString aliases arrayType
-
-        TypeConstructor [ "Maybe" ] [ maybeType ] ->
-            toTsType aliases maybeType |> appendStringIfOk " | null"
 
         TypeTuple [] ->
             Ok "null"
@@ -65,17 +65,17 @@ toTsType aliases elmType =
                             ++ " }"
                     )
 
-        _ ->
-            Err "Unhandled"
+        thing ->
+            Err ("Unhandled thing: " ++ toString thing)
 
 
-generateRecordPair : Aliases -> ( String, Ast.Statement.Type ) -> Result String String
+generateRecordPair : Aliases -> ( String, Ast.Expression.Type ) -> Result String String
 generateRecordPair aliases ( recordKey, recordType ) =
     toTsType aliases recordType
         |> Result.map (\value -> recordKey ++ ": " ++ value)
 
 
-listTypeString : Aliases -> Ast.Statement.Type -> Result String String
+listTypeString : Aliases -> Ast.Expression.Type -> Result String String
 listTypeString aliases listType =
     toTsType aliases listType
         |> appendStringIfOk "[]"

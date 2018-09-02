@@ -77,8 +77,9 @@ elmModuleNamespace aliases main =
 }"""
                 |> Ok
 
-        _ ->
-            Err "Error"
+        ( result1, result2 ) ->
+            Result.Extra.combine [ result1, result2 ]
+                |> Result.map (\_ -> "")
 
 
 generatePorts : Aliases -> List Port.Port -> Result String String

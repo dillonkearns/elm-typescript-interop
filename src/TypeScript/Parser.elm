@@ -1,7 +1,7 @@
 module TypeScript.Parser exposing (aliasOrNothing, extractAliases, extractMain, extractModuleName, extractPort, flagsType, moduleDeclaration, parse, parseSingle, programFlagType, statements, toProgram)
 
 import Ast
-import Ast.Statement exposing (..)
+import Ast.Expression exposing (..)
 import Dict
 import Result.Extra
 import TypeScript.Data.Aliases exposing (Aliases)
@@ -9,7 +9,7 @@ import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
 
-extractPort : Ast.Statement.Statement -> Maybe Port
+extractPort : Ast.Expression.Statement -> Maybe Port
 extractPort statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
@@ -22,7 +22,7 @@ extractPort statement =
             Nothing
 
 
-toProgram : List (List Ast.Statement.Statement) -> Result String TypeScript.Data.Program.Program
+toProgram : List (List Ast.Expression.Statement) -> Result String TypeScript.Data.Program.Program
 toProgram statements =
     let
         ports =
@@ -38,7 +38,7 @@ toProgram statements =
         (flagsType statements)
 
 
-flagsType : List (List Ast.Statement.Statement) -> Result String Main
+flagsType : List (List Ast.Expression.Statement) -> Result String Main
 flagsType statements =
     let
         mainCandidates =
@@ -56,7 +56,7 @@ flagsType statements =
             Err ("Multiple mains with type annotations found: " ++ toString multipleMains)
 
 
-extractMain : List Ast.Statement.Statement -> Maybe Main
+extractMain : List Ast.Expression.Statement -> Maybe Main
 extractMain statements =
     let
         maybeFlagsType =
@@ -70,7 +70,7 @@ extractMain statements =
     maybeFlagsType |> Maybe.map (\flagsType -> { moduleName = moduleName, flagsType = flagsType })
 
 
-extractModuleName : List Ast.Statement.Statement -> List String
+extractModuleName : List Ast.Expression.Statement -> List String
 extractModuleName statements =
     statements
         |> List.filterMap moduleDeclaration
@@ -78,7 +78,7 @@ extractModuleName statements =
         |> Maybe.withDefault []
 
 
-moduleDeclaration : Ast.Statement.Statement -> Maybe (List String)
+moduleDeclaration : Ast.Expression.Statement -> Maybe (List String)
 moduleDeclaration statement =
     case statement of
         ModuleDeclaration moduleName _ ->
@@ -87,21 +87,21 @@ moduleDeclaration statement =
         PortModuleDeclaration moduleName _ ->
             Just moduleName
 
-        EffectModuleDeclaration moduleName _ _ ->
+        EffectsModuleDeclaration moduleName _ _ ->
             Just moduleName
 
         _ ->
             Nothing
 
 
-extractAliases : List Ast.Statement.Statement -> Aliases
+extractAliases : List Ast.Expression.Statement -> Aliases
 extractAliases statements =
     statements
         |> List.filterMap aliasOrNothing
         |> Dict.fromList
 
 
-aliasOrNothing : Ast.Statement.Statement -> Maybe ( List String, Ast.Statement.Type )
+aliasOrNothing : Ast.Expression.Statement -> Maybe ( List String, Ast.Expression.Type )
 aliasOrNothing statement =
     case statement of
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
@@ -111,14 +111,14 @@ aliasOrNothing statement =
             Nothing
 
 
-programFlagType : Ast.Statement.Statement -> Maybe (Maybe Ast.Statement.Type)
+programFlagType : Ast.Expression.Statement -> Maybe (Maybe Ast.Expression.Type)
 programFlagType statement =
     case statement of
         FunctionTypeDeclaration "main" mainSubtree ->
             case mainSubtree of
                 TypeConstructor [ "Program" ] (flagsType :: _) ->
                     case flagsType of
-                        TypeConstructor [ "Never" ] [] ->
+                        TypeConstructor [ "Never" ] _ ->
                             Just Nothing
 
                         _ ->
