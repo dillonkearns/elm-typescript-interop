@@ -19,7 +19,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@types/minimist": "^1.2.0",
-    "@types/node": "^8.0.19",
+    "@types/node": "^10.9.4",
     "elm-test": "^0.18.12",
     "elm-webpack-loader": "^4.3.1",
     "ts-loader": "^2.3.2",
