@@ -1,4 +1,4 @@
-port module WithFlags exposing (main)
+port module Main exposing (main)
 
 import Html exposing (..)
 
