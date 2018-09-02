@@ -106,7 +106,7 @@ lookupAlias : Aliases -> List String -> Result String String
 lookupAlias aliases aliasName =
     case
         aliases
-            |> Dict.get aliasName
+            |> lookupAliasEntry aliasName
             |> Maybe.map (toTsType aliases)
     of
         Just foundTsTypeName ->
@@ -120,6 +120,34 @@ lookupAlias aliases aliasName =
             ]
                 |> String.Interpolate.interpolate "Alias `{0}` not found. Known aliases:\n{1}"
                 |> Err
+
+
+lookupAliasEntry : List String -> Aliases -> Maybe Ast.Expression.Type
+lookupAliasEntry aliasName aliases =
+    case
+        aliases
+            |> Dict.get aliasName
+    of
+        Nothing ->
+            case aliasName |> List.reverse |> List.head of
+                Just unqualifiedName ->
+                    aliases
+                        |> Dict.toList
+                        |> List.filterMap
+                            (\( moduleName, expression ) ->
+                                if Just unqualifiedName == (moduleName |> List.reverse |> List.head) then
+                                    Just expression
+
+                                else
+                                    Nothing
+                            )
+                        |> List.head
+
+                Nothing ->
+                    Nothing
+
+        Just something ->
+            Just something
 
 
 elmPrimitiveToTs : String -> Maybe String

@@ -207,12 +207,14 @@ main =
                 """
                 ]
                     |> TypeScript.Parser.statements
+                    |> Result.map (List.map TypeScript.Parser.moduleStatementsFor)
+                    |> Result.map (List.map TypeScript.Parser.extractAliasesNew)
                     |> Result.map List.concat
-                    |> Result.map TypeScript.Parser.extractAliases
+                    |> Result.map Dict.fromList
                     |> Expect.equal
                         (Ok
                             (Dict.fromList
-                                [ ( [ "AliasForString" ]
+                                [ ( [ "Main", "AliasForString" ]
                                   , TypeConstructor [ "String" ] []
                                   )
                                 ]

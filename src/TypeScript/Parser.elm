@@ -1,10 +1,10 @@
-module TypeScript.Parser exposing (aliasOrNothing, extractAliases, extractMain, extractModuleName, extractPort, flagsType, moduleDeclaration, parse, parseSingle, programFlagType, statements, toProgram)
+module TypeScript.Parser exposing (extractAliasesNew, extractMain, extractModuleName, extractPort, flagsType, moduleDeclaration, moduleStatementsFor, parse, parseSingle, programFlagType, statements, toProgram)
 
 import Ast
 import Ast.Expression exposing (..)
 import Dict
 import Result.Extra
-import TypeScript.Data.Aliases exposing (Aliases)
+import TypeScript.Data.Aliases exposing (Aliases, AliasesNew)
 import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
@@ -28,14 +28,35 @@ toProgram statements =
         ports =
             List.filterMap extractPort flatStatements
 
-        aliases =
-            extractAliases flatStatements
+        aliasesNew =
+            statements
+                |> List.map moduleStatementsFor
+                |> List.map extractAliasesNew
+                |> List.concat
+                |> Dict.fromList
 
         flatStatements =
             List.concat statements
     in
-    Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
+    Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliasesNew ports)
         (flagsType statements)
+
+
+type alias ModuleStatements =
+    { moduleName : List String
+    , statements : List Ast.Expression.Statement
+    }
+
+
+moduleStatementsFor : List Statement -> ModuleStatements
+moduleStatementsFor statements =
+    let
+        moduleName =
+            extractModuleName statements
+    in
+    { moduleName = moduleName
+    , statements = statements
+    }
 
 
 flagsType : List (List Ast.Expression.Statement) -> Result String Main
@@ -94,18 +115,21 @@ moduleDeclaration statement =
             Nothing
 
 
-extractAliases : List Ast.Expression.Statement -> Aliases
-extractAliases statements =
-    statements
-        |> List.filterMap aliasOrNothing
-        |> Dict.fromList
+extractAliasesNew : ModuleStatements -> AliasesNew
+extractAliasesNew moduleStatements =
+    moduleStatements.statements
+        |> List.filterMap (aliasOrNothingNew moduleStatements.moduleName)
 
 
-aliasOrNothing : Ast.Expression.Statement -> Maybe ( List String, Ast.Expression.Type )
-aliasOrNothing statement =
+type alias UnqualifiedModuleName =
+    List String
+
+
+aliasOrNothingNew : UnqualifiedModuleName -> Ast.Expression.Statement -> Maybe ( List String, Ast.Expression.Type )
+aliasOrNothingNew moduleName statement =
     case statement of
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
-            Just ( aliasName, aliasType )
+            Just ( moduleName ++ aliasName, aliasType )
 
         _ ->
             Nothing
