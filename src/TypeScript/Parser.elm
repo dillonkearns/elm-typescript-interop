@@ -34,6 +34,7 @@ toProgram statements =
                 |> List.map extractAliasesNew
                 |> List.concat
                 |> Dict.fromList
+                |> TypeScript.Data.Aliases.aliases
 
         flatStatements =
             List.concat statements

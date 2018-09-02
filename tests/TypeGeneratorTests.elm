@@ -4,6 +4,7 @@ import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Dict
 import Expect
 import Test exposing (Test, describe, test)
+import TypeScript.Data.Aliases
 import TypeScript.TypeGenerator
 
 
@@ -89,16 +90,20 @@ suite =
                 \() ->
                     TypeConstructor [ "MyAlias" ]
                         []
-                        |> TypeScript.TypeGenerator.toTsType (Dict.fromList [ ( [ "MyAlias" ], TypeConstructor [ "Bool" ] [] ) ])
+                        |> TypeScript.TypeGenerator.toTsType
+                            (Dict.fromList [ ( [ "MyAlias" ], TypeConstructor [ "Bool" ] [] ) ]
+                                |> TypeScript.Data.Aliases.aliases
+                            )
                         |> expectOkValue "boolean"
             ]
         ]
 
 
+expectOkValue : a -> Result error a -> Expect.Expectation
 expectOkValue value =
     Expect.equal (Ok value)
 
 
 toTsTypeNoAlias : Type -> Result String String
 toTsTypeNoAlias =
-    TypeScript.TypeGenerator.toTsType Dict.empty
+    TypeScript.TypeGenerator.toTsType (TypeScript.Data.Aliases.aliases Dict.empty)

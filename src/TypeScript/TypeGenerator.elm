@@ -1,9 +1,7 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
-import Dict
 import Result.Extra
-import String.Interpolate
 import TypeScript.Data.Aliases exposing (Aliases)
 
 
@@ -96,58 +94,20 @@ primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
                     Ok primitiveNameForTs
 
                 Nothing ->
-                    lookupAlias aliases [ singleName ]
+                    case TypeScript.Data.Aliases.lookupAlias aliases [ singleName ] of
+                        Ok foundAliasExpression ->
+                            toTsType aliases foundAliasExpression
+
+                        Err errorString ->
+                            Err errorString
 
         listName ->
-            lookupAlias aliases listName
+            case TypeScript.Data.Aliases.lookupAlias aliases listName of
+                Ok foundAliasExpression ->
+                    toTsType aliases foundAliasExpression
 
-
-lookupAlias : Aliases -> List String -> Result String String
-lookupAlias aliases aliasName =
-    case
-        aliases
-            |> lookupAliasEntry aliasName
-            |> Maybe.map (toTsType aliases)
-    of
-        Just foundTsTypeName ->
-            foundTsTypeName
-
-        Nothing ->
-            [ String.join "." aliasName
-            , Dict.keys aliases
-                |> List.map (String.join ".")
-                |> String.join ", "
-            ]
-                |> String.Interpolate.interpolate "Alias `{0}` not found. Known aliases:\n{1}"
-                |> Err
-
-
-lookupAliasEntry : List String -> Aliases -> Maybe Ast.Expression.Type
-lookupAliasEntry aliasName aliases =
-    case
-        aliases
-            |> Dict.get aliasName
-    of
-        Nothing ->
-            case aliasName |> List.reverse |> List.head of
-                Just unqualifiedName ->
-                    aliases
-                        |> Dict.toList
-                        |> List.filterMap
-                            (\( moduleName, expression ) ->
-                                if Just unqualifiedName == (moduleName |> List.reverse |> List.head) then
-                                    Just expression
-
-                                else
-                                    Nothing
-                            )
-                        |> List.head
-
-                Nothing ->
-                    Nothing
-
-        Just something ->
-            Just something
+                Err errorString ->
+                    Err errorString
 
 
 elmPrimitiveToTs : String -> Maybe String
