@@ -24,12 +24,15 @@ program.ports.parsingError.subscribe(function(errorString: string) {
   process.exit(1);
 });
 
+function isEmpty<T>(list: Array<T>) {
+  return list.length === 0;
+}
 program.ports.requestReadSourceFiles.subscribe((sourceFilePaths: string[]) => {
   const missingFiles = sourceFilePaths.filter(
     sourcePath => !fs.existsSync(sourcePath)
   );
 
-  if (missingFiles !== []) {
+  if (isEmpty(missingFiles)) {
     const elmModuleFileContents = sourceFilePaths.map(sourcePath =>
       fs.readFileSync(sourcePath).toString()
     );
