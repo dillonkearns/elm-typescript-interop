@@ -32,7 +32,21 @@ echo 'Confirming that generated code is unchanged...'
 git diff --exit-code -- 'tests-approval/expectSuccess/**/*.d.ts' || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
 
 
+echo 'RUNNING ERROR CASES...'
+cd $projectRoot/tests-approval/expectError
 
+for testFolder in *
+do
+  echo "Testing expected error for $testFolder folder"
+  cd $testFolder
+  # outputBase=`basename $testFolder`
+  # outputPath=../../tests/e2e/output/$outputBase.d.ts
+  $binary src/Main.elm &> output.approval.txt && (echo "Expected $testFolder to have non-zero exit code but it succeeded."; exit 1)
+  cd -
+done
+
+echo 'Confirming that error messages are unchanged...'
+git diff --exit-code -- './**/output.approval.txt' || (echo 'FAILURE' && echo 'error message output has changed. Commit changes to approve.' && exit 1)
 
 
 echo 'SUCCESS'
