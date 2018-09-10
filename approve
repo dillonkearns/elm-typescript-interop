@@ -2,9 +2,6 @@
 
 set -o errexit
 
-# remove test output from before
-rm -rf tests/e2e/output/*
-
 npm run build
 binary=./bin/elm-typescript-interop
 
