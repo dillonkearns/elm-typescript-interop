@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-bash --version
+echo BASH_VERSION $BASH_VERSION
 
 set -o errexit
 
@@ -18,15 +18,13 @@ do
 done
 
 echo "Checking that all TypeScript declaration files are valid..."
-for declarationFile in $(find test_data -type f -name "*.d.ts"); do echo $declarationFile; tsc $declarationFile; done
+declarationFiles=$(find test_data -type f -name "*.d.ts")
+tsc $declarationFiles --out /dev/null
 
 # echo 'Ensuring documentation is valid...'
 # elm make --docs=documentation.json
 
 echo 'Confirming that generated code is unchanged...'
 git diff --exit-code -- 'test_data/**/*.d.ts' || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
-
-
-# npm run approve-compilation
 
 echo 'SUCCESS'
