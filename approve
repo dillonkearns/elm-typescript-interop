@@ -2,11 +2,11 @@
 
 set -o errexit
 
-npm run build
-binary=./bin/elm-typescript-interop
-
 # remove test output from before
 rm -rf tests/e2e/output/*
+
+npm run build
+binary=./bin/elm-typescript-interop
 
 for testFolder in ./test_data/*
 do
