@@ -10,18 +10,19 @@ do
   echo "Testing generator with $testFolder folder"
   cd $testFolder
   outputBase=`basename $testFolder`
-  outputPath=../../tests/e2e/output/$outputBase.d.ts
-  $binary $testFolder/src/*.elm --output $outputPath
-  echo "Checking that $outputPath is a valid typescript declaration file..."
-  tsc $outputPath
+  # outputPath=../../tests/e2e/output/$outputBase.d.ts
+  $binary src/Main.elm
   cd ../..
 done
+
+echo "Checking that all TypeScript declaration files are valid..."
+for declarationFile in $(find test_data -type f -name "*.d.ts"); do echo $declarationFile; tsc $declarationFile; done
 
 # echo 'Ensuring documentation is valid...'
 # elm make --docs=documentation.json
 
 echo 'Confirming that generated code is unchanged...'
-git diff --exit-code -- tests/e2e/output || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
+git diff --exit-code -- 'test_data/**/*.d.ts' || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
 
 
 # npm run approve-compilation

@@ -4,14 +4,14 @@ import Cli.Option as Option
 import Cli.OptionsParser as OptionsParser exposing (with)
 import Cli.Program
 import Json.Decode exposing (..)
+import OutputPath
 import TypeScript.Data.Program
 import TypeScript.Generator
 import TypeScript.Parser
 
 
 type alias CliOptions =
-    { outputPath : String
-    , mainFiles : List String
+    { mainFiles : List String
     }
 
 
@@ -20,8 +20,6 @@ programConfig =
     Cli.Program.config { version = "0.0.4" }
         |> Cli.Program.add
             (OptionsParser.build CliOptions
-                |> with
-                    (Option.requiredKeywordArg "output")
                 |> OptionsParser.withDoc "generates TypeScript declaration files (.d.ts) based on the flags and ports you define within your Elm app."
                 |> OptionsParser.withRestArgs
                     (Option.restArgs "MAIN FILES")
@@ -94,7 +92,27 @@ update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
 update cliOptions msg model =
     case msg of
         ReadSourceFiles sourceFileContents ->
-            ( model, output sourceFileContents cliOptions.outputPath )
+            let
+                outputPath =
+                    case cliOptions.mainFiles of
+                        [ singleMainFile ] ->
+                            singleMainFile
+                                |> OutputPath.declarationPathFromMainElmPath
+
+                        _ ->
+                            Debug.crash "Currently only a single main file is supported..."
+            in
+            case Ok outputPath of
+                Ok _ ->
+                    ( model, output sourceFileContents outputPath )
+
+                Err error ->
+                    ( model
+                    , printAndExitFailure
+                        ("I couldn't understand the path to your main Elm file. I expect something like `src/Main.elm`: "
+                            ++ error
+                        )
+                    )
 
 
 type Msg

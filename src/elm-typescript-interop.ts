@@ -1,6 +1,7 @@
 const Elm = require("./Main.elm");
 import * as fs from "fs";
 import * as glob from "glob";
+import * as path from "path";
 
 const elmProjectConfig = JSON.parse(
   fs.readFileSync("./elm-package.json").toString()
@@ -20,10 +21,15 @@ program.ports.printAndExitSuccess.subscribe((message: string) => {
   process.exit(0);
 });
 program.ports.generatedFiles.subscribe(function(object: any) {
-  const path = object.path;
+  const filePath = object.path;
   const contents = object.contents;
 
-  fs.writeFileSync(path, contents);
+  const outputFolder = path.dirname(filePath);
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder);
+  }
+
+  fs.writeFileSync(filePath, contents);
 });
 
 program.ports.parsingError.subscribe(function(errorString: string) {
