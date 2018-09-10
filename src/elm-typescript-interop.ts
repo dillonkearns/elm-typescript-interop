@@ -2,7 +2,13 @@ const Elm = require("./Main.elm");
 import * as fs from "fs";
 import * as glob from "glob";
 
-const program: any = Elm.Main.worker({ argv: process.argv });
+const elmProjectConfig = JSON.parse(
+  fs.readFileSync("./elm-package.json").toString()
+);
+const program: any = Elm.Main.worker({
+  argv: process.argv,
+  elmProjectConfig: elmProjectConfig
+});
 program.ports.print.subscribe((message: string) => console.log(message));
 program.ports.printAndExitFailure.subscribe((message: string) => {
   console.log(message);

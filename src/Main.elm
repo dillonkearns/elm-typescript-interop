@@ -72,9 +72,22 @@ crashOrOutputString tsDeclarationPath result =
             parsingError errorMessage
 
 
+elmProjectConfigDecoder : Decoder (List String)
+elmProjectConfigDecoder =
+    Json.Decode.field "source-directories" (Json.Decode.list Json.Decode.string)
+
+
 init : Flags -> CliOptions -> ( Model, Cmd msg )
 init flags cliOptions =
-    ( (), requestReadSourceDirectories [ "src" ] )
+    case
+        flags.elmProjectConfig
+            |> Json.Decode.decodeValue elmProjectConfigDecoder
+    of
+        Ok sourceDirectories ->
+            ( (), requestReadSourceDirectories sourceDirectories )
+
+        Err error ->
+            ( (), printAndExitFailure ("Couldn't parse elm project configuration file: " ++ error) )
 
 
 update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
@@ -88,11 +101,16 @@ type Msg
     = ReadSourceFiles (List String)
 
 
+type alias FlagsExtension =
+    { elmProjectConfig : Json.Decode.Value
+    }
+
+
 type alias Flags =
-    Cli.Program.FlagsIncludingArgv {}
+    Cli.Program.FlagsIncludingArgv FlagsExtension
 
 
-main : Cli.Program.StatefulProgram Model Msg CliOptions {}
+main : Cli.Program.StatefulProgram Model Msg CliOptions FlagsExtension
 main =
     Cli.Program.stateful
         { printAndExitFailure = printAndExitFailure
