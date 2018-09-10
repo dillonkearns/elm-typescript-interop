@@ -74,7 +74,7 @@ crashOrOutputString tsDeclarationPath result =
 
 init : Flags -> CliOptions -> ( Model, Cmd msg )
 init flags cliOptions =
-    ( (), requestReadSourceFiles cliOptions.sourceFilePaths )
+    ( (), requestReadSourceFiles [ "src" ] )
 
 
 update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )

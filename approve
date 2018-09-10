@@ -3,16 +3,18 @@
 set -o errexit
 
 npm run build
-binary=./bin/elm-typescript-interop
+binary=../../bin/elm-typescript-interop
 
 for testFolder in ./test_data/*
 do
   echo "Testing generator with $testFolder folder"
+  cd $testFolder
   outputBase=`basename $testFolder`
-  outputPath=tests/e2e/output/$outputBase.d.ts
+  outputPath=../../tests/e2e/output/$outputBase.d.ts
   $binary $testFolder/src/*.elm --output $outputPath
   echo "Checking that $outputPath is a valid typescript declaration file..."
   tsc $outputPath
+  cd ../..
 done
 
 # echo 'Ensuring documentation is valid...'

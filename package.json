@@ -29,6 +29,8 @@
     "elm-typescript-interop": "bin/elm-typescript-interop"
   },
   "dependencies": {
-    "elm": "^0.18.0"
+    "@types/glob": "^5.0.35",
+    "elm": "^0.18.0",
+    "glob": "^7.1.3"
   }
 }
