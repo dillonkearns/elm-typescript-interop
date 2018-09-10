@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+bash --version
+
 set -o errexit
 
 npm run build
