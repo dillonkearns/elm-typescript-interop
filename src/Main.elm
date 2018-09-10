@@ -11,7 +11,7 @@ import TypeScript.Parser
 
 
 type alias CliOptions =
-    { mainFiles : List String
+    { mainFile : String
     }
 
 
@@ -20,9 +20,8 @@ programConfig =
     Cli.Program.config { version = "0.0.4" }
         |> Cli.Program.add
             (OptionsParser.build CliOptions
+                |> with (Option.requiredPositionalArg "MAIN FILE")
                 |> OptionsParser.withDoc "generates TypeScript declaration files (.d.ts) based on the flags and ports you define within your Elm app."
-                |> OptionsParser.withRestArgs
-                    (Option.restArgs "MAIN FILES")
             )
 
 
@@ -94,25 +93,10 @@ update cliOptions msg model =
         ReadSourceFiles sourceFileContents ->
             let
                 outputPath =
-                    case cliOptions.mainFiles of
-                        [ singleMainFile ] ->
-                            singleMainFile
-                                |> OutputPath.declarationPathFromMainElmPath
-
-                        _ ->
-                            Debug.crash "Currently only a single main file is supported..."
+                    cliOptions.mainFile
+                        |> OutputPath.declarationPathFromMainElmPath
             in
-            case Ok outputPath of
-                Ok _ ->
-                    ( model, output sourceFileContents outputPath )
-
-                Err error ->
-                    ( model
-                    , printAndExitFailure
-                        ("I couldn't understand the path to your main Elm file. I expect something like `src/Main.elm`: "
-                            ++ error
-                        )
-                    )
+            ( model, output sourceFileContents outputPath )
 
 
 type Msg

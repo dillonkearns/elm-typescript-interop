@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- The `--output` keyword argument has been removed. The CLI will now just
+  put the TypeScript declaration file (`.d.ts`-file) in the correct location
+  for you. If you have a special use-case that requires the output to be different from this,
+  please ping me on Slack or open an issue to discuss. Most likely there won't be a need though.
+- Instead of passing a list of source files to the `elm-typescript-interop` CLI, it will now
+  read your `elm-package.json`. You will get an error if you don't run it from
+  your project root.
+- Instead of a list of source files, you pass the main Elm file you would like to generate
+  TypeScript type definitions for (this file should be the entry point for your Elm app that exposes
+  your app's `main` function of type `Program`).
+
 ## [0.0.5] - 2018-09-02
 
 ### Fixed
