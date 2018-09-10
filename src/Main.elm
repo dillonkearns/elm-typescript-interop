@@ -11,7 +11,7 @@ import TypeScript.Parser
 
 type alias CliOptions =
     { outputPath : String
-    , sourceFilePaths : List String
+    , mainFiles : List String
     }
 
 
@@ -22,9 +22,9 @@ programConfig =
             (OptionsParser.build CliOptions
                 |> with
                     (Option.requiredKeywordArg "output")
-                |> OptionsParser.withDoc "initialize a git repository"
+                |> OptionsParser.withDoc "generates TypeScript declaration files (.d.ts) based on the flags and ports you define within your Elm app."
                 |> OptionsParser.withRestArgs
-                    (Option.restArgs "SOURCE FILES")
+                    (Option.restArgs "MAIN FILES")
             )
 
 
