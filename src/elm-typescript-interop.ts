@@ -34,23 +34,25 @@ function flatten<T>(list: Array<Array<T>>): Array<T> {
   return empty.concat(...list);
 }
 
-program.ports.requestReadSourceFiles.subscribe((srcDirectories: string[]) => {
-  const missingDirectories = srcDirectories.filter(
-    sourcePath => !fs.existsSync(sourcePath)
-  );
-
-  if (isEmpty(missingDirectories)) {
-    const files = srcDirectories.map(srcDirectory =>
-      glob.sync(`${srcDirectory}/**/*.elm`, { sync: true })
+program.ports.requestReadSourceDirectories.subscribe(
+  (srcDirectories: string[]) => {
+    const missingDirectories = srcDirectories.filter(
+      sourcePath => !fs.existsSync(sourcePath)
     );
 
-    const flatFiles = flatten(files);
-    const elmModuleFileContents = flatFiles.map(sourcePath =>
-      fs.readFileSync(sourcePath).toString()
-    );
-    program.ports.readSourceFiles.send(elmModuleFileContents);
-  } else {
-    console.error(`Could not find src directories: ${missingDirectories}`);
-    process.exit(1);
+    if (isEmpty(missingDirectories)) {
+      const files = srcDirectories.map(srcDirectory =>
+        glob.sync(`${srcDirectory}/**/*.elm`, { sync: true })
+      );
+
+      const flatFiles = flatten(files);
+      const elmModuleFileContents = flatFiles.map(sourcePath =>
+        fs.readFileSync(sourcePath).toString()
+      );
+      program.ports.readSourceFiles.send(elmModuleFileContents);
+    } else {
+      console.error(`Could not find src directories: ${missingDirectories}`);
+      process.exit(1);
+    }
   }
-});
+);

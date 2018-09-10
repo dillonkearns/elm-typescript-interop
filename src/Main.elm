@@ -74,7 +74,7 @@ crashOrOutputString tsDeclarationPath result =
 
 init : Flags -> CliOptions -> ( Model, Cmd msg )
 init flags cliOptions =
-    ( (), requestReadSourceFiles [ "src" ] )
+    ( (), requestReadSourceDirectories [ "src" ] )
 
 
 update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
@@ -110,7 +110,7 @@ port generatedFiles : { path : String, contents : String } -> Cmd msg
 port parsingError : String -> Cmd msg
 
 
-port requestReadSourceFiles : List String -> Cmd msg
+port requestReadSourceDirectories : List String -> Cmd msg
 
 
 port readSourceFiles : (List String -> msg) -> Sub msg
