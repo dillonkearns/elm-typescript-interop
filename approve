@@ -8,7 +8,8 @@ npm run build
 projectRoot=`pwd`
 binary=$projectRoot/bin/elm-typescript-interop
 
-cd tests/approval/expectSuccess
+echo 'RUNNING SUCCESS CASES...'
+cd $projectRoot/tests-approval/expectSuccess
 
 for testFolder in *
 do
@@ -28,6 +29,10 @@ tsc $declarationFiles --out /dev/null
 # elm make --docs=documentation.json
 
 echo 'Confirming that generated code is unchanged...'
-git diff --exit-code -- 'tests/approval/expectSuccess/**/*.d.ts' || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
+git diff --exit-code -- 'tests-approval/expectSuccess/**/*.d.ts' || (echo 'FAILURE' && echo 'examples code has changed. Commit changes to approve.' && exit 1)
+
+
+
+
 
 echo 'SUCCESS'
