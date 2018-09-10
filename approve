@@ -13,7 +13,7 @@ do
   echo "Testing generator with $testFolder folder"
   outputBase=`basename $testFolder`
   outputPath=tests/e2e/output/$outputBase.d.ts
-  $binary $testFolder/*.elm --output $outputPath
+  $binary $testFolder/src/*.elm --output $outputPath
   echo "Checking that $outputPath is a valid typescript declaration file..."
   tsc $outputPath
 done
