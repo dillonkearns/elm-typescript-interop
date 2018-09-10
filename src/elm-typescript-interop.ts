@@ -3,19 +3,19 @@ import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
 
-let elmProjectConfig;
-try {
-  elmProjectConfig = JSON.parse(
-    fs.readFileSync("./elm-package.json").toString()
-  );
-} catch (err) {
-  if (err.code === "ENOENT") {
+const elmProjectConfig = elmConfigFile();
+
+function elmConfigFile(): object {
+  if (fs.existsSync("./elm-package.json")) {
+    return JSON.parse(fs.readFileSync("./elm-package.json").toString());
+  } else if (fs.existsSync("./elm.json")) {
+    return JSON.parse(fs.readFileSync("./elm.json").toString());
+  } else {
     console.error(
       "I couldn't find an `elm-package.json` file. Please run `elm-typescript-interop` from your Elm project's root folder."
     );
     process.exit(1);
-  } else {
-    throw err;
+    return {};
   }
 }
 const program: any = Elm.Main.worker({
