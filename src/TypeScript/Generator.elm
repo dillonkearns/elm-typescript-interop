@@ -2,7 +2,7 @@ module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort
 
 import ElmProjectConfig exposing (ElmVersion)
 import Result.Extra
-import String.Interpolate
+import String.Interpolate exposing (interpolate)
 import TypeScript.Data.Aliases exposing (Aliases)
 import TypeScript.Data.Port as Port
 import TypeScript.Data.Program as Program exposing (Main)
@@ -66,16 +66,14 @@ elmModuleNamespace elmVersion aliases main =
     in
     case ( embedAppendParamResult, fullscreenParamResult ) of
         ( Ok embedAppendParam, Ok fullscreenParam ) ->
-            "export namespace "
-                ++ moduleName
-                ++ """ {
-  export function fullscreen("""
-                ++ fullscreenParam
-                ++ """): App
-  export function embed(node: HTMLElement | null"""
-                ++ embedAppendParam
-                ++ """): App
+            interpolate """export namespace {0} {
+  export function fullscreen({1}): App
+  export function embed(node: HTMLElement | null{2}): App
 }"""
+                [ moduleName
+                , fullscreenParam
+                , embedAppendParam
+                ]
                 |> Ok
 
         ( result1, result2 ) ->
