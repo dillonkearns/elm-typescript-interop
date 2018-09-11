@@ -69,4 +69,45 @@ suite =
                     |> Decode.decodeString ElmProjectConfig.decoder
                     |> Expect.equal
                         (Err "I ran into a `fail` decoder: Unsupported elm-version value: `0.18.0`. I only support the exact value \"0.18.0 <= v < 0.19.0\".")
+        , test "Elm 0.19 config" <|
+            \() ->
+                """
+{
+    "type": "application",
+    "source-directories": [
+        "../src",
+        "src"
+    ],
+    "elm-version": "0.19.0",
+    "dependencies": {
+        "direct": {
+            "elm/browser": "1.0.0",
+            "elm/core": "1.0.0",
+            "elm/html": "1.0.0",
+            "elm/http": "1.0.0",
+            "elm/json": "1.0.0",
+            "elm/url": "1.0.0",
+            "elm-community/list-extra": "8.0.0",
+            "krisajenkins/remotedata": "5.0.0",
+            "lukewestby/elm-string-interpolate": "1.0.3"
+        },
+        "indirect": {
+            "elm/regex": "1.0.0",
+            "elm/time": "1.0.0",
+            "elm/virtual-dom": "1.0.0"
+        }
+    },
+    "test-dependencies": {
+        "direct": {},
+        "indirect": {}
+    }
+}
+              """
+                    |> Decode.decodeString ElmProjectConfig.decoder
+                    |> Expect.equal
+                        (Ok
+                            { sourceDirectories = [ "../src", "src" ]
+                            , elmVersion = ElmProjectConfig.Elm19
+                            }
+                        )
         ]
