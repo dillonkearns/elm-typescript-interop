@@ -1,4 +1,4 @@
-module ElmProjectConfig exposing (ElmProjectConfig, decoder)
+module ElmProjectConfig exposing (ElmProjectConfig, ElmVersion(..), decoder)
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -14,6 +14,8 @@ type ElmVersion
     | Elm19
 
 
-decoder : Decoder (List String)
+decoder : Decoder ElmProjectConfig
 decoder =
-    Decode.field "source-directories" (Decode.list Decode.string)
+    Decode.map2 ElmProjectConfig
+        (Decode.field "source-directories" (Decode.list Decode.string))
+        (Decode.succeed Elm18)

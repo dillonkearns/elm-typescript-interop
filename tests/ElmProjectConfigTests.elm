@@ -35,5 +35,10 @@ suite =
 }
               """
                     |> Decode.decodeString ElmProjectConfig.decoder
-                    |> Expect.equal (Ok [ "src", "src/vendor/elm-ast" ])
+                    |> Expect.equal
+                        (Ok
+                            { sourceDirectories = [ "src", "src/vendor/elm-ast" ]
+                            , elmVersion = ElmProjectConfig.Elm18
+                            }
+                        )
         ]
