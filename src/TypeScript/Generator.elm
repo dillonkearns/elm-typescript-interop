@@ -66,15 +66,27 @@ elmModuleNamespace elmVersion aliases main =
     in
     case ( embedAppendParamResult, fullscreenParamResult ) of
         ( Ok embedAppendParam, Ok fullscreenParam ) ->
-            interpolate """export namespace {0} {
+            case elmVersion of
+                ElmProjectConfig.Elm18 ->
+                    interpolate """export namespace {0} {
   export function fullscreen({1}): App
   export function embed(node: HTMLElement | null{2}): App
 }"""
-                [ moduleName
-                , fullscreenParam
-                , embedAppendParam
-                ]
-                |> Ok
+                        [ moduleName
+                        , fullscreenParam
+                        , embedAppendParam
+                        ]
+                        |> Ok
+
+                ElmProjectConfig.Elm19 ->
+                    interpolate """export namespace {0} {
+  export function init(options: { node: HTMLElement; {1} }): App
+}"""
+                        [ moduleName
+                        , fullscreenParam
+                        , embedAppendParam
+                        ]
+                        |> Ok
 
         ( result1, result2 ) ->
             Result.Extra.combine [ result1, result2 ]

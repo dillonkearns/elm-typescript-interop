@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Support for Elm 0.19! Just run the `elm-typescript-interop` CLI from the
+  directory with your `elm.json` file!
+
 ### Changed
 
 - The `--output` keyword argument has been removed. The CLI will now just
