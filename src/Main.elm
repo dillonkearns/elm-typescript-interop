@@ -3,6 +3,7 @@ port module Main exposing (Flags, Model, crashOrOutputString, generatedFiles, in
 import Cli.Option as Option
 import Cli.OptionsParser as OptionsParser exposing (with)
 import Cli.Program
+import ElmProjectConfig
 import Json.Decode exposing (..)
 import OutputPath
 import TypeScript.Data.Program
@@ -69,18 +70,13 @@ crashOrOutputString tsDeclarationPath result =
             parsingError errorMessage
 
 
-elmProjectConfigDecoder : Decoder (List String)
-elmProjectConfigDecoder =
-    Json.Decode.field "source-directories" (Json.Decode.list Json.Decode.string)
-
-
 init : Flags -> CliOptions -> ( Model, Cmd msg )
 init flags cliOptions =
     case
         flags.elmProjectConfig
-            |> Json.Decode.decodeValue elmProjectConfigDecoder
+            |> Json.Decode.decodeValue ElmProjectConfig.decoder
     of
-        Ok sourceDirectories ->
+        Ok { sourceDirectories } ->
             ( (), requestReadSourceDirectories sourceDirectories )
 
         Err error ->
