@@ -12,7 +12,7 @@ function elmConfigFile(): object {
     return JSON.parse(fs.readFileSync("./elm.json").toString());
   } else {
     console.error(
-      "I couldn't find an `elm-package.json` file. Please run `elm-typescript-interop` from your Elm project's root folder."
+      "I couldn't find an `elm.json` or `elm-package.json` file. Please run `elm-typescript-interop` from your Elm project's root folder."
     );
     process.exit(1);
     return {};

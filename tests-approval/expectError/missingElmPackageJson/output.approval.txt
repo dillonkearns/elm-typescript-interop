@@ -1,1 +1,1 @@
-I couldn't find an `elm-package.json` file. Please run `elm-typescript-interop` from your Elm project's root folder.
+I couldn't find an `elm.json` or `elm-package.json` file. Please run `elm-typescript-interop` from your Elm project's root folder.
