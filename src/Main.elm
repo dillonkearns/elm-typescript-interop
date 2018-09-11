@@ -3,7 +3,7 @@ port module Main exposing (Flags, Model, crashOrOutputString, generatedFiles, in
 import Cli.Option as Option
 import Cli.OptionsParser as OptionsParser exposing (with)
 import Cli.Program
-import ElmProjectConfig
+import ElmProjectConfig exposing (ElmVersion)
 import Json.Decode exposing (..)
 import OutputPath
 import TypeScript.Data.Program
@@ -44,17 +44,17 @@ output : ElmProjectConfig.ElmVersion -> List String -> String -> Cmd msg
 output elmVersion elmModuleFileContents tsDeclarationPath =
     elmModuleFileContents
         |> TypeScript.Parser.parse
-        |> crashOrOutputString tsDeclarationPath
+        |> crashOrOutputString elmVersion tsDeclarationPath
 
 
-crashOrOutputString : String -> Result String TypeScript.Data.Program.Program -> Cmd msg
-crashOrOutputString tsDeclarationPath result =
+crashOrOutputString : ElmVersion -> String -> Result String TypeScript.Data.Program.Program -> Cmd msg
+crashOrOutputString elmVersion tsDeclarationPath result =
     case result of
         Ok elmProgram ->
             let
                 tsCode =
                     elmProgram
-                        |> TypeScript.Generator.generate
+                        |> TypeScript.Generator.generate elmVersion
             in
             case tsCode of
                 Ok generatedTsCode ->

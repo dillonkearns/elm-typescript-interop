@@ -1,5 +1,6 @@
 module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
 
+import ElmProjectConfig exposing (ElmVersion)
 import Result.Extra
 import String.Interpolate
 import TypeScript.Data.Aliases exposing (Aliases)
@@ -38,8 +39,8 @@ prefix =
 export as namespace Elm"""
 
 
-elmModuleNamespace : Aliases -> Main -> Result String String
-elmModuleNamespace aliases main =
+elmModuleNamespace : ElmVersion -> Aliases -> Main -> Result String String
+elmModuleNamespace elmVersion aliases main =
     let
         fullscreenParamResult =
             case main.flagsType of
@@ -104,14 +105,14 @@ export interface App {
     """
 
 
-generate : Program.Program -> Result String String
-generate program =
+generate : ElmVersion -> Program.Program -> Result String String
+generate elmVersion program =
     case program of
         Program.ElmProgram main aliases ports ->
             case
                 [ Ok prefix
                 , generatePorts aliases ports
-                , elmModuleNamespace aliases main
+                , elmModuleNamespace elmVersion aliases main
                 ]
                     |> Result.Extra.combine
             of
