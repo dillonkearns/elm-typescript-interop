@@ -68,7 +68,7 @@ suite =
               """
                     |> Decode.decodeString ElmProjectConfig.decoder
                     |> Expect.equal
-                        (Err "I ran into a `fail` decoder: Unsupported elm-version value: `0.18.0`. I only support the exact value \"0.18.0 <= v < 0.19.0\".")
+                        (Err "I ran into a `fail` decoder: Unsupported elm-version value: `0.18.0`. I only support the exact values [\"0.18.0 <= v < 0.19.0\", \"0.19.0\"].")
         , test "Elm 0.19 config" <|
             \() ->
                 """

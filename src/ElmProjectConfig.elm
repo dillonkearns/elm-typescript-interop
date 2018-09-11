@@ -33,9 +33,11 @@ parseVersion18 versionString =
         Decode.succeed Elm19
 
     else
-        interpolate "Unsupported elm-version value: `{0}`. I only support the exact value {1}."
+        interpolate "Unsupported elm-version value: `{0}`. I only support the exact values [{1}]."
             [ versionString
-            , toString elm18VersionString
+            , [ elm18VersionString, elm19VersionString ]
+                |> List.map toString
+                |> String.join ", "
             ]
             |> Decode.fail
 
@@ -48,16 +50,3 @@ elm18VersionString =
 elm19VersionString : String
 elm19VersionString =
     "0.19.0"
-
-
-parseVersion19 : String -> Decoder ElmVersion
-parseVersion19 versionString =
-    if versionString == elm19VersionString then
-        Decode.succeed Elm19
-
-    else
-        interpolate "Unsupported elm-version value: `{0}`. I only support the exact value {1}."
-            [ versionString
-            , toString elm19VersionString
-            ]
-            |> Decode.fail
