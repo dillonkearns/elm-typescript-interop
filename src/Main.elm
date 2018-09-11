@@ -37,11 +37,11 @@ workaround =
 
 
 type alias Model =
-    ()
+    { elmVersion : ElmProjectConfig.ElmVersion }
 
 
-output : List String -> String -> Cmd msg
-output elmModuleFileContents tsDeclarationPath =
+output : ElmProjectConfig.ElmVersion -> List String -> String -> Cmd msg
+output elmVersion elmModuleFileContents tsDeclarationPath =
     elmModuleFileContents
         |> TypeScript.Parser.parse
         |> crashOrOutputString tsDeclarationPath
@@ -76,11 +76,11 @@ init flags cliOptions =
         flags.elmProjectConfig
             |> Json.Decode.decodeValue ElmProjectConfig.decoder
     of
-        Ok { sourceDirectories } ->
-            ( (), requestReadSourceDirectories sourceDirectories )
+        Ok { sourceDirectories, elmVersion } ->
+            ( { elmVersion = elmVersion }, requestReadSourceDirectories sourceDirectories )
 
         Err error ->
-            ( (), printAndExitFailure ("Couldn't parse elm project configuration file: " ++ error) )
+            ( { elmVersion = ElmProjectConfig.Elm18 }, printAndExitFailure ("Couldn't parse elm project configuration file: " ++ error) )
 
 
 update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
@@ -92,7 +92,7 @@ update cliOptions msg model =
                     cliOptions.mainFile
                         |> OutputPath.declarationPathFromMainElmPath
             in
-            ( model, output sourceFileContents outputPath )
+            ( model, output model.elmVersion sourceFileContents outputPath )
 
 
 type Msg
