@@ -35,7 +35,7 @@ toProgram parsedSourceFiles =
         ports =
             List.filterMap extractPort flatStatements
 
-        aliasesNew =
+        aliases =
             statements
                 |> List.map moduleStatementsFor
                 |> List.map extractAliasesNew
@@ -48,7 +48,7 @@ toProgram parsedSourceFiles =
     in
     parsedSourceFiles
         |> flagsType
-        |> (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliasesNew ports)
+        |> (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
         |> Ok
 
 
