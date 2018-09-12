@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.6] - 2018-09-12
+
 ### Added
 
 - Support for Elm 0.19! Just run the `elm-typescript-interop` CLI from the
@@ -21,16 +23,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   are not safe unless you do explicit type checking. You can read more about the
   `unknown` type (new in TypeScript 3.0) in these references:
   https://stackoverflow.com/a/51439876/383983, https://auth0.com/blog/typescript-3-exploring-tuples-the-unknown-type/
+- Instead of passing a list of source files to the `elm-typescript-interop` CLI, it will now
+  read your `elm.json` or `elm-package.json`. You will get an error if you don't run it from
+  your project root. The CLI tool also generates TypeScript declaration files for each
+  module in your app which exposes a `main` function of type `Program`).
 - The `--output` keyword argument has been removed. The CLI will now just
   put the TypeScript declaration file (`.d.ts`-file) in the correct location
   for you. If you have a special use-case that requires the output to be different from this,
   please ping me on Slack or open an issue to discuss. Most likely there won't be a need though.
-- Instead of passing a list of source files to the `elm-typescript-interop` CLI, it will now
-  read your `elm-package.json`. You will get an error if you don't run it from
-  your project root.
-- Instead of a list of source files, you pass the main Elm file you would like to generate
-  TypeScript type definitions for (this file should be the entry point for your Elm app that exposes
-  your app's `main` function of type `Program`).
 
 ## [0.0.5] - 2018-09-02
 
