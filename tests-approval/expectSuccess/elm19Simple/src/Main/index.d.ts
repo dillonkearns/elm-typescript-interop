@@ -5,9 +5,10 @@
 export namespace Elm {
   namespace Main {
     export interface App {
-      ports: {};
+      ports: {
+        
+      };
     }
-
     export function init(options: {
       node?: HTMLElement | null;
       flags: null;
