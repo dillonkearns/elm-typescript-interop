@@ -21,7 +21,7 @@ done
 
 echo "Checking that all TypeScript declaration files are valid..."
 declarationFiles=$(find . -type f -name "*.d.ts")
-tsc $declarationFiles --out /dev/null
+npx tsc $declarationFiles --out /dev/null
 
 # echo 'Ensuring documentation is valid...'
 # elm make --docs=documentation.json
