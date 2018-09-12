@@ -168,9 +168,11 @@ parseSingle ipcFileAsString =
     parse [ ipcFileAsString ]
 
 
-statements : List String -> Result String (List (List Statement))
-statements ipcFilesAsStrings =
-    List.map Ast.parse ipcFilesAsStrings
+statements : List SourceFile -> Result String (List (List Statement))
+statements sourceFiles =
+    sourceFiles
+        |> List.map .contents
+        |> List.map Ast.parse
         |> Result.Extra.combine
         |> Result.map (List.map (\( _, _, statements ) -> statements))
         |> Result.mapError toString
@@ -182,7 +184,7 @@ type alias SourceFile =
 
 parse : List SourceFile -> Result String TypeScript.Data.Program.Program
 parse sourceFiles =
-    case sourceFiles |> List.map .contents |> statements of
+    case sourceFiles |> statements of
         Ok fileAsts ->
             toProgram fileAsts
 
