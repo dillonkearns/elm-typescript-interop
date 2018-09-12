@@ -1,6 +1,7 @@
 module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
 
 import ElmProjectConfig exposing (ElmVersion)
+import OutputPath
 import Result.Extra
 import String.Interpolate exposing (interpolate)
 import TypeScript.Data.Aliases exposing (Aliases)
@@ -134,30 +135,55 @@ export interface App {
     """
 
 
-generate : ElmVersion -> Program.Program -> Result String String
+type alias FileToGenerate =
+    { path : String, contents : String }
+
+
+generate : ElmVersion -> Program.Program -> Result String (List FileToGenerate)
 generate elmVersion program =
     case program of
-        Program.ElmProgram main aliases ports ->
-            let
-                portsResult =
-                    ports
-                        |> List.map (generatePort aliases)
-                        |> Result.Extra.combine
-                        |> Result.map (String.join "\n")
-            in
-            case
-                [ Ok prefix
-                , portsResult |> Result.andThen (\portsString -> elmModuleNamespace elmVersion portsString aliases main)
-                ]
-                    |> Result.Extra.combine
-            of
-                Ok list ->
-                    list
-                        |> String.join "\n\n"
-                        |> Ok
+        Program.ElmProgram mains aliases ports ->
+            mains
+                |> List.map
+                    (\main ->
+                        generateSingle elmVersion main aliases ports
+                            |> Result.map
+                                (\contents ->
+                                    { path = main.filePath |> OutputPath.declarationPathFromMainElmPath
+                                    , contents = contents
+                                    }
+                                )
+                    )
+                |> Result.Extra.combine
 
-                Err errorMessage ->
-                    Err errorMessage
+
+generateSingle :
+    ElmVersion
+    -> Main
+    -> Aliases
+    -> List Port.Port
+    -> Result String String
+generateSingle elmVersion main aliases ports =
+    let
+        portsResult =
+            ports
+                |> List.map (generatePort aliases)
+                |> Result.Extra.combine
+                |> Result.map (String.join "\n")
+    in
+    case
+        [ Ok prefix
+        , portsResult |> Result.andThen (\portsString -> elmModuleNamespace elmVersion portsString aliases main)
+        ]
+            |> Result.Extra.combine
+    of
+        Ok list ->
+            list
+                |> String.join "\n\n"
+                |> Ok
+
+        Err errorMessage ->
+            Err errorMessage
 
 
 indented : Int -> String -> String

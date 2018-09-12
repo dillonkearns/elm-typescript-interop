@@ -32,7 +32,8 @@ program.ports.printAndExitSuccess.subscribe((message: string) => {
   console.log(message);
   process.exit(0);
 });
-program.ports.generatedFiles.subscribe(function(object: any) {
+
+function writeGeneratedFile(object: { path: string; contents: string }) {
   const filePath = object.path;
   const contents = object.contents;
 
@@ -42,6 +43,11 @@ program.ports.generatedFiles.subscribe(function(object: any) {
   }
 
   fs.writeFileSync(filePath, contents);
+}
+program.ports.generatedFiles.subscribe(function(
+  filesToGenerate: { path: string; contents: string }[]
+) {
+  filesToGenerate.forEach(writeGeneratedFile);
 });
 
 program.ports.parsingError.subscribe(function(errorString: string) {

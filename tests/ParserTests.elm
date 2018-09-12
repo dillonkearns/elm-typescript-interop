@@ -130,7 +130,7 @@ main =
                     |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
-                                Ok (TypeScript.Data.Program.ElmProgram { flagsType } _ ports) ->
+                                Ok (TypeScript.Data.Program.ElmProgram [ { flagsType } ] _ ports) ->
                                     flagsType
                                         |> Expect.equal Nothing
 
@@ -153,7 +153,7 @@ main =
                     |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
-                                Ok (TypeScript.Data.Program.ElmProgram { flagsType } _ ports) ->
+                                Ok (TypeScript.Data.Program.ElmProgram [ { flagsType } ] _ ports) ->
                                     flagsType
                                         |> Expect.equal Nothing
 

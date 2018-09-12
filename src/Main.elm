@@ -58,10 +58,7 @@ crashOrOutputString elmVersion tsDeclarationPath result =
             in
             case tsCode of
                 Ok generatedTsCode ->
-                    generatedFiles
-                        { path = tsDeclarationPath
-                        , contents = generatedTsCode
-                        }
+                    generatedFiles generatedTsCode
 
                 Err errorMessage ->
                     parsingError errorMessage
@@ -124,7 +121,7 @@ type alias SourceFile =
     { path : String, contents : String }
 
 
-port generatedFiles : { path : String, contents : String } -> Cmd msg
+port generatedFiles : List { path : String, contents : String } -> Cmd msg
 
 
 port parsingError : String -> Cmd msg

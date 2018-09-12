@@ -48,7 +48,8 @@ toProgram parsedSourceFiles =
     in
     parsedSourceFiles
         |> flagsType
-        |> Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliasesNew ports)
+        |> (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliasesNew ports)
+        |> Ok
 
 
 type alias ModuleStatements =
@@ -68,23 +69,10 @@ moduleStatementsFor statements =
     }
 
 
-flagsType : List ParsedSourceFile -> Result String Main
+flagsType : List ParsedSourceFile -> List Main
 flagsType parsedSourceFiles =
-    let
-        mainCandidates =
-            parsedSourceFiles
-                |> List.filterMap extractMain
-    in
-    case mainCandidates of
-        -- TODO use a list, pass in the filenames associated with each module and lookup based on that.
-        [] ->
-            Err "No main function with type annotation found."
-
-        [ singleMain ] ->
-            Ok singleMain
-
-        multipleMains ->
-            Err ("Multiple mains with type annotations found: " ++ toString multipleMains)
+    parsedSourceFiles
+        |> List.filterMap extractMain
 
 
 extractMain : ParsedSourceFile -> Maybe Main
