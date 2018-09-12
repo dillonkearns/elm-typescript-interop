@@ -30,10 +30,10 @@ export namespace Main {
         subscribe(callback: (data: { id: number; username: string; avatarUrl: string }) => void): void
       }
       outgoingJsonValues: {
-        subscribe(callback: (data: any[]) => void): void
+        subscribe(callback: (data: unknown[]) => void): void
       }
       incomingJsonValue: {
-        send(data: any): void
+        send(data: unknown): void
       }
       emptyIncomingMessage: {
         send(data: null): void

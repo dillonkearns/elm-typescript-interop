@@ -73,17 +73,17 @@ suite =
                 \() ->
                     TypeConstructor [ "Json", "Decode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> expectOkValue "any"
+                        |> expectOkValue "unknown"
             , test "Json.Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Json", "Encode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> expectOkValue "any"
+                        |> expectOkValue "unknown"
             , test "aliased Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Encode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> Expect.equal (Ok "any")
+                        |> Expect.equal (Ok "unknown")
             ]
         , describe "alias lookup"
             [ test "single string alias" <|

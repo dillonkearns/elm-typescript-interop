@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Use `unknown` instead of `any` for JSON values. You can always cast it into
+  an `any` type. Having `unknown` be the default makes it more clear that these values
+  are not safe unless you do explicit type checking. You can read more about the
+  `unknown` type (new in TypeScript 3.0) in these references:
+  https://stackoverflow.com/a/51439876/383983, https://auth0.com/blog/typescript-3-exploring-tuples-the-unknown-type/
 - The `--output` keyword argument has been removed. The CLI will now just
   put the TypeScript declaration file (`.d.ts`-file) in the correct location
   for you. If you have a special use-case that requires the output to be different from this,

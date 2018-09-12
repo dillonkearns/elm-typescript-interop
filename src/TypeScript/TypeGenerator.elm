@@ -23,16 +23,16 @@ toTsType aliases elmType =
         TypeConstructor typeName _ ->
             case typeName of
                 [ "Json", "Decode", "Value" ] ->
-                    Ok "any"
+                    Ok "unknown"
 
                 [ "Decode", "Value" ] ->
-                    Ok "any"
+                    Ok "unknown"
 
                 [ "Json", "Encode", "Value" ] ->
-                    Ok "any"
+                    Ok "unknown"
 
                 [ "Encode", "Value" ] ->
-                    Ok "any"
+                    Ok "unknown"
 
                 primitiveOrAliasTypeName ->
                     primitiveOrTypeAlias aliases primitiveOrAliasTypeName
