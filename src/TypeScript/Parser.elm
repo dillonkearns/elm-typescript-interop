@@ -22,9 +22,12 @@ extractPort statement =
             Nothing
 
 
-toProgram : List (List Ast.Expression.Statement) -> Result String TypeScript.Data.Program.Program
-toProgram statements =
+toProgram : List { path : String, statements : List Ast.Expression.Statement } -> Result String TypeScript.Data.Program.Program
+toProgram sourceFiles =
     let
+        statements =
+            sourceFiles |> List.map .statements
+
         ports =
             List.filterMap extractPort flatStatements
 
@@ -168,10 +171,16 @@ parseSingle ipcFileAsString =
     parse [ ipcFileAsString ]
 
 
-statements : List SourceFile -> Result String (List (List Statement))
+statements : List SourceFile -> Result String (List { path : String, statements : List Statement })
 statements sourceFiles =
     sourceFiles
-        |> List.map statementsForSingle
+        |> List.map
+            (\sourceFile ->
+                sourceFile
+                    |> statementsForSingle
+                    |> Result.map
+                        (\statements -> { path = sourceFile.path, statements = statements })
+            )
         |> Result.Extra.combine
 
 

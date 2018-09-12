@@ -27,6 +27,7 @@ suite =
                 ]
                     |> List.map toSourceFile
                     |> TypeScript.Parser.statements
+                    |> Result.map (List.map .statements)
                     |> Result.map List.concat
                     |> Result.map (List.filterMap TypeScript.Parser.extractPort)
                     |> Result.map (List.map portNameAndDirection)
@@ -171,6 +172,7 @@ main =
                 ]
                     |> List.map toSourceFile
                     |> TypeScript.Parser.statements
+                    |> Result.map (List.map .statements)
                     |> Result.map List.concat
                     |> Result.map (List.filterMap TypeScript.Parser.extractPort)
                     |> Result.map (List.map portNameAndDirection)
@@ -192,6 +194,7 @@ main =
                 ]
                     |> List.map toSourceFile
                     |> TypeScript.Parser.statements
+                    |> Result.map (List.map .statements)
                     |> Result.map List.concat
                     |> Result.map (List.filterMap TypeScript.Parser.extractPort)
                     |> Result.map (List.map portNameAndDirection)
@@ -214,6 +217,7 @@ main =
                 ]
                     |> List.map toSourceFile
                     |> TypeScript.Parser.statements
+                    |> Result.map (List.map .statements)
                     |> Result.map (List.map TypeScript.Parser.moduleStatementsFor)
                     |> Result.map (List.map TypeScript.Parser.extractAliasesNew)
                     |> Result.map List.concat
