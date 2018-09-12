@@ -17,7 +17,7 @@ do
   cd $testFolder
   # outputBase=`basename $testFolder`
   # outputPath=../../tests/e2e/output/$outputBase.d.ts
-  $binary src/Main.elm
+  $binary
   cd -
 done
 
@@ -41,7 +41,7 @@ do
   cd $testFolder
   # outputBase=`basename $testFolder`
   # outputPath=../../tests/e2e/output/$outputBase.d.ts
-  $binary src/Main.elm &> output.approval.txt && (echo "Expected $testFolder to have non-zero exit code but it succeeded."; exit 1)
+  $binary &> output.approval.txt && (echo "Expected $testFolder to have non-zero exit code but it succeeded."; exit 1)
   cd -
 done
 

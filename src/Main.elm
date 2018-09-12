@@ -1,27 +1,23 @@
 port module Main exposing (Flags, Model, crashOrOutputString, generatedFiles, init, main, output, parsingError, update, workaround)
 
-import Cli.Option as Option
 import Cli.OptionsParser as OptionsParser exposing (with)
 import Cli.Program
 import ElmProjectConfig exposing (ElmVersion)
 import Json.Decode exposing (..)
-import OutputPath
 import TypeScript.Data.Program
 import TypeScript.Generator
 import TypeScript.Parser
 
 
 type alias CliOptions =
-    { mainFile : String
-    }
+    ()
 
 
 programConfig : Cli.Program.Config CliOptions
 programConfig =
     Cli.Program.config { version = "0.0.4" }
         |> Cli.Program.add
-            (OptionsParser.build CliOptions
-                |> with (Option.requiredPositionalArg "MAIN FILE")
+            (OptionsParser.build ()
                 |> OptionsParser.withDoc "generates TypeScript declaration files (.d.ts) based on the flags and ports you define within your Elm app."
             )
 
@@ -40,15 +36,15 @@ type alias Model =
     { elmVersion : ElmProjectConfig.ElmVersion }
 
 
-output : ElmProjectConfig.ElmVersion -> List SourceFile -> String -> Cmd msg
-output elmVersion elmModuleFileContents tsDeclarationPath =
+output : ElmProjectConfig.ElmVersion -> List SourceFile -> Cmd msg
+output elmVersion elmModuleFileContents =
     elmModuleFileContents
         |> TypeScript.Parser.parse
-        |> crashOrOutputString elmVersion tsDeclarationPath
+        |> crashOrOutputString elmVersion
 
 
-crashOrOutputString : ElmVersion -> String -> Result String TypeScript.Data.Program.Program -> Cmd msg
-crashOrOutputString elmVersion tsDeclarationPath result =
+crashOrOutputString : ElmVersion -> Result String TypeScript.Data.Program.Program -> Cmd msg
+crashOrOutputString elmVersion result =
     case result of
         Ok elmProgram ->
             let
@@ -84,12 +80,7 @@ update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
 update cliOptions msg model =
     case msg of
         ReadSourceFiles sourceFileContents ->
-            let
-                outputPath =
-                    cliOptions.mainFile
-                        |> OutputPath.declarationPathFromMainElmPath
-            in
-            ( model, output model.elmVersion sourceFileContents outputPath )
+            ( model, output model.elmVersion sourceFileContents )
 
 
 type Msg
