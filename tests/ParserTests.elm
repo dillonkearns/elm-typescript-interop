@@ -25,6 +25,7 @@ suite =
                   thereAreNoPorts = True
                 """
                 ]
+                    |> List.map toSourceFile
                     |> TypeScript.Parser.statements
                     |> Result.map List.concat
                     |> Result.map (List.filterMap TypeScript.Parser.extractPort)
@@ -168,6 +169,7 @@ main =
                   port showWarningDialog : String -> Cmd msg
                 """
                 ]
+                    |> List.map toSourceFile
                     |> TypeScript.Parser.statements
                     |> Result.map List.concat
                     |> Result.map (List.filterMap TypeScript.Parser.extractPort)
@@ -188,6 +190,7 @@ main =
                                  port suggestionsReceived : (String -> msg) -> Sub msg
                                """
                 ]
+                    |> List.map toSourceFile
                     |> TypeScript.Parser.statements
                     |> Result.map List.concat
                     |> Result.map (List.filterMap TypeScript.Parser.extractPort)
@@ -209,6 +212,7 @@ main =
                   port outboundWithAlias : AliasForString -> Cmd msg
                 """
                 ]
+                    |> List.map toSourceFile
                     |> TypeScript.Parser.statements
                     |> Result.map (List.map TypeScript.Parser.moduleStatementsFor)
                     |> Result.map (List.map TypeScript.Parser.extractAliasesNew)

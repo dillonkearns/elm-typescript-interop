@@ -171,10 +171,16 @@ parseSingle ipcFileAsString =
 statements : List SourceFile -> Result String (List (List Statement))
 statements sourceFiles =
     sourceFiles
-        |> List.map .contents
-        |> List.map Ast.parse
+        |> List.map statementsForSingle
         |> Result.Extra.combine
-        |> Result.map (List.map (\( _, _, statements ) -> statements))
+
+
+statementsForSingle : SourceFile -> Result String (List Statement)
+statementsForSingle sourceFile =
+    sourceFile
+        |> .contents
+        |> Ast.parse
+        |> Result.map (\( _, _, statements ) -> statements)
         |> Result.mapError toString
 
 
