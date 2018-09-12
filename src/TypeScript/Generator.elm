@@ -140,21 +140,19 @@ type alias FileToGenerate =
 
 
 generate : ElmVersion -> Program.Program -> Result String (List FileToGenerate)
-generate elmVersion program =
-    case program of
-        Program.ElmProgram mains aliases ports ->
-            mains
-                |> List.map
-                    (\main ->
-                        generateSingle elmVersion main aliases ports
-                            |> Result.map
-                                (\contents ->
-                                    { path = main.filePath |> OutputPath.declarationPathFromMainElmPath
-                                    , contents = contents
-                                    }
-                                )
-                    )
-                |> Result.Extra.combine
+generate elmVersion (Program.ElmProgram mains aliases ports) =
+    mains
+        |> List.map
+            (\main ->
+                generateSingle elmVersion main aliases ports
+                    |> Result.map
+                        (\contents ->
+                            { path = main.filePath |> OutputPath.declarationPathFromMainElmPath
+                            , contents = contents
+                            }
+                        )
+            )
+        |> Result.Extra.combine
 
 
 generateSingle :
