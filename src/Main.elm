@@ -40,7 +40,7 @@ type alias Model =
     { elmVersion : ElmProjectConfig.ElmVersion }
 
 
-output : ElmProjectConfig.ElmVersion -> List String -> String -> Cmd msg
+output : ElmProjectConfig.ElmVersion -> List SourceFile -> String -> Cmd msg
 output elmVersion elmModuleFileContents tsDeclarationPath =
     elmModuleFileContents
         |> TypeScript.Parser.parse
@@ -92,7 +92,7 @@ update cliOptions msg model =
                     cliOptions.mainFile
                         |> OutputPath.declarationPathFromMainElmPath
             in
-            ( model, output model.elmVersion (sourceFileContents |> List.map .contents) outputPath )
+            ( model, output model.elmVersion sourceFileContents outputPath )
 
 
 type Msg

@@ -163,7 +163,7 @@ programFlagType statement =
             Nothing
 
 
-parseSingle : String -> Result String TypeScript.Data.Program.Program
+parseSingle : SourceFile -> Result String TypeScript.Data.Program.Program
 parseSingle ipcFileAsString =
     parse [ ipcFileAsString ]
 
@@ -176,9 +176,13 @@ statements ipcFilesAsStrings =
         |> Result.mapError toString
 
 
-parse : List String -> Result String TypeScript.Data.Program.Program
-parse ipcFilesAsStrings =
-    case statements ipcFilesAsStrings of
+type alias SourceFile =
+    { path : String, contents : String }
+
+
+parse : List SourceFile -> Result String TypeScript.Data.Program.Program
+parse sourceFiles =
+    case sourceFiles |> List.map .contents |> statements of
         Ok fileAsts ->
             fileAsts
                 |> toProgram

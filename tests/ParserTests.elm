@@ -72,6 +72,7 @@ main =
         , subscriptions = \\_ -> Sub.none
         }
                 """
+                    |> toSourceFile
                     |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
@@ -123,6 +124,7 @@ main =
         , subscriptions = \\_ -> Sub.none
         }
                 """
+                    |> toSourceFile
                     |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
@@ -145,6 +147,7 @@ main : Html msg
 main =
     text "Hello World!"
                                        """
+                    |> toSourceFile
                     |> TypeScript.Parser.parseSingle
                     |> (\parsedProgram ->
                             case parsedProgram of
@@ -221,3 +224,8 @@ main =
                             )
                         )
         ]
+
+
+toSourceFile : String -> { contents : String, path : String }
+toSourceFile contents =
+    { contents = contents, path = "" }
