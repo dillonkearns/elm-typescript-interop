@@ -184,8 +184,7 @@ parse : List SourceFile -> Result String TypeScript.Data.Program.Program
 parse sourceFiles =
     case sourceFiles |> List.map .contents |> statements of
         Ok fileAsts ->
-            fileAsts
-                |> toProgram
+            toProgram fileAsts
 
         Err err ->
             Err err
