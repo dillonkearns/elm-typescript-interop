@@ -6,7 +6,12 @@ export namespace Elm {
   namespace Main {
     export interface App {
       ports: {
-        
+    fromElm: {
+      subscribe(callback: (data: string) => void): void
+    }
+    toElm: {
+      send(data: string): void
+    }
       };
     }
     export function init(options: {

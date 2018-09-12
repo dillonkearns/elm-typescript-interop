@@ -5,6 +5,12 @@ import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
 
 
+port fromElm : String -> Cmd msg
+
+
+port toElm : (String -> msg) -> Sub msg
+
+
 type alias Model =
     { count : Int }
 

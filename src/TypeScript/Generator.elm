@@ -89,7 +89,7 @@ elmModuleNamespace elmVersion portsString aliases main =
   namespace {0} {
     export interface App {
       ports: {
-        {3}
+{3}
       };
     }
     export function init(options: {
