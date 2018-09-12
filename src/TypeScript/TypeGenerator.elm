@@ -87,22 +87,12 @@ appendStringIfOk stringToAppend result =
 
 primitiveOrTypeAlias : Aliases -> List String -> Result String String
 primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
-    case primitiveOrAliasTypeName of
-        [ singleName ] ->
-            case elmPrimitiveToTs singleName of
-                Just primitiveNameForTs ->
-                    Ok primitiveNameForTs
+    case elmPrimitiveToTs primitiveOrAliasTypeName of
+        Just primitiveNameForTs ->
+            Ok primitiveNameForTs
 
-                Nothing ->
-                    case TypeScript.Data.Aliases.lookupAlias aliases [ singleName ] of
-                        Ok foundAliasExpression ->
-                            toTsType aliases foundAliasExpression
-
-                        Err errorString ->
-                            Err errorString
-
-        listName ->
-            case TypeScript.Data.Aliases.lookupAlias aliases listName of
+        Nothing ->
+            case TypeScript.Data.Aliases.lookupAlias aliases primitiveOrAliasTypeName of
                 Ok foundAliasExpression ->
                     toTsType aliases foundAliasExpression
 
@@ -110,19 +100,19 @@ primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
                     Err errorString
 
 
-elmPrimitiveToTs : String -> Maybe String
+elmPrimitiveToTs : List String -> Maybe String
 elmPrimitiveToTs elmPrimitive =
     case elmPrimitive of
-        "String" ->
+        [ "String" ] ->
             Just "string"
 
-        "Int" ->
+        [ "Int" ] ->
             Just "number"
 
-        "Float" ->
+        [ "Float" ] ->
             Just "number"
 
-        "Bool" ->
+        [ "Bool" ] ->
             Just "boolean"
 
         _ ->
