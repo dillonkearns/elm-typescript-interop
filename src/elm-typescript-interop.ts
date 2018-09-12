@@ -70,9 +70,12 @@ program.ports.requestReadSourceDirectories.subscribe(
       );
 
       const flatFiles = flatten(files);
-      const elmModuleFileContents = flatFiles.map(sourcePath =>
-        fs.readFileSync(sourcePath).toString()
-      );
+      const elmModuleFileContents = flatFiles.map(sourcePath => {
+        return {
+          path: sourcePath,
+          contents: fs.readFileSync(sourcePath).toString()
+        };
+      });
       program.ports.readSourceFiles.send(elmModuleFileContents);
     } else {
       console.error(`Could not find src directories: ${missingDirectories}`);

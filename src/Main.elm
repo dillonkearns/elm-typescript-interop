@@ -92,11 +92,11 @@ update cliOptions msg model =
                     cliOptions.mainFile
                         |> OutputPath.declarationPathFromMainElmPath
             in
-            ( model, output model.elmVersion sourceFileContents outputPath )
+            ( model, output model.elmVersion (sourceFileContents |> List.map .contents) outputPath )
 
 
 type Msg
-    = ReadSourceFiles (List String)
+    = ReadSourceFiles (List SourceFile)
 
 
 type alias FlagsExtension =
@@ -120,6 +120,10 @@ main =
         }
 
 
+type alias SourceFile =
+    { path : String, contents : String }
+
+
 port generatedFiles : { path : String, contents : String } -> Cmd msg
 
 
@@ -129,7 +133,7 @@ port parsingError : String -> Cmd msg
 port requestReadSourceDirectories : List String -> Cmd msg
 
 
-port readSourceFiles : (List String -> msg) -> Sub msg
+port readSourceFiles : (List SourceFile -> msg) -> Sub msg
 
 
 port print : String -> Cmd msg

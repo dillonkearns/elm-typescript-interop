@@ -68,6 +68,7 @@ flagsType statements =
                 |> List.filterMap extractMain
     in
     case mainCandidates of
+        -- TODO use a list, pass in the filenames associated with each module and lookup based on that.
         [] ->
             Err "No main function with type annotation found."
 
