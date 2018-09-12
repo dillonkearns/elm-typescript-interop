@@ -5,7 +5,7 @@
 export namespace Main {
   export interface App {
     ports: {
-
+      
     };
   }
 

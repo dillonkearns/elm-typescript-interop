@@ -19,9 +19,9 @@ suite =
                         |> TypeScript.Generator.generatePort (Dict.empty |> TypeScript.Data.Aliases.aliases)
                         |> Expect.equal
                             (Ok
-                                """    hello: {
-      subscribe(callback: (data: string) => void): void
-    }"""
+                                """hello: {
+  subscribe(callback: (data: string) => void): void
+}"""
                             )
             , test "inbound port" <|
                 \() ->
@@ -29,9 +29,9 @@ suite =
                         |> TypeScript.Generator.generatePort (Dict.empty |> TypeScript.Data.Aliases.aliases)
                         |> Expect.equal
                             (Ok
-                                """    reply: {
-      send(data: number): void
-    }"""
+                                """reply: {
+  send(data: number): void
+}"""
                             )
             ]
         ]

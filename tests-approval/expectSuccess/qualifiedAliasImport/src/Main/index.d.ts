@@ -5,9 +5,9 @@
 export namespace Main {
   export interface App {
     ports: {
-    outgoingBoolAlias: {
-      subscribe(callback: (data: boolean) => void): void
-    }
+      outgoingBoolAlias: {
+        subscribe(callback: (data: boolean) => void): void
+      }
     };
   }
 

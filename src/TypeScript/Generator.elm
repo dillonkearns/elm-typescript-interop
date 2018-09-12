@@ -24,9 +24,9 @@ generatePort aliases (Port.Port name direction portType) =
         |> Result.map
             (\inner ->
                 String.Interpolate.interpolate
-                    """    {0}: {
-      {1}: void
-    }"""
+                    """{0}: {
+  {1}: void
+}"""
                     [ name, inner ]
             )
 
@@ -81,6 +81,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                         , fullscreenParam
                         , embedAppendParam
                         , portsString
+                            |> indented 3
                         ]
                         |> Ok
 
@@ -102,6 +103,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                         , fullscreenParam
                         , embedAppendParam
                         , portsString
+                            |> indented 4
                         ]
                         |> Ok
 
@@ -156,3 +158,20 @@ generate elmVersion program =
 
                 Err errorMessage ->
                     Err errorMessage
+
+
+indented : Int -> String -> String
+indented amount code =
+    code
+        |> String.split "\n"
+        |> List.map (\line -> indentation amount ++ line)
+        |> String.join "\n"
+
+
+indentation : Int -> String
+indentation n =
+    if n == 0 then
+        ""
+
+    else
+        "  " ++ indentation (n - 1)
