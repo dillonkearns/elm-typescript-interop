@@ -22,11 +22,15 @@ extractPort statement =
             Nothing
 
 
-toProgram : List { path : String, statements : List Ast.Expression.Statement } -> Result String TypeScript.Data.Program.Program
-toProgram sourceFiles =
+type alias ParsedSourceFile =
+    { path : String, statements : List Ast.Expression.Statement }
+
+
+toProgram : List ParsedSourceFile -> Result String TypeScript.Data.Program.Program
+toProgram parsedSourceFiles =
     let
         statements =
-            sourceFiles |> List.map .statements
+            parsedSourceFiles |> List.map .statements
 
         ports =
             List.filterMap extractPort flatStatements
@@ -42,8 +46,9 @@ toProgram sourceFiles =
         flatStatements =
             List.concat statements
     in
-    Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliasesNew ports)
-        (flagsType statements)
+    parsedSourceFiles
+        |> flagsType
+        |> Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliasesNew ports)
 
 
 type alias ModuleStatements =
@@ -63,11 +68,11 @@ moduleStatementsFor statements =
     }
 
 
-flagsType : List (List Ast.Expression.Statement) -> Result String Main
-flagsType statements =
+flagsType : List ParsedSourceFile -> Result String Main
+flagsType parsedSourceFiles =
     let
         mainCandidates =
-            statements
+            parsedSourceFiles
                 |> List.filterMap extractMain
     in
     case mainCandidates of
@@ -82,18 +87,25 @@ flagsType statements =
             Err ("Multiple mains with type annotations found: " ++ toString multipleMains)
 
 
-extractMain : List Ast.Expression.Statement -> Maybe Main
-extractMain statements =
+extractMain : ParsedSourceFile -> Maybe Main
+extractMain parsedSourceFile =
     let
         maybeFlagsType =
-            statements
+            parsedSourceFile.statements
                 |> List.filterMap programFlagType
                 |> List.head
 
         moduleName =
-            extractModuleName statements
+            extractModuleName parsedSourceFile.statements
     in
-    maybeFlagsType |> Maybe.map (\flagsType -> { moduleName = moduleName, flagsType = flagsType })
+    maybeFlagsType
+        |> Maybe.map
+            (\flagsType ->
+                { moduleName = moduleName
+                , flagsType = flagsType
+                , filePath = parsedSourceFile.path
+                }
+            )
 
 
 extractModuleName : List Ast.Expression.Statement -> List String
