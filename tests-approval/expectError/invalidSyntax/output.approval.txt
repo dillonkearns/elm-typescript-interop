@@ -1,0 +1,2 @@
+Could not parse file `src/Main.elm` at position 32. Errors:
+expected end of input

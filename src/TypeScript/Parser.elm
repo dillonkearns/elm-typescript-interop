@@ -4,6 +4,7 @@ import Ast
 import Ast.Expression exposing (..)
 import Dict
 import Result.Extra
+import String.Interpolate
 import TypeScript.Data.Aliases exposing (Aliases, AliasesNew)
 import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
@@ -190,7 +191,15 @@ statementsForSingle sourceFile =
         |> .contents
         |> Ast.parse
         |> Result.map (\( _, _, statements ) -> statements)
-        |> Result.mapError toString
+        |> Result.mapError
+            (\( state, inputStream, errorMessages ) ->
+                [ sourceFile.path
+                , inputStream.position |> toString
+                , errorMessages |> String.join "\n"
+                ]
+                    |> String.Interpolate.interpolate
+                        "Could not parse file `{0}` at position {1}. Errors:\n{2}"
+            )
 
 
 type alias SourceFile =
