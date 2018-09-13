@@ -6,10 +6,10 @@ import * as path from "path";
 const elmProjectConfig = elmConfigFile();
 
 function elmConfigFile(): object {
-  if (fs.existsSync("./elm-package.json")) {
-    return JSON.parse(fs.readFileSync("./elm-package.json").toString());
-  } else if (fs.existsSync("./elm.json")) {
+  if (fs.existsSync("./elm.json")) {
     return JSON.parse(fs.readFileSync("./elm.json").toString());
+  } else if (fs.existsSync("./elm-package.json")) {
+    return JSON.parse(fs.readFileSync("./elm-package.json").toString());
   } else {
     console.error(
       "I couldn't find an `elm.json` or `elm-package.json` file. Please run `elm-typescript-interop` from your Elm project's root folder."
