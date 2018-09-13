@@ -219,7 +219,7 @@ main =
                     |> TypeScript.Parser.statements
                     |> Result.map (List.map .statements)
                     |> Result.map (List.map TypeScript.Parser.moduleStatementsFor)
-                    |> Result.map (List.map TypeScript.Parser.extractAliasesNew)
+                    |> Result.map (List.map TypeScript.Parser.extractAliases)
                     |> Result.map List.concat
                     |> Result.map Dict.fromList
                     |> Expect.equal
