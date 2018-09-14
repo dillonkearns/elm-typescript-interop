@@ -11,8 +11,8 @@ import TypeScript.Data.Program as Program exposing (Main)
 import TypeScript.TypeGenerator exposing (toTsType)
 
 
-generatePort : Aliases -> List ImportAlias -> Port.Port -> Result String String
-generatePort aliases importAliases (Port.Port name direction portType) =
+generatePort : Aliases -> Port.Port -> Result String String
+generatePort aliases (Port.Port name direction portType importAliases) =
     (case direction of
         Port.Outbound ->
             toTsType aliases importAliases portType
@@ -117,7 +117,7 @@ elmModuleNamespace elmVersion portsString aliases main =
 generatePorts : Aliases -> List ImportAlias -> List Port.Port -> Result String String
 generatePorts aliases importAliases ports =
     ports
-        |> List.map (generatePort aliases importAliases)
+        |> List.map (generatePort aliases)
         |> Result.Extra.combine
         |> Result.map (String.join "\n")
         |> Result.map wrapPorts
@@ -166,7 +166,7 @@ generateSingle elmVersion main aliases ports =
     let
         portsResult =
             ports
-                |> List.map (generatePort aliases main.importAliases)
+                |> List.map (generatePort aliases)
                 |> Result.Extra.combine
                 |> Result.map (String.join "\n")
     in

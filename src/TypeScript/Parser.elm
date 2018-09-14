@@ -10,21 +10,24 @@ import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
 
-extractPort : Ast.Expression.Statement -> Maybe Port
-extractPort statement =
+extractPort : List ImportAlias -> Ast.Expression.Statement -> Maybe Port
+extractPort importAliases statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
-            Port outboundPortName Port.Outbound outboundPortType |> Just
+            Port outboundPortName Port.Outbound outboundPortType importAliases |> Just
 
         PortTypeDeclaration inboundPortName (TypeApplication (TypeApplication inboundPortType (TypeVariable _)) (TypeConstructor [ "Sub" ] [ TypeVariable _ ])) ->
-            Port inboundPortName Port.Inbound inboundPortType |> Just
+            Port inboundPortName Port.Inbound inboundPortType importAliases |> Just
 
         _ ->
             Nothing
 
 
 type alias ParsedSourceFile =
-    { path : String, statements : List Ast.Expression.Statement }
+    { path : String
+    , statements : List Ast.Expression.Statement
+    , importAliases : List ImportAlias
+    }
 
 
 toProgram : List ParsedSourceFile -> Result String TypeScript.Data.Program.Program
@@ -34,7 +37,10 @@ toProgram parsedSourceFiles =
             parsedSourceFiles |> List.map .statements
 
         ports =
-            List.filterMap extractPort flatStatements
+            parsedSourceFiles
+                |> List.map
+                    (\parsedSourceFile -> List.filterMap (extractPort parsedSourceFile.importAliases) parsedSourceFile.statements)
+                |> List.concat
 
         aliases =
             statements
@@ -42,9 +48,6 @@ toProgram parsedSourceFiles =
                 |> List.map extractAliases
                 |> List.concat
                 |> Aliases.aliasesFromList
-
-        flatStatements =
-            List.concat statements
     in
     parsedSourceFiles
         |> flagsType
@@ -178,7 +181,7 @@ parseSingle ipcFileAsString =
     parse [ ipcFileAsString ]
 
 
-statements : List SourceFile -> Result String (List { path : String, statements : List Statement })
+statements : List SourceFile -> Result String (List ParsedSourceFile)
 statements sourceFiles =
     sourceFiles
         |> List.map
@@ -186,7 +189,12 @@ statements sourceFiles =
                 sourceFile
                     |> statementsForSingle
                     |> Result.map
-                        (\statements -> { path = sourceFile.path, statements = statements })
+                        (\statements ->
+                            { path = sourceFile.path
+                            , statements = statements
+                            , importAliases = statements |> List.filterMap ImportAlias.fromExpression
+                            }
+                        )
             )
         |> Result.Extra.combine
 
