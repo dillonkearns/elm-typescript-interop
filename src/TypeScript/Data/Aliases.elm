@@ -47,9 +47,37 @@ unqualifiedTypeReference rawTypeReferenceName importAliases =
         |> UnqualifiedTypeReference
 
 
+jsonDecodeValue : UnqualifiedTypeReference
+jsonDecodeValue =
+    UnqualifiedTypeReference [ "Json", "Decode", "Value" ]
+
+
+jsonEncodeValue : UnqualifiedTypeReference
+jsonEncodeValue =
+    UnqualifiedTypeReference [ "Json", "Encode", "Value" ]
+
+
 alias : List String -> List ImportAlias -> Ast.Expression.Type -> Alias
 alias name importAliases astType =
-    Alias (unqualifiedTypeReference name importAliases) astType
+    let
+        maybeUnqualifiedNameOverride =
+            case astType of
+                Ast.Expression.TypeConstructor typeName _ ->
+                    if unqualifiedTypeReference typeName importAliases == jsonDecodeValue then
+                        Ast.Expression.TypeConstructor [ "Json", "Decode", "Value" ] []
+                            |> Just
+
+                    else if unqualifiedTypeReference typeName importAliases == jsonEncodeValue then
+                        Ast.Expression.TypeConstructor [ "Json", "Encode", "Value" ] []
+                            |> Just
+
+                    else
+                        Nothing
+
+                _ ->
+                    Nothing
+    in
+    Alias (unqualifiedTypeReference name importAliases) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
 
 
 aliasesFromList : List Alias -> Aliases
