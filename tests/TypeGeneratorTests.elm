@@ -87,12 +87,14 @@ suite =
         , describe "alias lookup"
             [ test "single string alias" <|
                 \() ->
-                    TypeConstructor [ "MyAlias" ]
+                    TypeScript.TypeGenerator.toTsType
+                        ([ Aliases.alias [ "MyAlias" ] [] (TypeConstructor [ "Bool" ] []) ]
+                            |> Aliases.aliasesFromList
+                        )
                         []
-                        |> TypeScript.TypeGenerator.toTsType
-                            ([ Aliases.alias [ "MyAlias" ] [] (TypeConstructor [ "Bool" ] []) ]
-                                |> Aliases.aliasesFromList
-                            )
+                        (TypeConstructor [ "MyAlias" ]
+                            []
+                        )
                         |> expectOkValue "boolean"
             ]
         ]
@@ -105,4 +107,4 @@ expectOkValue value =
 
 toTsTypeNoAlias : Type -> Result String String
 toTsTypeNoAlias =
-    TypeScript.TypeGenerator.toTsType (Aliases.aliasesFromList [])
+    TypeScript.TypeGenerator.toTsType (Aliases.aliasesFromList []) []

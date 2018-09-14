@@ -15,7 +15,7 @@ suite =
             [ test "outbound port" <|
                 \() ->
                     Port.Port "hello" Port.Outbound (Ast.Expression.TypeConstructor [ "String" ] [])
-                        |> TypeScript.Generator.generatePort ([] |> TypeScript.Data.Aliases.aliasesFromList)
+                        |> TypeScript.Generator.generatePort ([] |> TypeScript.Data.Aliases.aliasesFromList) []
                         |> Expect.equal
                             (Ok
                                 """hello: {
@@ -25,7 +25,7 @@ suite =
             , test "inbound port" <|
                 \() ->
                     Port.Port "reply" Port.Inbound (Ast.Expression.TypeConstructor [ "Int" ] [])
-                        |> TypeScript.Generator.generatePort ([] |> TypeScript.Data.Aliases.aliasesFromList)
+                        |> TypeScript.Generator.generatePort ([] |> TypeScript.Data.Aliases.aliasesFromList) []
                         |> Expect.equal
                             (Ok
                                 """reply: {
