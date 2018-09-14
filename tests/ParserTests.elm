@@ -8,7 +8,7 @@ import TypeScript.Parser
 
 
 portNameAndDirection : TypeScript.Data.Port.Port -> ( String, TypeScript.Data.Port.Direction )
-portNameAndDirection (TypeScript.Data.Port.Port name kind _) =
+portNameAndDirection (TypeScript.Data.Port.Port name kind _ _) =
     ( name, kind )
 
 
@@ -27,7 +27,7 @@ suite =
                     |> TypeScript.Parser.statements
                     |> Result.map (List.map .statements)
                     |> Result.map List.concat
-                    |> Result.map (List.filterMap TypeScript.Parser.extractPort)
+                    |> Result.map (List.filterMap (TypeScript.Parser.extractPort []))
                     |> Result.map (List.map portNameAndDirection)
                     |> Expect.equal (Ok [])
         , test "program with flags" <|
@@ -172,7 +172,7 @@ main =
                     |> TypeScript.Parser.statements
                     |> Result.map (List.map .statements)
                     |> Result.map List.concat
-                    |> Result.map (List.filterMap TypeScript.Parser.extractPort)
+                    |> Result.map (List.filterMap (TypeScript.Parser.extractPort []))
                     |> Result.map (List.map portNameAndDirection)
                     |> Expect.equal
                         (Ok
@@ -194,7 +194,7 @@ main =
                     |> TypeScript.Parser.statements
                     |> Result.map (List.map .statements)
                     |> Result.map List.concat
-                    |> Result.map (List.filterMap TypeScript.Parser.extractPort)
+                    |> Result.map (List.filterMap (TypeScript.Parser.extractPort []))
                     |> Result.map (List.map portNameAndDirection)
                     |> Expect.equal
                         (Ok
