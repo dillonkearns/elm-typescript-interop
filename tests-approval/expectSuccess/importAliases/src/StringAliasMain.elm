@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import StringAlias as ThisIsAnImportAlias
 
 
-port fromElmString : { key : String, value : ThisIsAnImportAlias.Alias } -> Cmd msg
+port fromElmString : { key : String, value : List ThisIsAnImportAlias.Alias } -> Cmd msg
 
 
 port toElmString : (ThisIsAnImportAlias.Alias -> msg) -> Sub msg

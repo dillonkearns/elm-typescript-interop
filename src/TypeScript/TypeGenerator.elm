@@ -10,13 +10,13 @@ toTsType : Aliases -> List ImportAlias -> Ast.Expression.Type -> Result String S
 toTsType aliases importAliases elmType =
     case elmType of
         TypeConstructor [ "List" ] [ listType ] ->
-            listTypeString aliases listType
+            listTypeString aliases importAliases listType
 
         TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
-            listTypeString aliases arrayType
+            listTypeString aliases importAliases arrayType
 
         TypeConstructor [ "Array" ] [ arrayType ] ->
-            listTypeString aliases arrayType
+            listTypeString aliases importAliases arrayType
 
         TypeConstructor [ "Maybe" ] [ maybeType ] ->
             toTsType aliases importAliases maybeType |> appendStringIfOk " | null"
@@ -75,9 +75,9 @@ generateRecordPair aliases importAliases ( recordKey, recordType ) =
         |> Result.map (\value -> recordKey ++ ": " ++ value)
 
 
-listTypeString : Aliases -> Ast.Expression.Type -> Result String String
-listTypeString aliases listType =
-    toTsType aliases [] listType
+listTypeString : Aliases -> List ImportAlias -> Ast.Expression.Type -> Result String String
+listTypeString aliases importAliases listType =
+    toTsType aliases importAliases listType
         |> appendStringIfOk "[]"
 
 
