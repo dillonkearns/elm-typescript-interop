@@ -14,12 +14,12 @@ generatePort : Aliases -> Port.Port -> Result String String
 generatePort aliases (Port.Port name direction portType) =
     (case direction of
         Port.Outbound ->
-            toTsType aliases portType
+            toTsType aliases [] portType
                 |> Result.map
                     (\tsType -> "subscribe(callback: (data: " ++ tsType ++ ") => void)")
 
         Port.Inbound ->
-            toTsType aliases portType
+            toTsType aliases [] portType
                 |> Result.map (\tsType -> "send(data: " ++ tsType ++ ")")
     )
         |> Result.map
@@ -48,7 +48,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType aliases flagsType
+                    toTsType aliases [] flagsType
                         |> Result.map
                             (\flagsTsType -> "flags: " ++ flagsTsType)
 
@@ -61,7 +61,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType aliases flagsType
+                    toTsType aliases [] flagsType
                         |> Result.map (\tsFlagsType -> ", flags: " ++ tsFlagsType)
     in
     case ( embedAppendParamResult, fullscreenParamResult ) of

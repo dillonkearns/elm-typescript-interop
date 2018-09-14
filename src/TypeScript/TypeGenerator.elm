@@ -1,12 +1,13 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
+import ImportAlias exposing (ImportAlias)
 import Result.Extra
 import TypeScript.Data.Aliases as Aliases exposing (Aliases)
 
 
-toTsType : Aliases -> Ast.Expression.Type -> Result String String
-toTsType aliases elmType =
+toTsType : Aliases -> List ImportAlias -> Ast.Expression.Type -> Result String String
+toTsType aliases importAliases elmType =
     case elmType of
         TypeConstructor [ "List" ] [ listType ] ->
             listTypeString aliases listType
@@ -18,7 +19,7 @@ toTsType aliases elmType =
             listTypeString aliases arrayType
 
         TypeConstructor [ "Maybe" ] [ maybeType ] ->
-            toTsType aliases maybeType |> appendStringIfOk " | null"
+            toTsType aliases importAliases maybeType |> appendStringIfOk " | null"
 
         TypeConstructor typeName _ ->
             case typeName of
@@ -35,14 +36,14 @@ toTsType aliases elmType =
                     Ok "unknown"
 
                 primitiveOrAliasTypeName ->
-                    primitiveOrTypeAlias aliases primitiveOrAliasTypeName
+                    primitiveOrTypeAlias aliases importAliases primitiveOrAliasTypeName
 
         TypeTuple [] ->
             Ok "null"
 
         TypeTuple tupleTypes ->
             tupleTypes
-                |> List.map (toTsType aliases)
+                |> List.map (toTsType aliases importAliases)
                 |> Result.Extra.combine
                 |> Result.map (String.join ", ")
                 |> Result.map
@@ -70,13 +71,13 @@ toTsType aliases elmType =
 
 generateRecordPair : Aliases -> ( String, Ast.Expression.Type ) -> Result String String
 generateRecordPair aliases ( recordKey, recordType ) =
-    toTsType aliases recordType
+    toTsType aliases [] recordType
         |> Result.map (\value -> recordKey ++ ": " ++ value)
 
 
 listTypeString : Aliases -> Ast.Expression.Type -> Result String String
 listTypeString aliases listType =
-    toTsType aliases listType
+    toTsType aliases [] listType
         |> appendStringIfOk "[]"
 
 
@@ -85,16 +86,16 @@ appendStringIfOk stringToAppend result =
     result |> Result.map (\okResult -> okResult ++ stringToAppend)
 
 
-primitiveOrTypeAlias : Aliases -> List String -> Result String String
-primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
+primitiveOrTypeAlias : Aliases -> List ImportAlias -> List String -> Result String String
+primitiveOrTypeAlias aliases importAliases primitiveOrAliasTypeName =
     case elmPrimitiveToTs primitiveOrAliasTypeName of
         Just primitiveNameForTs ->
             Ok primitiveNameForTs
 
         Nothing ->
-            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference primitiveOrAliasTypeName []) of
+            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference primitiveOrAliasTypeName importAliases) of
                 Ok foundAliasExpression ->
-                    toTsType aliases foundAliasExpression
+                    toTsType aliases importAliases foundAliasExpression
 
                 Err errorString ->
                     Err errorString
