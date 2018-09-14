@@ -12,9 +12,14 @@ type Alias
 
 lookupImportAlias : List String -> List ImportAlias -> Maybe ImportAlias
 lookupImportAlias moduleName importAliases =
-    importAliases
-        |> List.filter (\importAlias -> True)
-        |> List.head
+    case moduleName of
+        [ possibleModuleAlias ] ->
+            importAliases
+                |> List.filter (\importAlias -> possibleModuleAlias == importAlias.aliasName)
+                |> List.head
+
+        _ ->
+            Nothing
 
 
 type UnqualifiedTypeReference
