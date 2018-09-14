@@ -2,7 +2,7 @@ module TypeScript.TypeGenerator exposing (toTsType)
 
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Result.Extra
-import TypeScript.Data.Aliases exposing (Aliases)
+import TypeScript.Data.Aliases as Aliases exposing (Aliases)
 
 
 toTsType : Aliases -> Ast.Expression.Type -> Result String String
@@ -92,7 +92,7 @@ primitiveOrTypeAlias aliases primitiveOrAliasTypeName =
             Ok primitiveNameForTs
 
         Nothing ->
-            case TypeScript.Data.Aliases.lookupAlias aliases primitiveOrAliasTypeName of
+            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference primitiveOrAliasTypeName []) of
                 Ok foundAliasExpression ->
                     toTsType aliases foundAliasExpression
 

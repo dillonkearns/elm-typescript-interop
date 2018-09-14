@@ -1,4 +1,4 @@
-module TypeScript.Data.Aliases exposing (Alias, Aliases, alias, aliasesFromList, lookupAlias)
+module TypeScript.Data.Aliases exposing (Alias, Aliases, UnqualifiedTypeReference, alias, aliasesFromList, lookupAlias, unqualifiedTypeReference)
 
 import Ast.Expression
 import Dict exposing (Dict)
@@ -66,17 +66,17 @@ type alias AliasesInner =
     Dict (List String) Ast.Expression.Type
 
 
-lookupAlias : Aliases -> List String -> Result String Ast.Expression.Type
-lookupAlias (Aliases aliases) aliasName =
+lookupAlias : Aliases -> UnqualifiedTypeReference -> Result String Ast.Expression.Type
+lookupAlias (Aliases aliases) (UnqualifiedTypeReference unqualifiedAliasName) =
     case
         aliases
-            |> lookupAliasEntry aliasName
+            |> lookupAliasEntry unqualifiedAliasName
     of
         Just foundTsTypeName ->
             Ok foundTsTypeName
 
         Nothing ->
-            [ String.join "." aliasName
+            [ String.join "." unqualifiedAliasName
             , knownAliases aliases
                 |> String.join ", "
             ]
