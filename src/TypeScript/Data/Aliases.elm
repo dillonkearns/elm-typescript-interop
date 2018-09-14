@@ -22,8 +22,8 @@ type UnqualifiedTypeReference
 
 
 unqualifiedModuleName : List String -> List ImportAlias -> UnqualifiedTypeReference
-unqualifiedModuleName rawName importAliases =
-    (case rawName |> List.reverse of
+unqualifiedModuleName rawTypeReferenceName importAliases =
+    (case rawTypeReferenceName |> List.reverse of
         typeName :: backwardsModuleName ->
             let
                 moduleName =
