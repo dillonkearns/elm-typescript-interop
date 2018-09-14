@@ -10,9 +10,35 @@ type Alias
     = Alias (List String) Ast.Expression.Type
 
 
+lookupImportAlias : List String -> List ImportAlias -> Maybe ImportAlias
+lookupImportAlias moduleName importAliases =
+    importAliases
+        |> List.filter (\importAlias -> True)
+        |> List.head
+
+
+unqualifiedModuleName : List String -> List ImportAlias -> List String
+unqualifiedModuleName rawName importAliases =
+    case rawName |> List.reverse of
+        typeName :: backwardsModuleName ->
+            let
+                moduleName =
+                    backwardsModuleName |> List.reverse
+            in
+            case lookupImportAlias moduleName importAliases of
+                Just importAlias ->
+                    importAlias.unqualifiedModuleName ++ [ typeName ]
+
+                Nothing ->
+                    moduleName ++ [ typeName ]
+
+        [] ->
+            []
+
+
 alias : List String -> List ImportAlias -> Ast.Expression.Type -> Alias
 alias name importAliases astType =
-    Alias name astType
+    Alias (unqualifiedModuleName name importAliases) astType
 
 
 aliasesFromList : List Alias -> Aliases
