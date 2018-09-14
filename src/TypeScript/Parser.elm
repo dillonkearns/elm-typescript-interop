@@ -4,7 +4,7 @@ import Ast
 import Ast.Expression exposing (..)
 import Result.Extra
 import String.Interpolate
-import TypeScript.Data.Aliases as Aliases exposing (Aliases, AliasesNew)
+import TypeScript.Data.Aliases as Aliases
 import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 

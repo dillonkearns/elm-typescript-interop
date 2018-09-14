@@ -1,4 +1,4 @@
-module TypeScript.Data.Aliases exposing (Alias, Aliases, AliasesNew, alias, aliases, aliasesFromList, lookupAlias)
+module TypeScript.Data.Aliases exposing (Alias, Aliases, alias, aliasesFromList, lookupAlias)
 
 import Ast.Expression
 import Dict exposing (Dict)
@@ -21,11 +21,6 @@ aliasesFromList aliases =
         |> List.map (\(Alias unqualifiedName astType) -> ( unqualifiedName, astType ))
         |> Dict.fromList
         |> Aliases
-
-
-aliases : AliasesInner -> Aliases
-aliases aliasesInner =
-    Aliases aliasesInner
 
 
 type Aliases
@@ -88,7 +83,3 @@ lookupAliasEntry aliasName aliases =
 
         Just something ->
             Just something
-
-
-type alias AliasesNew =
-    List ( List String, Ast.Expression.Type )
