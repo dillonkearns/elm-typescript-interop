@@ -16,8 +16,8 @@ type alias Model =
     { count : Int }
 
 
-initialModel : Model
-initialModel =
+init : Flags -> Model
+init flags =
     { count = 0 }
 
 
@@ -45,10 +45,14 @@ view model =
         ]
 
 
-main : Program () Model Msg
+type alias Flags =
+    ThisIsAnImportAlias.Alias
+
+
+main : Program Flags Model Msg
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.element
+        { init = init
         , view = view
         , update = update
         }

@@ -22,7 +22,7 @@ export namespace Elm {
     }
     export function init(options: {
       node?: HTMLElement | null;
-      flags: null;
+      flags: string;
     }): Elm.StringAliasMain.App;
   }
 }
