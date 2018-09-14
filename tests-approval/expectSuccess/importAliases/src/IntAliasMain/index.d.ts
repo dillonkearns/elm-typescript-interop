@@ -7,13 +7,13 @@ export namespace Elm {
     export interface App {
       ports: {
         fromElmInt: {
-          subscribe(callback: (data: number) => void): void
+          subscribe(callback: (data: { key: string; value: number }) => void): void
         }
         toElmInt: {
           send(data: number): void
         }
         fromElmString: {
-          subscribe(callback: (data: string) => void): void
+          subscribe(callback: (data: { key: string; value: number }) => void): void
         }
         toElmString: {
           send(data: string): void

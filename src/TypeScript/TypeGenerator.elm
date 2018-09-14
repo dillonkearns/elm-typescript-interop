@@ -55,7 +55,7 @@ toTsType aliases importAliases elmType =
 
         TypeRecord recordPairs ->
             recordPairs
-                |> List.map (generateRecordPair aliases)
+                |> List.map (generateRecordPair aliases importAliases)
                 |> Result.Extra.combine
                 |> Result.map (String.join "; ")
                 |> Result.map
@@ -69,9 +69,9 @@ toTsType aliases importAliases elmType =
             Err ("Unhandled thing: " ++ toString thing)
 
 
-generateRecordPair : Aliases -> ( String, Ast.Expression.Type ) -> Result String String
-generateRecordPair aliases ( recordKey, recordType ) =
-    toTsType aliases [] recordType
+generateRecordPair : Aliases -> List ImportAlias -> ( String, Ast.Expression.Type ) -> Result String String
+generateRecordPair aliases importAliases ( recordKey, recordType ) =
+    toTsType aliases importAliases recordType
         |> Result.map (\value -> recordKey ++ ": " ++ value)
 
 
