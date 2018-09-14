@@ -7,7 +7,7 @@ import String.Interpolate
 
 
 type Alias
-    = Alias (List String) Ast.Expression.Type
+    = Alias UnqualifiedTypeReference Ast.Expression.Type
 
 
 lookupImportAlias : List String -> List ImportAlias -> Maybe ImportAlias
@@ -17,9 +17,13 @@ lookupImportAlias moduleName importAliases =
         |> List.head
 
 
-unqualifiedModuleName : List String -> List ImportAlias -> List String
+type UnqualifiedTypeReference
+    = UnqualifiedTypeReference (List String)
+
+
+unqualifiedModuleName : List String -> List ImportAlias -> UnqualifiedTypeReference
 unqualifiedModuleName rawName importAliases =
-    case rawName |> List.reverse of
+    (case rawName |> List.reverse of
         typeName :: backwardsModuleName ->
             let
                 moduleName =
@@ -34,6 +38,8 @@ unqualifiedModuleName rawName importAliases =
 
         [] ->
             []
+    )
+        |> UnqualifiedTypeReference
 
 
 alias : List String -> List ImportAlias -> Ast.Expression.Type -> Alias
@@ -44,7 +50,10 @@ alias name importAliases astType =
 aliasesFromList : List Alias -> Aliases
 aliasesFromList aliases =
     aliases
-        |> List.map (\(Alias unqualifiedName astType) -> ( unqualifiedName, astType ))
+        |> List.map
+            (\(Alias (UnqualifiedTypeReference unqualifiedTypeReference) astType) ->
+                ( unqualifiedTypeReference, astType )
+            )
         |> Dict.fromList
         |> Aliases
 
