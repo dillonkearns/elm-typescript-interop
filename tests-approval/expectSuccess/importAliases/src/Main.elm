@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Aliases1 as ThisIsAnImportAlias
+import Aliases2 as ThisIsAnImportAlias
 import Browser
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)

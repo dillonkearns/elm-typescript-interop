@@ -1,6 +1,7 @@
 module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
 
 import ElmProjectConfig exposing (ElmVersion)
+import ImportAlias exposing (ImportAlias)
 import OutputPath
 import Result.Extra
 import String.Interpolate exposing (interpolate)
@@ -10,16 +11,16 @@ import TypeScript.Data.Program as Program exposing (Main)
 import TypeScript.TypeGenerator exposing (toTsType)
 
 
-generatePort : Aliases -> Port.Port -> Result String String
-generatePort aliases (Port.Port name direction portType) =
+generatePort : Aliases -> List ImportAlias -> Port.Port -> Result String String
+generatePort aliases importAliases (Port.Port name direction portType) =
     (case direction of
         Port.Outbound ->
-            toTsType aliases [] portType
+            toTsType aliases importAliases portType
                 |> Result.map
                     (\tsType -> "subscribe(callback: (data: " ++ tsType ++ ") => void)")
 
         Port.Inbound ->
-            toTsType aliases [] portType
+            toTsType aliases importAliases portType
                 |> Result.map (\tsType -> "send(data: " ++ tsType ++ ")")
     )
         |> Result.map
@@ -113,10 +114,10 @@ elmModuleNamespace elmVersion portsString aliases main =
                 |> Result.map (\_ -> "")
 
 
-generatePorts : Aliases -> List Port.Port -> Result String String
-generatePorts aliases ports =
+generatePorts : Aliases -> List ImportAlias -> List Port.Port -> Result String String
+generatePorts aliases importAliases ports =
     ports
-        |> List.map (generatePort aliases)
+        |> List.map (generatePort aliases importAliases)
         |> Result.Extra.combine
         |> Result.map (String.join "\n")
         |> Result.map wrapPorts
@@ -165,7 +166,7 @@ generateSingle elmVersion main aliases ports =
     let
         portsResult =
             ports
-                |> List.map (generatePort aliases)
+                |> List.map (generatePort aliases main.importAliases)
                 |> Result.Extra.combine
                 |> Result.map (String.join "\n")
     in

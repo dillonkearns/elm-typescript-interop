@@ -97,6 +97,7 @@ extractMain parsedSourceFile =
                 { moduleName = moduleName
                 , flagsType = flagsType
                 , filePath = parsedSourceFile.path
+                , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
                 }
             )
 
