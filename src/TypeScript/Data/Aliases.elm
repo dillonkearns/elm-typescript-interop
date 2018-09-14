@@ -1,8 +1,26 @@
-module TypeScript.Data.Aliases exposing (Aliases, AliasesNew, aliases, lookupAlias)
+module TypeScript.Data.Aliases exposing (Alias, Aliases, AliasesNew, alias, aliases, aliasesFromList, lookupAlias)
 
 import Ast.Expression
 import Dict exposing (Dict)
+import ImportAlias exposing (ImportAlias)
 import String.Interpolate
+
+
+type Alias
+    = Alias (List String) Ast.Expression.Type
+
+
+alias : List String -> List ImportAlias -> Ast.Expression.Type -> Alias
+alias name importAliases astType =
+    Alias name astType
+
+
+aliasesFromList : List Alias -> Aliases
+aliasesFromList aliases =
+    aliases
+        |> List.map (\(Alias unqualifiedName astType) -> ( unqualifiedName, astType ))
+        |> Dict.fromList
+        |> Aliases
 
 
 aliases : AliasesInner -> Aliases

@@ -2,10 +2,9 @@ module TypeScript.Parser exposing (extractAliases, extractMain, extractModuleNam
 
 import Ast
 import Ast.Expression exposing (..)
-import Dict
 import Result.Extra
 import String.Interpolate
-import TypeScript.Data.Aliases exposing (Aliases, AliasesNew)
+import TypeScript.Data.Aliases as Aliases exposing (Aliases, AliasesNew)
 import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
@@ -41,8 +40,7 @@ toProgram parsedSourceFiles =
                 |> List.map moduleStatementsFor
                 |> List.map extractAliases
                 |> List.concat
-                |> Dict.fromList
-                |> TypeScript.Data.Aliases.aliases
+                |> Aliases.aliasesFromList
 
         flatStatements =
             List.concat statements
@@ -121,7 +119,7 @@ moduleDeclaration statement =
             Nothing
 
 
-extractAliases : ModuleStatements -> AliasesNew
+extractAliases : ModuleStatements -> List Aliases.Alias
 extractAliases moduleStatements =
     moduleStatements.statements
         |> List.filterMap (aliasOrNothing moduleStatements.moduleName)
@@ -131,11 +129,12 @@ type alias UnqualifiedModuleName =
     List String
 
 
-aliasOrNothing : UnqualifiedModuleName -> Ast.Expression.Statement -> Maybe ( List String, Ast.Expression.Type )
+aliasOrNothing : UnqualifiedModuleName -> Ast.Expression.Statement -> Maybe Aliases.Alias
 aliasOrNothing moduleName statement =
     case statement of
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
-            Just ( moduleName ++ aliasName, aliasType )
+            Aliases.alias (moduleName ++ aliasName) [] aliasType
+                |> Just
 
         _ ->
             Nothing
