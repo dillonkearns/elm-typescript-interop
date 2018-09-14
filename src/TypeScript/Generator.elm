@@ -62,7 +62,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType aliases [] flagsType
+                    toTsType aliases main.importAliases flagsType
                         |> Result.map (\tsFlagsType -> ", flags: " ++ tsFlagsType)
     in
     case ( embedAppendParamResult, fullscreenParamResult ) of
