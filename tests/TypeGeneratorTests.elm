@@ -1,10 +1,9 @@
 module TypeGeneratorTests exposing (suite, toTsTypeNoAlias)
 
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
-import Dict
 import Expect
 import Test exposing (Test, describe, test)
-import TypeScript.Data.Aliases
+import TypeScript.Data.Aliases as Aliases
 import TypeScript.TypeGenerator
 
 
@@ -91,8 +90,8 @@ suite =
                     TypeConstructor [ "MyAlias" ]
                         []
                         |> TypeScript.TypeGenerator.toTsType
-                            (Dict.fromList [ ( [ "MyAlias" ], TypeConstructor [ "Bool" ] [] ) ]
-                                |> TypeScript.Data.Aliases.aliases
+                            ([ Aliases.alias [ "MyAlias" ] [] (TypeConstructor [ "Bool" ] []) ]
+                                |> Aliases.aliasesFromList
                             )
                         |> expectOkValue "boolean"
             ]
@@ -106,4 +105,4 @@ expectOkValue value =
 
 toTsTypeNoAlias : Type -> Result String String
 toTsTypeNoAlias =
-    TypeScript.TypeGenerator.toTsType (TypeScript.Data.Aliases.aliases Dict.empty)
+    TypeScript.TypeGenerator.toTsType (Aliases.aliasesFromList [])

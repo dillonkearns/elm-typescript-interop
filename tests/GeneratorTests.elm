@@ -1,7 +1,6 @@
 module GeneratorTests exposing (suite)
 
 import Ast.Expression
-import Dict
 import Expect
 import Test exposing (Test, describe, test)
 import TypeScript.Data.Aliases
@@ -16,7 +15,7 @@ suite =
             [ test "outbound port" <|
                 \() ->
                     Port.Port "hello" Port.Outbound (Ast.Expression.TypeConstructor [ "String" ] [])
-                        |> TypeScript.Generator.generatePort (Dict.empty |> TypeScript.Data.Aliases.aliases)
+                        |> TypeScript.Generator.generatePort ([] |> TypeScript.Data.Aliases.aliasesFromList)
                         |> Expect.equal
                             (Ok
                                 """hello: {
@@ -26,7 +25,7 @@ suite =
             , test "inbound port" <|
                 \() ->
                     Port.Port "reply" Port.Inbound (Ast.Expression.TypeConstructor [ "Int" ] [])
-                        |> TypeScript.Generator.generatePort (Dict.empty |> TypeScript.Data.Aliases.aliases)
+                        |> TypeScript.Generator.generatePort ([] |> TypeScript.Data.Aliases.aliasesFromList)
                         |> Expect.equal
                             (Ok
                                 """reply: {

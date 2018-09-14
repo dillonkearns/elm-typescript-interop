@@ -1,7 +1,5 @@
 module ParserTests exposing (portNameAndDirection, suite)
 
-import Ast.Expression exposing (Type(TypeConstructor))
-import Dict
 import Expect exposing (Expectation)
 import Test exposing (..)
 import TypeScript.Data.Port
@@ -203,33 +201,6 @@ main =
                             [ ( "localStorageReceived", TypeScript.Data.Port.Inbound )
                             , ( "suggestionsReceived", TypeScript.Data.Port.Inbound )
                             ]
-                        )
-        , test "program with aliases" <|
-            \_ ->
-                [ """
-                  module Main exposing (main)
-
-                  type alias AliasForString =
-                    String
-
-                  port outboundWithAlias : AliasForString -> Cmd msg
-                """
-                ]
-                    |> List.map toSourceFile
-                    |> TypeScript.Parser.statements
-                    |> Result.map (List.map .statements)
-                    |> Result.map (List.map TypeScript.Parser.moduleStatementsFor)
-                    |> Result.map (List.map TypeScript.Parser.extractAliases)
-                    |> Result.map List.concat
-                    |> Result.map Dict.fromList
-                    |> Expect.equal
-                        (Ok
-                            (Dict.fromList
-                                [ ( [ "Main", "AliasForString" ]
-                                  , TypeConstructor [ "String" ] []
-                                  )
-                                ]
-                            )
                         )
         ]
 
