@@ -21,8 +21,8 @@ type UnqualifiedTypeReference
     = UnqualifiedTypeReference (List String)
 
 
-unqualifiedModuleName : List String -> List ImportAlias -> UnqualifiedTypeReference
-unqualifiedModuleName rawTypeReferenceName importAliases =
+unqualifiedTypeReference : List String -> List ImportAlias -> UnqualifiedTypeReference
+unqualifiedTypeReference rawTypeReferenceName importAliases =
     (case rawTypeReferenceName |> List.reverse of
         typeName :: backwardsModuleName ->
             let
@@ -44,7 +44,7 @@ unqualifiedModuleName rawTypeReferenceName importAliases =
 
 alias : List String -> List ImportAlias -> Ast.Expression.Type -> Alias
 alias name importAliases astType =
-    Alias (unqualifiedModuleName name importAliases) astType
+    Alias (unqualifiedTypeReference name importAliases) astType
 
 
 aliasesFromList : List Alias -> Aliases
