@@ -72,7 +72,10 @@ program.ports.requestReadSourceDirectories.subscribe(
 
     if (isEmpty(missingDirectories)) {
       const files = srcDirectories.map(srcDirectory =>
-        glob.sync(`${srcDirectory}/**/*.elm`, { sync: true })
+        glob.sync(`${srcDirectory}/**/*.elm`, {
+          sync: true,
+          ignore: ["**/node_modules/**/*", "**/elm-stuff/**/*"]
+        })
       );
 
       const flatFiles = flatten(files);

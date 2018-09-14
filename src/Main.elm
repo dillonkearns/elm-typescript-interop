@@ -15,7 +15,7 @@ type alias CliOptions =
 
 programConfig : Cli.Program.Config CliOptions
 programConfig =
-    Cli.Program.config { version = "0.0.8" }
+    Cli.Program.config { version = "0.0.9" }
         |> Cli.Program.add
             (OptionsParser.build ()
                 |> OptionsParser.withDoc "generates TypeScript declaration files (.d.ts) based on the flags and ports you define within your Elm app."
