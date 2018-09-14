@@ -3,20 +3,26 @@
 // Type definitions for Elm ports
 
 export namespace Elm {
-  namespace Main {
+  namespace IntAliasMain {
     export interface App {
       ports: {
-        fromElm: {
+        fromElmInt: {
           subscribe(callback: (data: number) => void): void
         }
-        toElm: {
+        toElmInt: {
           send(data: number): void
+        }
+        fromElmString: {
+          subscribe(callback: (data: string) => void): void
+        }
+        toElmString: {
+          send(data: string): void
         }
       };
     }
     export function init(options: {
       node?: HTMLElement | null;
       flags: null;
-    }): Elm.Main.App;
+    }): Elm.IntAliasMain.App;
   }
 }

@@ -1,15 +1,15 @@
-module Main exposing (main)
+module IntAliasMain exposing (main)
 
-import Aliases2 as ThisIsAnImportAlias
 import Browser
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
+import IntAlias as ThisIsAnImportAlias
 
 
-port fromElm : ThisIsAnImportAlias.Alias -> Cmd msg
+port fromElmInt : ThisIsAnImportAlias.Alias -> Cmd msg
 
 
-port toElm : (ThisIsAnImportAlias.Alias -> msg) -> Sub msg
+port toElmInt : (ThisIsAnImportAlias.Alias -> msg) -> Sub msg
 
 
 type alias Model =
