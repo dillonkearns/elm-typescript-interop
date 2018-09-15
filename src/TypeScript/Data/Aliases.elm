@@ -167,5 +167,27 @@ knownAliases aliases =
 
 lookupAliasEntry : List String -> AliasesInner -> Maybe Ast.Expression.Type
 lookupAliasEntry aliasName aliases =
-    aliases
-        |> Dict.get aliasName
+    case
+        aliases
+            |> Dict.get aliasName
+    of
+        Nothing ->
+            case aliasName |> List.reverse |> List.head of
+                Just unqualifiedName ->
+                    aliases
+                        |> Dict.toList
+                        |> List.filterMap
+                            (\( moduleName, expression ) ->
+                                if Just unqualifiedName == (moduleName |> List.reverse |> List.head) then
+                                    Just expression
+
+                                else
+                                    Nothing
+                            )
+                        |> List.head
+
+                Nothing ->
+                    Nothing
+
+        Just something ->
+            Just something
