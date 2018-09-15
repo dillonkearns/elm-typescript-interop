@@ -180,21 +180,23 @@ parseSingle ipcFileAsString =
 extractContexts : List SourceFile -> Result String (List Context)
 extractContexts sourceFiles =
     sourceFiles
-        |> List.map
-            (\sourceFile ->
-                sourceFile
-                    |> statementsForSingle
-                    |> Result.map
-                        (\statements ->
-                            { filePath = sourceFile.path
-                            , statements = statements
-                            , importAliases = statements |> List.filterMap ImportAlias.fromExpression
-                            , moduleName = extractModuleName statements
-                            , localTypeDeclarations = statements |> LocalTypeDeclarations.fromStatements
-                            }
-                        )
-            )
+        |> List.map extractContext
         |> Result.Extra.combine
+
+
+extractContext : SourceFile -> Result String Context
+extractContext sourceFile =
+    sourceFile
+        |> statementsForSingle
+        |> Result.map
+            (\statements ->
+                { filePath = sourceFile.path
+                , statements = statements
+                , importAliases = statements |> List.filterMap ImportAlias.fromExpression
+                , moduleName = extractModuleName statements
+                , localTypeDeclarations = statements |> LocalTypeDeclarations.fromStatements
+                }
+            )
 
 
 statementsForSingle : SourceFile -> Result String (List Statement)
