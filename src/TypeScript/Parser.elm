@@ -3,6 +3,7 @@ module TypeScript.Parser exposing (extractAliases, extractMain, extractModuleNam
 import Ast
 import Ast.Expression exposing (..)
 import ImportAlias exposing (ImportAlias)
+import Parser.Context
 import Result.Extra
 import String.Interpolate
 import TypeScript.Data.Aliases as Aliases
@@ -142,17 +143,26 @@ moduleDeclaration statement =
 
 extractAliases : ModuleStatements -> List Aliases.Alias
 extractAliases moduleStatements =
+    let
+        context =
+            { path = ""
+            , statements = moduleStatements.statements
+            , importAliases = moduleStatements.importAliases
+            , localTypeDeclarations =
+                moduleStatements.statements |> Aliases.localTypeDeclarations
+            , moduleName = moduleStatements.moduleName
+            }
+    in
     moduleStatements.statements
-        |> List.filterMap
-            (aliasOrNothing (moduleStatements.statements |> Aliases.localTypeDeclarations) moduleStatements.moduleName moduleStatements.importAliases)
+        |> List.filterMap (aliasOrNothing context)
 
 
 type alias UnqualifiedModuleName =
     List String
 
 
-aliasOrNothing : Aliases.LocalTypeDeclarations -> UnqualifiedModuleName -> List ImportAlias -> Ast.Expression.Statement -> Maybe Aliases.Alias
-aliasOrNothing localTypeDeclarations moduleName importAliases statement =
+aliasOrNothing : Parser.Context.Context -> Ast.Expression.Statement -> Maybe Aliases.Alias
+aliasOrNothing { localTypeDeclarations, moduleName, importAliases } statement =
     case statement of
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
             Aliases.alias moduleName localTypeDeclarations ((moduleName |> Debug.log "moduleName") ++ aliasName) importAliases aliasType
