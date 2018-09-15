@@ -16,10 +16,10 @@ extractPort : Context -> List String -> List ImportAlias -> LocalTypeDeclaration
 extractPort context moduleName importAliases localTypeDeclarations statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
-            Port context outboundPortName Port.Outbound outboundPortType importAliases localTypeDeclarations moduleName |> Just
+            Port context outboundPortName Port.Outbound outboundPortType |> Just
 
         PortTypeDeclaration inboundPortName (TypeApplication (TypeApplication inboundPortType (TypeVariable _)) (TypeConstructor [ "Sub" ] [ TypeVariable _ ])) ->
-            Port context inboundPortName Port.Inbound inboundPortType importAliases localTypeDeclarations moduleName |> Just
+            Port context inboundPortName Port.Inbound inboundPortType |> Just
 
         _ ->
             Nothing

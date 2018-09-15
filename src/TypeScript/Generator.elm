@@ -12,7 +12,7 @@ import TypeScript.TypeGenerator exposing (toTsType)
 
 
 generatePort : Aliases -> Port.Port -> Result String String
-generatePort aliases (Port.Port context name direction portType importAliases localTypeDeclarations moduleName) =
+generatePort aliases (Port.Port context name direction portType) =
     (case direction of
         Port.Outbound ->
             toTsType context aliases portType
