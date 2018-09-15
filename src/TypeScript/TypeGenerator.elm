@@ -1,26 +1,25 @@
 module TypeScript.TypeGenerator exposing (toTsType)
 
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
-import ImportAlias exposing (ImportAlias)
-import Parser.LocalTypeDeclarations exposing (LocalTypeDeclarations)
+import Parser.Context exposing (Context)
 import Result.Extra
 import TypeScript.Data.Aliases as Aliases exposing (Aliases)
 
 
-toTsType : List String -> Aliases -> List ImportAlias -> LocalTypeDeclarations -> Ast.Expression.Type -> Result String String
-toTsType callingModuleName aliases importAliases localTypeDeclarations elmType =
+toTsType : Context -> Aliases -> Ast.Expression.Type -> Result String String
+toTsType context aliases elmType =
     case elmType of
         TypeConstructor [ "List" ] [ listType ] ->
-            listTypeString callingModuleName aliases importAliases localTypeDeclarations listType
+            listTypeString context aliases listType
 
         TypeConstructor [ "Array", "Array" ] [ arrayType ] ->
-            listTypeString callingModuleName aliases importAliases localTypeDeclarations arrayType
+            listTypeString context aliases arrayType
 
         TypeConstructor [ "Array" ] [ arrayType ] ->
-            listTypeString callingModuleName aliases importAliases localTypeDeclarations arrayType
+            listTypeString context aliases arrayType
 
         TypeConstructor [ "Maybe" ] [ maybeType ] ->
-            toTsType callingModuleName aliases importAliases localTypeDeclarations maybeType |> appendStringIfOk " | null"
+            toTsType context aliases maybeType |> appendStringIfOk " | null"
 
         TypeConstructor typeName _ ->
             case typeName of
@@ -37,14 +36,14 @@ toTsType callingModuleName aliases importAliases localTypeDeclarations elmType =
                     Ok "unknown"
 
                 primitiveOrAliasTypeName ->
-                    primitiveOrTypeAlias callingModuleName aliases importAliases localTypeDeclarations primitiveOrAliasTypeName
+                    primitiveOrTypeAlias context aliases primitiveOrAliasTypeName
 
         TypeTuple [] ->
             Ok "null"
 
         TypeTuple tupleTypes ->
             tupleTypes
-                |> List.map (toTsType callingModuleName aliases importAliases localTypeDeclarations)
+                |> List.map (toTsType context aliases)
                 |> Result.Extra.combine
                 |> Result.map (String.join ", ")
                 |> Result.map
@@ -56,7 +55,7 @@ toTsType callingModuleName aliases importAliases localTypeDeclarations elmType =
 
         TypeRecord recordPairs ->
             recordPairs
-                |> List.map (generateRecordPair callingModuleName aliases importAliases localTypeDeclarations)
+                |> List.map (generateRecordPair context aliases)
                 |> Result.Extra.combine
                 |> Result.map (String.join "; ")
                 |> Result.map
@@ -70,15 +69,15 @@ toTsType callingModuleName aliases importAliases localTypeDeclarations elmType =
             Err ("Unhandled thing: " ++ toString thing)
 
 
-generateRecordPair : List String -> Aliases -> List ImportAlias -> LocalTypeDeclarations -> ( String, Ast.Expression.Type ) -> Result String String
-generateRecordPair callingModuleName aliases importAliases localTypeDeclarations ( recordKey, recordType ) =
-    toTsType callingModuleName aliases importAliases localTypeDeclarations recordType
+generateRecordPair : Context -> Aliases -> ( String, Ast.Expression.Type ) -> Result String String
+generateRecordPair context aliases ( recordKey, recordType ) =
+    toTsType context aliases recordType
         |> Result.map (\value -> recordKey ++ ": " ++ value)
 
 
-listTypeString : List String -> Aliases -> List ImportAlias -> LocalTypeDeclarations -> Ast.Expression.Type -> Result String String
-listTypeString callingModuleName aliases importAliases localTypeDeclarations listType =
-    toTsType callingModuleName aliases importAliases localTypeDeclarations listType
+listTypeString : Context -> Aliases -> Ast.Expression.Type -> Result String String
+listTypeString context aliases listType =
+    toTsType context aliases listType
         |> appendStringIfOk "[]"
 
 
@@ -87,16 +86,16 @@ appendStringIfOk stringToAppend result =
     result |> Result.map (\okResult -> okResult ++ stringToAppend)
 
 
-primitiveOrTypeAlias : List String -> Aliases -> List ImportAlias -> LocalTypeDeclarations -> List String -> Result String String
-primitiveOrTypeAlias callingModuleName aliases importAliases localTypeDeclarations primitiveOrAliasTypeName =
+primitiveOrTypeAlias : Context -> Aliases -> List String -> Result String String
+primitiveOrTypeAlias context aliases primitiveOrAliasTypeName =
     case elmPrimitiveToTs primitiveOrAliasTypeName of
         Just primitiveNameForTs ->
             Ok primitiveNameForTs
 
         Nothing ->
-            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference callingModuleName localTypeDeclarations primitiveOrAliasTypeName importAliases) of
+            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference context.moduleName context.localTypeDeclarations primitiveOrAliasTypeName context.importAliases) of
                 Ok foundAliasExpression ->
-                    toTsType callingModuleName aliases importAliases localTypeDeclarations foundAliasExpression
+                    toTsType context aliases foundAliasExpression
 
                 Err errorString ->
                     Err errorString

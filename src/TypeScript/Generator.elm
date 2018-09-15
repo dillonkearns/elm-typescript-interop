@@ -12,15 +12,15 @@ import TypeScript.TypeGenerator exposing (toTsType)
 
 
 generatePort : Aliases -> Port.Port -> Result String String
-generatePort aliases (Port.Port name direction portType importAliases localTypeDeclarations moduleName) =
+generatePort aliases (Port.Port context name direction portType importAliases localTypeDeclarations moduleName) =
     (case direction of
         Port.Outbound ->
-            toTsType moduleName aliases importAliases localTypeDeclarations portType
+            toTsType context aliases portType
                 |> Result.map
                     (\tsType -> "subscribe(callback: (data: " ++ tsType ++ ") => void)")
 
         Port.Inbound ->
-            toTsType moduleName aliases importAliases localTypeDeclarations portType
+            toTsType context aliases portType
                 |> Result.map (\tsType -> "send(data: " ++ tsType ++ ")")
     )
         |> Result.map
@@ -49,7 +49,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType main.context.moduleName aliases main.context.importAliases main.context.localTypeDeclarations flagsType
+                    toTsType main.context aliases flagsType
                         |> Result.map
                             (\flagsTsType -> "flags: " ++ flagsTsType)
 
@@ -62,7 +62,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType main.context.moduleName aliases main.context.importAliases main.context.localTypeDeclarations flagsType
+                    toTsType main.context aliases flagsType
                         |> Result.map (\tsFlagsType -> ", flags: " ++ tsFlagsType)
     in
     case ( embedAppendParamResult, fullscreenParamResult ) of

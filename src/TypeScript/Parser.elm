@@ -3,7 +3,7 @@ module TypeScript.Parser exposing (extractAliases, extractMain, extractModuleNam
 import Ast
 import Ast.Expression exposing (..)
 import ImportAlias exposing (ImportAlias)
-import Parser.Context
+import Parser.Context exposing (Context)
 import Parser.LocalTypeDeclarations as LocalTypeDeclarations exposing (LocalTypeDeclarations)
 import Result.Extra
 import String.Interpolate
@@ -12,14 +12,14 @@ import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
 
-extractPort : List String -> List ImportAlias -> LocalTypeDeclarations -> Ast.Expression.Statement -> Maybe Port
-extractPort moduleName importAliases localTypeDeclarations statement =
+extractPort : Context -> List String -> List ImportAlias -> LocalTypeDeclarations -> Ast.Expression.Statement -> Maybe Port
+extractPort context moduleName importAliases localTypeDeclarations statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
-            Port outboundPortName Port.Outbound outboundPortType importAliases localTypeDeclarations moduleName |> Just
+            Port context outboundPortName Port.Outbound outboundPortType importAliases localTypeDeclarations moduleName |> Just
 
         PortTypeDeclaration inboundPortName (TypeApplication (TypeApplication inboundPortType (TypeVariable _)) (TypeConstructor [ "Sub" ] [ TypeVariable _ ])) ->
-            Port inboundPortName Port.Inbound inboundPortType importAliases localTypeDeclarations moduleName |> Just
+            Port context inboundPortName Port.Inbound inboundPortType importAliases localTypeDeclarations moduleName |> Just
 
         _ ->
             Nothing
@@ -44,7 +44,8 @@ toProgram parsedSourceFiles =
                 |> List.map
                     (\parsedSourceFile ->
                         List.filterMap
-                            (extractPort parsedSourceFile.moduleName
+                            (extractPort (parsedSourceFileToContext parsedSourceFile)
+                                parsedSourceFile.moduleName
                                 parsedSourceFile.importAliases
                                 (parsedSourceFile.statements
                                     |> LocalTypeDeclarations.fromStatements
@@ -65,6 +66,16 @@ toProgram parsedSourceFiles =
         |> flagsType
         |> (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
         |> Ok
+
+
+parsedSourceFileToContext : ParsedSourceFile -> Context
+parsedSourceFileToContext parsedSourceFile =
+    { filePath = parsedSourceFile.path
+    , statements = parsedSourceFile.statements
+    , importAliases = parsedSourceFile.importAliases
+    , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.fromStatements
+    , moduleName = parsedSourceFile.moduleName
+    }
 
 
 type alias ModuleStatements =
