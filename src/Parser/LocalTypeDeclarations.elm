@@ -1,4 +1,4 @@
-module Parser.LocalTypeDeclarations exposing (LocalTypeDeclarations, includes, localTypeDeclarations)
+module Parser.LocalTypeDeclarations exposing (LocalTypeDeclarations, fromStatements, includes)
 
 import Ast.Expression
 
@@ -8,13 +8,13 @@ type LocalTypeDeclarations
 
 
 includes : String -> LocalTypeDeclarations -> Bool
-includes typeName (LocalTypeDeclarations localTypeDeclarations) =
-    localTypeDeclarations
+includes typeName (LocalTypeDeclarations fromStatements) =
+    fromStatements
         |> List.member typeName
 
 
-localTypeDeclarations : List Ast.Expression.Statement -> LocalTypeDeclarations
-localTypeDeclarations statements =
+fromStatements : List Ast.Expression.Statement -> LocalTypeDeclarations
+fromStatements statements =
     List.filterMap typeDeclaration statements
         |> LocalTypeDeclarations
 

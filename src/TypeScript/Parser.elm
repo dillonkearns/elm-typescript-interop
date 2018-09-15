@@ -47,7 +47,7 @@ toProgram parsedSourceFiles =
                             (extractPort parsedSourceFile.moduleName
                                 parsedSourceFile.importAliases
                                 (parsedSourceFile.statements
-                                    |> LocalTypeDeclarations.localTypeDeclarations
+                                    |> LocalTypeDeclarations.fromStatements
                                 )
                             )
                             parsedSourceFile.statements
@@ -113,7 +113,7 @@ extractMain parsedSourceFile =
                 , flagsType = flagsType
                 , filePath = parsedSourceFile.path
                 , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
-                , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.localTypeDeclarations
+                , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.fromStatements
                 }
             )
 
@@ -150,7 +150,7 @@ extractAliases moduleStatements =
             , statements = moduleStatements.statements
             , importAliases = moduleStatements.importAliases
             , localTypeDeclarations =
-                moduleStatements.statements |> LocalTypeDeclarations.localTypeDeclarations
+                moduleStatements.statements |> LocalTypeDeclarations.fromStatements
             , moduleName = moduleStatements.moduleName
             }
     in
