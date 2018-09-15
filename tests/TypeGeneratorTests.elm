@@ -118,8 +118,6 @@ toTsType =
 
 stubContext : Context
 stubContext =
-    -- extractContext : SourceFile -> Result String Context
-    -- extractContext sourceFile =
     { filePath = "stub/path"
     , statements = []
     , importAliases = []
