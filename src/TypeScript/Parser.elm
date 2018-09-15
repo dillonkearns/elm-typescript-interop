@@ -12,8 +12,8 @@ import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
 
-extractPort : Context -> List String -> List ImportAlias -> LocalTypeDeclarations -> Ast.Expression.Statement -> Maybe Port
-extractPort context moduleName importAliases localTypeDeclarations statement =
+extractPort : Context -> Ast.Expression.Statement -> Maybe Port
+extractPort context statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
             Port context outboundPortName Port.Outbound outboundPortType |> Just
@@ -40,15 +40,7 @@ toProgram parsedSourceFiles =
             contexts
                 |> List.map
                     (\context ->
-                        List.filterMap
-                            (extractPort context
-                                context.moduleName
-                                context.importAliases
-                                (context.statements
-                                    |> LocalTypeDeclarations.fromStatements
-                                )
-                            )
-                            context.statements
+                        List.filterMap (extractPort context) context.statements
                     )
                 |> List.concat
 
