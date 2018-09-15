@@ -2,6 +2,8 @@ module TypeGeneratorTests exposing (suite, toTsTypeNoAlias)
 
 import Ast.Expression exposing (Type(TypeConstructor, TypeRecord, TypeTuple))
 import Expect
+import Parser.Context exposing (Context)
+import Parser.LocalTypeDeclarations as LocalTypeDeclarations
 import Test exposing (Test, describe, test)
 import TypeScript.Data.Aliases as Aliases
 import TypeScript.TypeGenerator
@@ -87,11 +89,10 @@ suite =
         , describe "alias lookup"
             [ test "single string alias" <|
                 \() ->
-                    TypeScript.TypeGenerator.toTsType
-                        ([ Aliases.alias [ "MyAlias" ] [] (TypeConstructor [ "Bool" ] []) ]
+                    toTsType
+                        ([ Aliases.alias stubContext [ "MyAlias" ] (TypeConstructor [ "Bool" ] []) ]
                             |> Aliases.aliasesFromList
                         )
-                        []
                         (TypeConstructor [ "MyAlias" ]
                             []
                         )
@@ -107,4 +108,21 @@ expectOkValue value =
 
 toTsTypeNoAlias : Type -> Result String String
 toTsTypeNoAlias =
-    TypeScript.TypeGenerator.toTsType (Aliases.aliasesFromList []) []
+    toTsType ([] |> Aliases.aliasesFromList)
+
+
+toTsType : Aliases.Aliases -> Type -> Result String String
+toTsType =
+    TypeScript.TypeGenerator.toTsType stubContext
+
+
+stubContext : Context
+stubContext =
+    -- extractContext : SourceFile -> Result String Context
+    -- extractContext sourceFile =
+    { filePath = "stub/path"
+    , statements = []
+    , importAliases = []
+    , moduleName = [ "Module", "Name" ]
+    , localTypeDeclarations = [] |> LocalTypeDeclarations.fromStatements
+    }
