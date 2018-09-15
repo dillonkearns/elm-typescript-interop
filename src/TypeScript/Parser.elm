@@ -4,6 +4,7 @@ import Ast
 import Ast.Expression exposing (..)
 import ImportAlias exposing (ImportAlias)
 import Parser.Context
+import Parser.LocalTypeDeclarations as LocalTypeDeclarations exposing (LocalTypeDeclarations)
 import Result.Extra
 import String.Interpolate
 import TypeScript.Data.Aliases as Aliases
@@ -11,7 +12,7 @@ import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
 
-extractPort : List String -> List ImportAlias -> Aliases.LocalTypeDeclarations -> Ast.Expression.Statement -> Maybe Port
+extractPort : List String -> List ImportAlias -> LocalTypeDeclarations -> Ast.Expression.Statement -> Maybe Port
 extractPort moduleName importAliases localTypeDeclarations statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
@@ -46,7 +47,7 @@ toProgram parsedSourceFiles =
                             (extractPort parsedSourceFile.moduleName
                                 parsedSourceFile.importAliases
                                 (parsedSourceFile.statements
-                                    |> Aliases.localTypeDeclarations
+                                    |> LocalTypeDeclarations.localTypeDeclarations
                                 )
                             )
                             parsedSourceFile.statements
@@ -112,7 +113,7 @@ extractMain parsedSourceFile =
                 , flagsType = flagsType
                 , filePath = parsedSourceFile.path
                 , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
-                , localTypeDeclarations = parsedSourceFile.statements |> Aliases.localTypeDeclarations
+                , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.localTypeDeclarations
                 }
             )
 
@@ -149,7 +150,7 @@ extractAliases moduleStatements =
             , statements = moduleStatements.statements
             , importAliases = moduleStatements.importAliases
             , localTypeDeclarations =
-                moduleStatements.statements |> Aliases.localTypeDeclarations
+                moduleStatements.statements |> LocalTypeDeclarations.localTypeDeclarations
             , moduleName = moduleStatements.moduleName
             }
     in

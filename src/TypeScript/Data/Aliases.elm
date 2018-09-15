@@ -1,8 +1,9 @@
-module TypeScript.Data.Aliases exposing (Alias, Aliases, LocalTypeDeclarations, UnqualifiedTypeReference, alias, aliasesFromList, localTypeDeclarations, lookupAlias, unqualifiedTypeReference)
+module TypeScript.Data.Aliases exposing (Alias, Aliases, UnqualifiedTypeReference, alias, aliasesFromList, lookupAlias, unqualifiedTypeReference)
 
 import Ast.Expression
 import Dict exposing (Dict)
 import ImportAlias exposing (ImportAlias)
+import Parser.LocalTypeDeclarations as LocalTypeDeclarations exposing (LocalTypeDeclarations)
 import String.Interpolate
 
 
@@ -26,37 +27,13 @@ type UnqualifiedTypeReference
     = UnqualifiedTypeReference (List String)
 
 
-type LocalTypeDeclarations
-    = LocalTypeDeclarations (List String)
-
-
-localTypeDeclarations : List Ast.Expression.Statement -> LocalTypeDeclarations
-localTypeDeclarations statements =
-    List.filterMap typeDeclaration statements
-        |> LocalTypeDeclarations
-
-
-typeDeclaration : Ast.Expression.Statement -> Maybe String
-typeDeclaration statement =
-    case statement of
-        Ast.Expression.TypeDeclaration (Ast.Expression.TypeConstructor [ typeName ] _) _ ->
-            Just typeName
-
-        Ast.Expression.TypeAliasDeclaration (Ast.Expression.TypeConstructor [ typeName ] _) _ ->
-            Just typeName
-
-        _ ->
-            Nothing
-
-
 unqualifiedTypeReference : List String -> LocalTypeDeclarations -> List String -> List ImportAlias -> UnqualifiedTypeReference
-unqualifiedTypeReference callingModuleName (LocalTypeDeclarations localTypeDeclarations) rawTypeReferenceName importAliases =
+unqualifiedTypeReference callingModuleName localTypeDeclarations rawTypeReferenceName importAliases =
     (case rawTypeReferenceName |> List.reverse of
         [ typeName ] ->
             let
                 localTypeOverride =
-                    localTypeDeclarations
-                        |> List.member typeName
+                    LocalTypeDeclarations.includes typeName localTypeDeclarations
             in
             if localTypeOverride then
                 callingModuleName ++ [ typeName ]
