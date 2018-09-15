@@ -36,28 +36,28 @@ type alias ParsedSourceFile =
 toProgram : List ParsedSourceFile -> Result String TypeScript.Data.Program.Program
 toProgram parsedSourceFiles =
     let
-        statements =
-            parsedSourceFiles |> List.map .statements
-
         ports =
-            parsedSourceFiles
+            contexts
                 |> List.map
-                    (\parsedSourceFile ->
+                    (\context ->
                         List.filterMap
-                            (extractPort (parsedSourceFileToContext parsedSourceFile)
-                                parsedSourceFile.moduleName
-                                parsedSourceFile.importAliases
-                                (parsedSourceFile.statements
+                            (extractPort context
+                                context.moduleName
+                                context.importAliases
+                                (context.statements
                                     |> LocalTypeDeclarations.fromStatements
                                 )
                             )
-                            parsedSourceFile.statements
+                            context.statements
                     )
                 |> List.concat
 
+        contexts =
+            parsedSourceFiles
+                |> List.map parsedSourceFileToContext
+
         aliases =
-            statements
-                |> List.map moduleStatementsFor
+            contexts
                 |> List.map extractAliases
                 |> List.concat
                 |> Aliases.aliasesFromList
@@ -156,19 +156,9 @@ moduleDeclaration statement =
             Nothing
 
 
-extractAliases : ModuleStatements -> List Aliases.Alias
-extractAliases moduleStatements =
-    let
-        context =
-            { filePath = "" -- TODO
-            , statements = moduleStatements.statements
-            , importAliases = moduleStatements.importAliases
-            , localTypeDeclarations =
-                moduleStatements.statements |> LocalTypeDeclarations.fromStatements
-            , moduleName = moduleStatements.moduleName
-            }
-    in
-    moduleStatements.statements
+extractAliases : Context -> List Aliases.Alias
+extractAliases context =
+    context.statements
         |> List.filterMap (aliasOrNothing context)
 
 
