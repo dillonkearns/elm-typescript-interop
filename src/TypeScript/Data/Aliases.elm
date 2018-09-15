@@ -1,4 +1,4 @@
-module TypeScript.Data.Aliases exposing (Alias, Aliases, UnqualifiedTypeReference, alias, aliasesFromList, lookupAlias, unqualifiedTypeReference)
+module TypeScript.Data.Aliases exposing (Alias, Aliases, UnqualifiedTypeReference, alias, aliasesFromList, elmPrimitiveToTs, lookupAlias, unqualifiedTypeReference)
 
 import Ast.Expression
 import Dict exposing (Dict)
@@ -26,6 +26,31 @@ lookupImportAlias moduleName context =
 
 type UnqualifiedTypeReference
     = UnqualifiedTypeReference (List String)
+
+
+elmPrimitiveToTs : UnqualifiedTypeReference -> Maybe String
+elmPrimitiveToTs (UnqualifiedTypeReference elmPrimitive) =
+    case elmPrimitive of
+        [ "String" ] ->
+            Just "string"
+
+        [ "Int" ] ->
+            Just "number"
+
+        [ "Float" ] ->
+            Just "number"
+
+        [ "Bool" ] ->
+            Just "boolean"
+
+        [ "Json", "Decode", "Value" ] ->
+            Just "unknown"
+
+        [ "Json", "Encode", "Value" ] ->
+            Just "unknown"
+
+        _ ->
+            Nothing
 
 
 unqualifiedTypeReference : Context -> List String -> UnqualifiedTypeReference

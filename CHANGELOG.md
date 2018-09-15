@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.11] - 2018-09-15
+
+### Fixed
+
+- `import Json.Decode as JD` only resolved correctly when it was referred to in a type alias.
+  It now resolves correctly when it is used directly in a port declaration.
+
 ## [0.0.10] - 2018-09-15
 
 ### Fixed

@@ -88,33 +88,18 @@ appendStringIfOk stringToAppend result =
 
 primitiveOrTypeAlias : Context -> Aliases -> List String -> Result String String
 primitiveOrTypeAlias context aliases primitiveOrAliasTypeName =
-    case elmPrimitiveToTs primitiveOrAliasTypeName of
+    let
+        unqualified =
+            Aliases.unqualifiedTypeReference context primitiveOrAliasTypeName
+    in
+    case Aliases.elmPrimitiveToTs unqualified of
         Just primitiveNameForTs ->
             Ok primitiveNameForTs
 
         Nothing ->
-            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference context primitiveOrAliasTypeName) of
+            case Aliases.lookupAlias aliases unqualified of
                 Ok foundAliasExpression ->
                     toTsType context aliases foundAliasExpression
 
                 Err errorString ->
                     Err errorString
-
-
-elmPrimitiveToTs : List String -> Maybe String
-elmPrimitiveToTs elmPrimitive =
-    case elmPrimitive of
-        [ "String" ] ->
-            Just "string"
-
-        [ "Int" ] ->
-            Just "number"
-
-        [ "Float" ] ->
-            Just "number"
-
-        [ "Bool" ] ->
-            Just "boolean"
-
-        _ ->
-            Nothing
