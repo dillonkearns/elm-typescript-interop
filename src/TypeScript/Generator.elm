@@ -1,7 +1,6 @@
-module TypeScript.Generator exposing (elmModuleNamespace, generate, generatePort, generatePorts, prefix, wrapPorts)
+module TypeScript.Generator exposing (generate, generatePort)
 
 import ElmProjectConfig exposing (ElmVersion)
-import ImportAlias exposing (ImportAlias)
 import OutputPath
 import Result.Extra
 import String.Interpolate exposing (interpolate)
@@ -112,28 +111,6 @@ elmModuleNamespace elmVersion portsString aliases main =
         ( result1, result2 ) ->
             Result.Extra.combine [ result1, result2 ]
                 |> Result.map (\_ -> "")
-
-
-generatePorts : Aliases -> List ImportAlias -> List Port.Port -> Result String String
-generatePorts aliases importAliases ports =
-    ports
-        |> List.map (generatePort aliases)
-        |> Result.Extra.combine
-        |> Result.map (String.join "\n")
-        |> Result.map wrapPorts
-
-
-wrapPorts : String -> String
-wrapPorts portsString =
-    """
-export interface App {
-  ports: {
-"""
-        ++ portsString
-        ++ """
-  }
-}
-    """
 
 
 type alias FileToGenerate =
