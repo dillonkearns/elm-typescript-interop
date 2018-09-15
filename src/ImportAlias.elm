@@ -1,13 +1,38 @@
-module ImportAlias exposing (ImportAlias, fromExpression)
+module ImportAlias exposing (ImportAlias, fromExpression, typeDeclaration)
 
 import Ast.Expression
+
+
+type Exposing
+    = ExposeType String
+    | ModuleTypePrecedence String
 
 
 type alias ImportAlias =
     { unqualifiedModuleName : List String
     , aliasName : String
     , exposed : List String
+
+    -- , exposed : List Exposing
     }
+
+
+exposedFromModule : Ast.Expression.Statement -> List Exposing
+exposedFromModule statement =
+    []
+
+
+typeDeclaration : Ast.Expression.Statement -> Maybe String
+typeDeclaration statement =
+    case statement of
+        Ast.Expression.TypeDeclaration (Ast.Expression.TypeConstructor [ typeName ] _) _ ->
+            Just typeName
+
+        Ast.Expression.TypeAliasDeclaration (Ast.Expression.TypeConstructor [ typeName ] _) _ ->
+            Just typeName
+
+        _ ->
+            Nothing
 
 
 fromExpression : Ast.Expression.Statement -> Maybe ImportAlias

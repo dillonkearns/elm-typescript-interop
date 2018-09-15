@@ -10,14 +10,14 @@ import TypeScript.Data.Port as Port exposing (Port(Port))
 import TypeScript.Data.Program exposing (Main)
 
 
-extractPort : List ImportAlias -> Ast.Expression.Statement -> Maybe Port
-extractPort importAliases statement =
+extractPort : List ImportAlias -> Aliases.LocalTypeDeclarations -> Ast.Expression.Statement -> Maybe Port
+extractPort importAliases localTypeDeclarations statement =
     case statement of
         PortTypeDeclaration outboundPortName (TypeApplication outboundPortType (TypeConstructor [ "Cmd" ] [ TypeVariable _ ])) ->
-            Port outboundPortName Port.Outbound outboundPortType importAliases |> Just
+            Port outboundPortName Port.Outbound outboundPortType importAliases localTypeDeclarations |> Just
 
         PortTypeDeclaration inboundPortName (TypeApplication (TypeApplication inboundPortType (TypeVariable _)) (TypeConstructor [ "Sub" ] [ TypeVariable _ ])) ->
-            Port inboundPortName Port.Inbound inboundPortType importAliases |> Just
+            Port inboundPortName Port.Inbound inboundPortType importAliases localTypeDeclarations |> Just
 
         _ ->
             Nothing
@@ -39,7 +39,7 @@ toProgram parsedSourceFiles =
         ports =
             parsedSourceFiles
                 |> List.map
-                    (\parsedSourceFile -> List.filterMap (extractPort parsedSourceFile.importAliases) parsedSourceFile.statements)
+                    (\parsedSourceFile -> List.filterMap (extractPort parsedSourceFile.importAliases (parsedSourceFile.statements |> Aliases.localTypeDeclarations)) parsedSourceFile.statements)
                 |> List.concat
 
         aliases =
@@ -101,6 +101,7 @@ extractMain parsedSourceFile =
                 , flagsType = flagsType
                 , filePath = parsedSourceFile.path
                 , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
+                , localTypeDeclarations = parsedSourceFile.statements |> Aliases.localTypeDeclarations
                 }
             )
 
@@ -132,19 +133,21 @@ moduleDeclaration statement =
 extractAliases : ModuleStatements -> List Aliases.Alias
 extractAliases moduleStatements =
     moduleStatements.statements
-        |> List.filterMap (aliasOrNothing moduleStatements.moduleName moduleStatements.importAliases)
+        |> List.filterMap
+            (aliasOrNothing (moduleStatements.statements |> Aliases.localTypeDeclarations) moduleStatements.moduleName moduleStatements.importAliases)
 
 
 type alias UnqualifiedModuleName =
     List String
 
 
-aliasOrNothing : UnqualifiedModuleName -> List ImportAlias -> Ast.Expression.Statement -> Maybe Aliases.Alias
-aliasOrNothing moduleName importAliases statement =
+aliasOrNothing : Aliases.LocalTypeDeclarations -> UnqualifiedModuleName -> List ImportAlias -> Ast.Expression.Statement -> Maybe Aliases.Alias
+aliasOrNothing localTypeDeclarations moduleName importAliases statement =
     case statement of
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
-            Aliases.alias (moduleName ++ aliasName) importAliases aliasType
+            Aliases.alias localTypeDeclarations ((moduleName |> Debug.log "moduleName") ++ aliasName) importAliases aliasType
                 |> Just
+                |> Debug.log "Result"
 
         _ ->
             Nothing

@@ -1,4 +1,4 @@
-module TypeScript.Data.Aliases exposing (Alias, Aliases, UnqualifiedTypeReference, alias, aliasesFromList, lookupAlias, unqualifiedTypeReference)
+module TypeScript.Data.Aliases exposing (Alias, Aliases, LocalTypeDeclarations, UnqualifiedTypeReference, alias, aliasesFromList, localTypeDeclarations, lookupAlias, unqualifiedTypeReference)
 
 import Ast.Expression
 import Dict exposing (Dict)
@@ -26,9 +26,49 @@ type UnqualifiedTypeReference
     = UnqualifiedTypeReference (List String)
 
 
-unqualifiedTypeReference : List String -> List ImportAlias -> UnqualifiedTypeReference
-unqualifiedTypeReference rawTypeReferenceName importAliases =
+type LocalTypeDeclarations
+    = LocalTypeDeclarations (List String)
+
+
+localTypeDeclarations : List Ast.Expression.Statement -> LocalTypeDeclarations
+localTypeDeclarations statements =
+    List.filterMap typeDeclaration statements
+        |> LocalTypeDeclarations
+
+
+typeDeclaration : Ast.Expression.Statement -> Maybe String
+typeDeclaration statement =
+    case statement of
+        Ast.Expression.TypeDeclaration (Ast.Expression.TypeConstructor [ typeName ] _) _ ->
+            Just typeName
+
+        Ast.Expression.TypeAliasDeclaration (Ast.Expression.TypeConstructor [ typeName ] _) _ ->
+            Just typeName
+
+        _ ->
+            Nothing
+
+
+unqualifiedTypeReference : LocalTypeDeclarations -> List String -> List ImportAlias -> UnqualifiedTypeReference
+unqualifiedTypeReference (LocalTypeDeclarations localTypeDeclarations) rawTypeReferenceName importAliases =
     (case rawTypeReferenceName |> List.reverse of
+        [ typeName ] ->
+            let
+                localTypeOverride =
+                    localTypeDeclarations
+                        |> List.member typeName
+            in
+            -- if localTypeOverride then
+            --     [ "IntAliasMain" ] ++ [ typeName ]
+            --
+            -- else
+            case lookupImportAlias [ typeName ] importAliases of
+                Just importAlias ->
+                    importAlias.unqualifiedModuleName ++ [ typeName ]
+
+                Nothing ->
+                    [ typeName ]
+
         typeName :: backwardsModuleName ->
             let
                 moduleName =
@@ -57,17 +97,17 @@ jsonEncodeValue =
     UnqualifiedTypeReference [ "Json", "Encode", "Value" ]
 
 
-alias : List String -> List ImportAlias -> Ast.Expression.Type -> Alias
-alias name importAliases astType =
+alias : LocalTypeDeclarations -> List String -> List ImportAlias -> Ast.Expression.Type -> Alias
+alias localTypeDeclarations name importAliases astType =
     let
         maybeUnqualifiedNameOverride =
             case astType of
                 Ast.Expression.TypeConstructor typeName _ ->
-                    if unqualifiedTypeReference typeName importAliases == jsonDecodeValue then
+                    if unqualifiedTypeReference localTypeDeclarations typeName importAliases == jsonDecodeValue then
                         Ast.Expression.TypeConstructor [ "Json", "Decode", "Value" ] []
                             |> Just
 
-                    else if unqualifiedTypeReference typeName importAliases == jsonEncodeValue then
+                    else if unqualifiedTypeReference localTypeDeclarations typeName importAliases == jsonEncodeValue then
                         Ast.Expression.TypeConstructor [ "Json", "Encode", "Value" ] []
                             |> Just
 
@@ -77,7 +117,7 @@ alias name importAliases astType =
                 _ ->
                     Nothing
     in
-    Alias (unqualifiedTypeReference name importAliases) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
+    Alias (unqualifiedTypeReference localTypeDeclarations name importAliases) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
 
 
 aliasesFromList : List Alias -> Aliases
@@ -127,27 +167,5 @@ knownAliases aliases =
 
 lookupAliasEntry : List String -> AliasesInner -> Maybe Ast.Expression.Type
 lookupAliasEntry aliasName aliases =
-    case
-        aliases
-            |> Dict.get aliasName
-    of
-        Nothing ->
-            case aliasName |> List.reverse |> List.head of
-                Just unqualifiedName ->
-                    aliases
-                        |> Dict.toList
-                        |> List.filterMap
-                            (\( moduleName, expression ) ->
-                                if Just unqualifiedName == (moduleName |> List.reverse |> List.head) then
-                                    Just expression
-
-                                else
-                                    Nothing
-                            )
-                        |> List.head
-
-                Nothing ->
-                    Nothing
-
-        Just something ->
-            Just something
+    aliases
+        |> Dict.get aliasName
