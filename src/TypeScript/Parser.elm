@@ -164,7 +164,6 @@ aliasOrNothing ({ localTypeDeclarations, moduleName, importAliases } as context)
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
             Aliases.alias context (moduleName ++ aliasName) aliasType
                 |> Just
-                |> Debug.log "Result"
 
         _ ->
             Nothing
