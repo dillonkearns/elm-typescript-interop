@@ -93,7 +93,7 @@ primitiveOrTypeAlias context aliases primitiveOrAliasTypeName =
             Ok primitiveNameForTs
 
         Nothing ->
-            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference context.moduleName context.localTypeDeclarations primitiveOrAliasTypeName context.importAliases) of
+            case Aliases.lookupAlias aliases (Aliases.unqualifiedTypeReference context primitiveOrAliasTypeName) of
                 Ok foundAliasExpression ->
                     toTsType context aliases foundAliasExpression
 

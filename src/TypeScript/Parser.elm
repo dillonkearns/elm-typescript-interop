@@ -167,10 +167,10 @@ type alias UnqualifiedModuleName =
 
 
 aliasOrNothing : Parser.Context.Context -> Ast.Expression.Statement -> Maybe Aliases.Alias
-aliasOrNothing { localTypeDeclarations, moduleName, importAliases } statement =
+aliasOrNothing ({ localTypeDeclarations, moduleName, importAliases } as context) statement =
     case statement of
         TypeAliasDeclaration (TypeConstructor aliasName []) aliasType ->
-            Aliases.alias moduleName localTypeDeclarations ((moduleName |> Debug.log "moduleName") ++ aliasName) importAliases aliasType
+            Aliases.alias context (moduleName ++ aliasName) aliasType
                 |> Just
                 |> Debug.log "Result"
 

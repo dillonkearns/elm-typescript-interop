@@ -3,6 +3,7 @@ module TypeScript.Data.Aliases exposing (Alias, Aliases, UnqualifiedTypeReferenc
 import Ast.Expression
 import Dict exposing (Dict)
 import ImportAlias exposing (ImportAlias)
+import Parser.Context exposing (Context)
 import Parser.LocalTypeDeclarations as LocalTypeDeclarations exposing (LocalTypeDeclarations)
 import String.Interpolate
 
@@ -11,11 +12,11 @@ type Alias
     = Alias UnqualifiedTypeReference Ast.Expression.Type
 
 
-lookupImportAlias : List String -> List ImportAlias -> Maybe ImportAlias
-lookupImportAlias moduleName importAliases =
+lookupImportAlias : List String -> Context -> Maybe ImportAlias
+lookupImportAlias moduleName context =
     case moduleName of
         [ possibleModuleAlias ] ->
-            importAliases
+            context.importAliases
                 |> List.filter (\importAlias -> possibleModuleAlias == importAlias.aliasName)
                 |> List.head
 
@@ -27,19 +28,19 @@ type UnqualifiedTypeReference
     = UnqualifiedTypeReference (List String)
 
 
-unqualifiedTypeReference : List String -> LocalTypeDeclarations -> List String -> List ImportAlias -> UnqualifiedTypeReference
-unqualifiedTypeReference callingModuleName localTypeDeclarations rawTypeReferenceName importAliases =
+unqualifiedTypeReference : Context -> List String -> UnqualifiedTypeReference
+unqualifiedTypeReference context rawTypeReferenceName =
     (case rawTypeReferenceName |> List.reverse of
         [ typeName ] ->
             let
                 localTypeOverride =
-                    LocalTypeDeclarations.includes typeName localTypeDeclarations
+                    LocalTypeDeclarations.includes typeName context.localTypeDeclarations
             in
             if localTypeOverride then
-                callingModuleName ++ [ typeName ]
+                context.moduleName ++ [ typeName ]
 
             else
-                case lookupImportAlias [ typeName ] importAliases of
+                case lookupImportAlias [ typeName ] context of
                     Just importAlias ->
                         importAlias.unqualifiedModuleName ++ [ typeName ]
 
@@ -51,7 +52,7 @@ unqualifiedTypeReference callingModuleName localTypeDeclarations rawTypeReferenc
                 moduleName =
                     backwardsModuleName |> List.reverse
             in
-            case lookupImportAlias moduleName importAliases of
+            case lookupImportAlias moduleName context of
                 Just importAlias ->
                     importAlias.unqualifiedModuleName ++ [ typeName ]
 
@@ -74,17 +75,17 @@ jsonEncodeValue =
     UnqualifiedTypeReference [ "Json", "Encode", "Value" ]
 
 
-alias : List String -> LocalTypeDeclarations -> List String -> List ImportAlias -> Ast.Expression.Type -> Alias
-alias callingModuleName localTypeDeclarations name importAliases astType =
+alias : Context -> List String -> Ast.Expression.Type -> Alias
+alias context name astType =
     let
         maybeUnqualifiedNameOverride =
             case astType of
                 Ast.Expression.TypeConstructor typeName _ ->
-                    if unqualifiedTypeReference callingModuleName localTypeDeclarations typeName importAliases == jsonDecodeValue then
+                    if unqualifiedTypeReference context typeName == jsonDecodeValue then
                         Ast.Expression.TypeConstructor [ "Json", "Decode", "Value" ] []
                             |> Just
 
-                    else if unqualifiedTypeReference callingModuleName localTypeDeclarations typeName importAliases == jsonEncodeValue then
+                    else if unqualifiedTypeReference context typeName == jsonEncodeValue then
                         Ast.Expression.TypeConstructor [ "Json", "Encode", "Value" ] []
                             |> Just
 
@@ -94,7 +95,7 @@ alias callingModuleName localTypeDeclarations name importAliases astType =
                 _ ->
                     Nothing
     in
-    Alias (unqualifiedTypeReference callingModuleName localTypeDeclarations name importAliases) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
+    Alias (unqualifiedTypeReference context name) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
 
 
 aliasesFromList : List Alias -> Aliases
