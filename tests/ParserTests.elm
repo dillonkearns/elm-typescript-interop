@@ -24,11 +24,8 @@ suite =
                   thereAreNoPorts = True
                 """
                 ]
-                    |> List.map toSourceFile
-                    |> TypeScript.Parser.statements
-                    |> Result.map (List.map .statements)
-                    |> Result.map List.concat
-                    |> Result.map (List.filterMap (TypeScript.Parser.extractPort []))
+                    |> toContexts
+                    |> Result.map TypeScript.Parser.extractPorts
                     |> Result.map (List.map portNameAndDirection)
                     |> Expect.equal (Ok [])
         , test "program with flags" <|
@@ -169,11 +166,8 @@ main =
                   port showWarningDialog : String -> Cmd msg
                 """
                 ]
-                    |> List.map toSourceFile
-                    |> TypeScript.Parser.statements
-                    |> Result.map (List.map .statements)
-                    |> Result.map List.concat
-                    |> Result.map (List.filterMap (TypeScript.Parser.extractPort []))
+                    |> toContexts
+                    |> Result.map TypeScript.Parser.extractPorts
                     |> Result.map (List.map portNameAndDirection)
                     |> Expect.equal
                         (Ok
@@ -191,11 +185,8 @@ main =
                                  port suggestionsReceived : (String -> msg) -> Sub msg
                                """
                 ]
-                    |> List.map toSourceFile
-                    |> TypeScript.Parser.statements
-                    |> Result.map (List.map .statements)
-                    |> Result.map List.concat
-                    |> Result.map (List.filterMap (TypeScript.Parser.extractPort []))
+                    |> toContexts
+                    |> Result.map TypeScript.Parser.extractPorts
                     |> Result.map (List.map portNameAndDirection)
                     |> Expect.equal
                         (Ok
@@ -206,6 +197,14 @@ main =
         ]
 
 
-toSourceFile : String -> Parser.Context.Context
-toSourceFile contents =
-    { contents = contents, filePath = "" }
+toContexts : List String -> Result String (List Parser.Context.Context)
+toContexts fileContents =
+    fileContents
+        |> List.map
+            (\fileContent -> { path = "FAKE", contents = fileContent })
+        |> TypeScript.Parser.extractContexts
+
+
+toSourceFile : a -> { contents : a, path : String }
+toSourceFile fileContent =
+    { path = "FAKE", contents = fileContent }
