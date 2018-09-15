@@ -1,4 +1,4 @@
-module TypeScript.Parser exposing (extractAliases, extractMain, extractModuleName, extractPort, flagsType, moduleDeclaration, moduleStatementsFor, parse, parseSingle, programFlagType, statements, toProgram)
+module TypeScript.Parser exposing (extractAliases, extractMain, extractModuleName, extractPort, extractPorts, flagsType, moduleDeclaration, moduleStatementsFor, parse, parseSingle, programFlagType)
 
 import Ast
 import Ast.Expression exposing (..)
@@ -25,28 +25,21 @@ extractPort context statement =
             Nothing
 
 
-type alias ParsedSourceFile =
-    { path : String
-    , statements : List Ast.Expression.Statement
-    , importAliases : List ImportAlias
-    , moduleName : List String
-    }
+extractPorts : List Context -> List Port
+extractPorts contexts =
+    contexts
+        |> List.map
+            (\context ->
+                List.filterMap (extractPort context) context.statements
+            )
+        |> List.concat
 
 
-toProgram : List ParsedSourceFile -> Result String TypeScript.Data.Program.Program
-toProgram parsedSourceFiles =
+toProgram : List Context -> Result String TypeScript.Data.Program.Program
+toProgram contexts =
     let
         ports =
-            contexts
-                |> List.map
-                    (\context ->
-                        List.filterMap (extractPort context) context.statements
-                    )
-                |> List.concat
-
-        contexts =
-            parsedSourceFiles
-                |> List.map parsedSourceFileToContext
+            extractPorts contexts
 
         aliases =
             contexts
@@ -54,20 +47,10 @@ toProgram parsedSourceFiles =
                 |> List.concat
                 |> Aliases.aliasesFromList
     in
-    parsedSourceFiles
+    contexts
         |> flagsType
         |> (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
         |> Ok
-
-
-parsedSourceFileToContext : ParsedSourceFile -> Context
-parsedSourceFileToContext parsedSourceFile =
-    { filePath = parsedSourceFile.path
-    , statements = parsedSourceFile.statements
-    , importAliases = parsedSourceFile.importAliases
-    , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.fromStatements
-    , moduleName = parsedSourceFile.moduleName
-    }
 
 
 type alias ModuleStatements =
@@ -92,33 +75,27 @@ moduleStatementsFor statements =
     }
 
 
-flagsType : List ParsedSourceFile -> List Main
+flagsType : List Context -> List Main
 flagsType parsedSourceFiles =
     parsedSourceFiles
         |> List.filterMap extractMain
 
 
-extractMain : ParsedSourceFile -> Maybe Main
-extractMain parsedSourceFile =
+extractMain : Context -> Maybe Main
+extractMain context =
     let
         maybeFlagsType =
-            parsedSourceFile.statements
+            context.statements
                 |> List.filterMap programFlagType
                 |> List.head
 
         moduleName =
-            extractModuleName parsedSourceFile.statements
+            extractModuleName context.statements
     in
     maybeFlagsType
         |> Maybe.map
             (\flagsType ->
-                { context =
-                    { moduleName = moduleName
-                    , filePath = parsedSourceFile.path
-                    , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
-                    , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.fromStatements
-                    , statements = parsedSourceFile.statements
-                    }
+                { context = context
                 , flagsType = flagsType
                 }
             )
@@ -200,8 +177,8 @@ parseSingle ipcFileAsString =
     parse [ ipcFileAsString ]
 
 
-statements : List SourceFile -> Result String (List ParsedSourceFile)
-statements sourceFiles =
+extractContexts : List SourceFile -> Result String (List Context)
+extractContexts sourceFiles =
     sourceFiles
         |> List.map
             (\sourceFile ->
@@ -209,10 +186,11 @@ statements sourceFiles =
                     |> statementsForSingle
                     |> Result.map
                         (\statements ->
-                            { path = sourceFile.path
+                            { filePath = sourceFile.path
                             , statements = statements
                             , importAliases = statements |> List.filterMap ImportAlias.fromExpression
                             , moduleName = extractModuleName statements
+                            , localTypeDeclarations = statements |> LocalTypeDeclarations.fromStatements
                             }
                         )
             )
@@ -242,7 +220,7 @@ type alias SourceFile =
 
 parse : List SourceFile -> Result String TypeScript.Data.Program.Program
 parse sourceFiles =
-    case sourceFiles |> statements of
+    case extractContexts sourceFiles of
         Ok fileAsts ->
             toProgram fileAsts
 

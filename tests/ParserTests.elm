@@ -1,6 +1,7 @@
 module ParserTests exposing (portNameAndDirection, suite)
 
 import Expect exposing (Expectation)
+import Parser.Context
 import Test exposing (..)
 import TypeScript.Data.Port
 import TypeScript.Data.Program
@@ -8,7 +9,7 @@ import TypeScript.Parser
 
 
 portNameAndDirection : TypeScript.Data.Port.Port -> ( String, TypeScript.Data.Port.Direction )
-portNameAndDirection (TypeScript.Data.Port.Port name kind _ _) =
+portNameAndDirection (TypeScript.Data.Port.Port context name kind _) =
     ( name, kind )
 
 
@@ -205,6 +206,6 @@ main =
         ]
 
 
-toSourceFile : String -> { contents : String, path : String }
+toSourceFile : String -> Parser.Context.Context
 toSourceFile contents =
-    { contents = contents, path = "" }
+    { contents = contents, filePath = "" }
