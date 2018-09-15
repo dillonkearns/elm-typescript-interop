@@ -11,4 +11,4 @@ type Direction
 
 
 type Port
-    = Port String Direction Ast.Expression.Type (List ImportAlias) Aliases.LocalTypeDeclarations
+    = Port String Direction Ast.Expression.Type (List ImportAlias) Aliases.LocalTypeDeclarations (List String)

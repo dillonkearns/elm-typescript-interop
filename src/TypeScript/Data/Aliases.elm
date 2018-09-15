@@ -49,8 +49,8 @@ typeDeclaration statement =
             Nothing
 
 
-unqualifiedTypeReference : LocalTypeDeclarations -> List String -> List ImportAlias -> UnqualifiedTypeReference
-unqualifiedTypeReference (LocalTypeDeclarations localTypeDeclarations) rawTypeReferenceName importAliases =
+unqualifiedTypeReference : List String -> LocalTypeDeclarations -> List String -> List ImportAlias -> UnqualifiedTypeReference
+unqualifiedTypeReference callingModuleName (LocalTypeDeclarations localTypeDeclarations) rawTypeReferenceName importAliases =
     (case rawTypeReferenceName |> List.reverse of
         [ typeName ] ->
             let
@@ -58,16 +58,16 @@ unqualifiedTypeReference (LocalTypeDeclarations localTypeDeclarations) rawTypeRe
                     localTypeDeclarations
                         |> List.member typeName
             in
-            -- if localTypeOverride then
-            --     [ "IntAliasMain" ] ++ [ typeName ]
-            --
-            -- else
-            case lookupImportAlias [ typeName ] importAliases of
-                Just importAlias ->
-                    importAlias.unqualifiedModuleName ++ [ typeName ]
+            if localTypeOverride then
+                callingModuleName ++ [ typeName ]
 
-                Nothing ->
-                    [ typeName ]
+            else
+                case lookupImportAlias [ typeName ] importAliases of
+                    Just importAlias ->
+                        importAlias.unqualifiedModuleName ++ [ typeName ]
+
+                    Nothing ->
+                        [ typeName ]
 
         typeName :: backwardsModuleName ->
             let
@@ -97,17 +97,17 @@ jsonEncodeValue =
     UnqualifiedTypeReference [ "Json", "Encode", "Value" ]
 
 
-alias : LocalTypeDeclarations -> List String -> List ImportAlias -> Ast.Expression.Type -> Alias
-alias localTypeDeclarations name importAliases astType =
+alias : List String -> LocalTypeDeclarations -> List String -> List ImportAlias -> Ast.Expression.Type -> Alias
+alias callingModuleName localTypeDeclarations name importAliases astType =
     let
         maybeUnqualifiedNameOverride =
             case astType of
                 Ast.Expression.TypeConstructor typeName _ ->
-                    if unqualifiedTypeReference localTypeDeclarations typeName importAliases == jsonDecodeValue then
+                    if unqualifiedTypeReference callingModuleName localTypeDeclarations typeName importAliases == jsonDecodeValue then
                         Ast.Expression.TypeConstructor [ "Json", "Decode", "Value" ] []
                             |> Just
 
-                    else if unqualifiedTypeReference localTypeDeclarations typeName importAliases == jsonEncodeValue then
+                    else if unqualifiedTypeReference callingModuleName localTypeDeclarations typeName importAliases == jsonEncodeValue then
                         Ast.Expression.TypeConstructor [ "Json", "Encode", "Value" ] []
                             |> Just
 
@@ -117,7 +117,7 @@ alias localTypeDeclarations name importAliases astType =
                 _ ->
                     Nothing
     in
-    Alias (unqualifiedTypeReference localTypeDeclarations name importAliases) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
+    Alias (unqualifiedTypeReference callingModuleName localTypeDeclarations name importAliases) (maybeUnqualifiedNameOverride |> Maybe.withDefault astType)
 
 
 aliasesFromList : List Alias -> Aliases
