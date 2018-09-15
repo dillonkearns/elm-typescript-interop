@@ -6,7 +6,7 @@ import Parser.LocalTypeDeclarations as LocalTypeDeclarations exposing (LocalType
 
 
 type alias Context =
-    { path : String
+    { filePath : String
     , statements : List Ast.Expression.Statement
     , importAliases : List ImportAlias
     , localTypeDeclarations : LocalTypeDeclarations

@@ -49,12 +49,12 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType main.moduleName aliases main.importAliases main.localTypeDeclarations flagsType
+                    toTsType main.context.moduleName aliases main.context.importAliases main.context.localTypeDeclarations flagsType
                         |> Result.map
                             (\flagsTsType -> "flags: " ++ flagsTsType)
 
         moduleName =
-            String.join "." main.moduleName
+            String.join "." main.context.moduleName
 
         embedAppendParamResult =
             case main.flagsType of
@@ -62,7 +62,7 @@ elmModuleNamespace elmVersion portsString aliases main =
                     Ok ""
 
                 Just flagsType ->
-                    toTsType main.moduleName aliases main.importAliases main.localTypeDeclarations flagsType
+                    toTsType main.context.moduleName aliases main.context.importAliases main.context.localTypeDeclarations flagsType
                         |> Result.map (\tsFlagsType -> ", flags: " ++ tsFlagsType)
     in
     case ( embedAppendParamResult, fullscreenParamResult ) of
@@ -148,7 +148,7 @@ generate elmVersion (Program.ElmProgram mains aliases ports) =
                 generateSingle elmVersion main aliases ports
                     |> Result.map
                         (\contents ->
-                            { path = main.filePath |> OutputPath.declarationPathFromMainElmPath
+                            { path = main.context.filePath |> OutputPath.declarationPathFromMainElmPath
                             , contents = contents
                             }
                         )

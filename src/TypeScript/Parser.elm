@@ -109,11 +109,14 @@ extractMain parsedSourceFile =
     maybeFlagsType
         |> Maybe.map
             (\flagsType ->
-                { moduleName = moduleName
+                { context =
+                    { moduleName = moduleName
+                    , filePath = parsedSourceFile.path
+                    , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
+                    , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.fromStatements
+                    , statements = parsedSourceFile.statements
+                    }
                 , flagsType = flagsType
-                , filePath = parsedSourceFile.path
-                , importAliases = parsedSourceFile.statements |> List.filterMap ImportAlias.fromExpression
-                , localTypeDeclarations = parsedSourceFile.statements |> LocalTypeDeclarations.fromStatements
                 }
             )
 
@@ -146,7 +149,7 @@ extractAliases : ModuleStatements -> List Aliases.Alias
 extractAliases moduleStatements =
     let
         context =
-            { path = ""
+            { filePath = "" -- TODO
             , statements = moduleStatements.statements
             , importAliases = moduleStatements.importAliases
             , localTypeDeclarations =

@@ -1,18 +1,14 @@
 module TypeScript.Data.Program exposing (Main, Program(..))
 
 import Ast.Expression
-import ImportAlias exposing (ImportAlias)
-import Parser.LocalTypeDeclarations as LocalTypeDeclarations exposing (LocalTypeDeclarations)
+import Parser.Context exposing (Context)
 import TypeScript.Data.Aliases as Aliases exposing (Aliases)
 import TypeScript.Data.Port exposing (Port)
 
 
 type alias Main =
-    { moduleName : List String
-    , flagsType : Maybe Ast.Expression.Type
-    , filePath : String
-    , importAliases : List ImportAlias
-    , localTypeDeclarations : LocalTypeDeclarations
+    { flagsType : Maybe Ast.Expression.Type
+    , context : Context
     }
 
 
