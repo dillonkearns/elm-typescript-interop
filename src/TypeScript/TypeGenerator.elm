@@ -22,21 +22,7 @@ toTsType context aliases elmType =
             toTsType context aliases maybeType |> appendStringIfOk " | null"
 
         TypeConstructor typeName _ ->
-            case typeName of
-                [ "Json", "Decode", "Value" ] ->
-                    Ok "unknown"
-
-                [ "Decode", "Value" ] ->
-                    Ok "unknown"
-
-                [ "Json", "Encode", "Value" ] ->
-                    Ok "unknown"
-
-                [ "Encode", "Value" ] ->
-                    Ok "unknown"
-
-                primitiveOrAliasTypeName ->
-                    primitiveOrTypeAlias context aliases primitiveOrAliasTypeName
+            primitiveOrTypeAlias context aliases typeName
 
         TypeTuple [] ->
             Ok "null"
