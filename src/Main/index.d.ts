@@ -29,7 +29,7 @@ export namespace Main {
     };
   }
 
-  export function fullscreen(flags: { elmProjectConfig: unknown }): Main.App;
-  export function embed(node: HTMLElement | null, flags: { elmProjectConfig: unknown }): Main.App;
-  export function worker(flags: { elmProjectConfig: unknown }): Main.App;
+  export function fullscreen(flags: { elmProjectConfig: any }): Main.App;
+  export function embed(node: HTMLElement | null, flags: { elmProjectConfig: any }): Main.App;
+  export function worker(flags: { elmProjectConfig: any }): Main.App;
 }
