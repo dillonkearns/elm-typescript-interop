@@ -1,4 +1,4 @@
-const Elm = require("./Main.elm");
+import * as Elm from "./Main";
 import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
@@ -16,7 +16,7 @@ if (process.argv[2] === "--version") {
 
 const elmProjectConfig = elmConfigFile();
 
-function elmConfigFile(): object {
+function elmConfigFile() {
   if (fs.existsSync("./elm.json")) {
     return JSON.parse(fs.readFileSync("./elm.json").toString());
   } else if (fs.existsSync("./elm-package.json")) {
@@ -29,16 +29,17 @@ function elmConfigFile(): object {
     return {};
   }
 }
-const program: any = Elm.Main.worker({
+
+const program = Elm.Main.worker({
   elmProjectConfig: elmProjectConfig
 });
-program.ports.print.subscribe((message: string) => console.log(message));
-program.ports.printAndExitFailure.subscribe((message: string) => {
+program.ports.print.subscribe(message => console.log(message));
+program.ports.printAndExitFailure.subscribe(message => {
   console.log(message);
   process.exit(1);
 });
 
-program.ports.printAndExitSuccess.subscribe((message: string) => {
+program.ports.printAndExitSuccess.subscribe(message => {
   console.log(message);
   process.exit(0);
 });
@@ -54,13 +55,11 @@ function writeGeneratedFile(object: { path: string; contents: string }) {
 
   fs.writeFileSync(filePath, contents);
 }
-program.ports.generatedFiles.subscribe(function(
-  filesToGenerate: { path: string; contents: string }[]
-) {
+program.ports.generatedFiles.subscribe(function(filesToGenerate) {
   filesToGenerate.forEach(writeGeneratedFile);
 });
 
-program.ports.parsingError.subscribe(function(errorString: string) {
+program.ports.parsingError.subscribe(function(errorString) {
   console.error(errorString);
   process.exit(1);
 });
@@ -74,31 +73,29 @@ function flatten<T>(list: Array<Array<T>>): Array<T> {
   return empty.concat(...list);
 }
 
-program.ports.requestReadSourceDirectories.subscribe(
-  (srcDirectories: string[]) => {
-    const missingDirectories = srcDirectories.filter(
-      sourcePath => !fs.existsSync(sourcePath)
+program.ports.requestReadSourceDirectories.subscribe(srcDirectories => {
+  const missingDirectories = srcDirectories.filter(
+    sourcePath => !fs.existsSync(sourcePath)
+  );
+
+  if (isEmpty(missingDirectories)) {
+    const files = srcDirectories.map(srcDirectory =>
+      glob.sync(`${srcDirectory}/**/*.elm`, {
+        sync: true,
+        ignore: ["**/node_modules/**/*", "**/elm-stuff/**/*"]
+      })
     );
 
-    if (isEmpty(missingDirectories)) {
-      const files = srcDirectories.map(srcDirectory =>
-        glob.sync(`${srcDirectory}/**/*.elm`, {
-          sync: true,
-          ignore: ["**/node_modules/**/*", "**/elm-stuff/**/*"]
-        })
-      );
-
-      const flatFiles = flatten(files);
-      const elmModuleFileContents = flatFiles.map(sourcePath => {
-        return {
-          path: sourcePath,
-          contents: fs.readFileSync(sourcePath).toString()
-        };
-      });
-      program.ports.readSourceFiles.send(elmModuleFileContents);
-    } else {
-      console.error(`Could not find src directories: ${missingDirectories}`);
-      process.exit(1);
-    }
+    const flatFiles = flatten(files);
+    const elmModuleFileContents = flatFiles.map(sourcePath => {
+      return {
+        path: sourcePath,
+        contents: fs.readFileSync(sourcePath).toString()
+      };
+    });
+    program.ports.readSourceFiles.send(elmModuleFileContents);
+  } else {
+    console.error(`Could not find src directories: ${missingDirectories}`);
+    process.exit(1);
   }
-);
+});
