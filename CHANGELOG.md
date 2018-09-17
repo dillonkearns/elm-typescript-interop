@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.14] - 2018-09-17
+
+### Changed
+
+- Generate `any` for `Json.Decode.Value`s since this represents something where any
+  TypeScript value is valid to send into Elm, and it must be decoded using a Json Decoder.
+
 ## [0.0.13] - 2018-09-17
 
 ### Added

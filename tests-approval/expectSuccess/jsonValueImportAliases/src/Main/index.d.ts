@@ -16,7 +16,7 @@ export namespace Elm {
     }
     export function init(options: {
       node?: HTMLElement | null;
-      flags: unknown;
+      flags: any;
     }): Elm.Main.App;
   }
 }

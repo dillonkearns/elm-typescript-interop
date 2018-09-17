@@ -7,7 +7,7 @@ export namespace Elm {
     export interface App {
       ports: {
         fromElmInt: {
-          subscribe(callback: (data: unknown) => void): void
+          subscribe(callback: (data: any) => void): void
         }
         toElmInt: {
           send(data: unknown): void
@@ -16,7 +16,7 @@ export namespace Elm {
     }
     export function init(options: {
       node?: HTMLElement | null;
-      flags: unknown;
+      flags: any;
     }): Elm.Main.App;
   }
 }

@@ -33,7 +33,7 @@ export namespace Main {
         subscribe(callback: (data: unknown[]) => void): void
       }
       incomingJsonValue: {
-        send(data: unknown): void
+        send(data: any): void
       }
       emptyIncomingMessage: {
         send(data: null): void

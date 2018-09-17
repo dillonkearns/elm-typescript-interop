@@ -44,7 +44,7 @@ elmPrimitiveToTs (UnqualifiedTypeReference elmPrimitive) =
             Just "boolean"
 
         [ "Json", "Decode", "Value" ] ->
-            Just "unknown"
+            Just "any"
 
         [ "Json", "Encode", "Value" ] ->
             Just "unknown"
