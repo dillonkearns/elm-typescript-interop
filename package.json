@@ -1,6 +1,6 @@
 {
   "name": "elm-typescript-interop",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Code generator for type-safe elm-typescript interprocess messages.",
   "main": "index.js",
   "scripts": {
