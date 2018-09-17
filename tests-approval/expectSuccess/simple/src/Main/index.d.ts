@@ -46,4 +46,5 @@ export namespace Main {
 
   export function fullscreen(flags: { elmModuleFileContents: string }): Main.App;
   export function embed(node: HTMLElement | null, flags: { elmModuleFileContents: string }): Main.App;
+  export function worker(flags: { elmModuleFileContents: string }): Main.App;
 }

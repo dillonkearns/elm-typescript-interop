@@ -77,6 +77,7 @@ elmModuleNamespace elmVersion portsString aliases main =
 
   export function fullscreen({1}): {0}.App;
   export function embed(node: HTMLElement | null{2}): {0}.App;
+  export function worker({1}): {0}.App;
 }"""
                         [ moduleName
                         , fullscreenParam
