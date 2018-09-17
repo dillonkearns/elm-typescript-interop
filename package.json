@@ -7,7 +7,7 @@
     "test": "elm-test",
     "approve": "./approve",
     "all": "npm test && ./approve",
-    "build": "webpack --mode production"
+    "build": "npx elm-typescript-interop && webpack --mode production"
   },
   "keywords": [
     "elm",
@@ -21,6 +21,7 @@
     "@types/glob": "^5.0.35",
     "@types/node": "^10.9.4",
     "elm-test": "^0.18.12",
+    "elm-typescript-interop": "0.0.13",
     "elm-webpack-loader": "^4.5.0",
     "ts-loader": "^5.1.0",
     "typescript": "^3.0.3",
