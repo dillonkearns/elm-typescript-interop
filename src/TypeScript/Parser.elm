@@ -49,8 +49,7 @@ toProgram contexts =
     in
     contexts
         |> flagsType
-        |> (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
-        |> Ok
+        |> Result.map (\mainFlagType -> TypeScript.Data.Program.ElmProgram mainFlagType aliases ports)
 
 
 type alias ModuleStatements =
@@ -75,13 +74,15 @@ moduleStatementsFor statements =
     }
 
 
-flagsType : List Context -> List Main
+flagsType : List Context -> Result String (List Main)
 flagsType parsedSourceFiles =
     parsedSourceFiles
-        |> List.filterMap extractMain
+        |> List.map extractMain
+        |> Result.Extra.combine
+        |> Result.map (List.filterMap identity)
 
 
-extractMain : Context -> Maybe Main
+extractMain : Context -> Result String (Maybe Main)
 extractMain context =
     let
         maybeFlagsType =
@@ -99,6 +100,7 @@ extractMain context =
                 , flagsType = flagsType
                 }
             )
+        |> Ok
 
 
 extractModuleName : List Ast.Expression.Statement -> List String
