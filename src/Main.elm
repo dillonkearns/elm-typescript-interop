@@ -1,25 +1,10 @@
 port module Main exposing (Flags, Model, crashOrOutputString, generatedFiles, init, main, output, parsingError, update, workaround)
 
-import Cli.OptionsParser as OptionsParser exposing (with)
-import Cli.Program
 import ElmProjectConfig exposing (ElmVersion)
 import Json.Decode exposing (..)
 import TypeScript.Data.Program
 import TypeScript.Generator
 import TypeScript.Parser
-
-
-type alias CliOptions =
-    ()
-
-
-programConfig : Cli.Program.Config CliOptions
-programConfig =
-    Cli.Program.config { version = "0.0.11" }
-        |> Cli.Program.add
-            (OptionsParser.build ()
-                |> OptionsParser.withDoc "generates TypeScript declaration files (.d.ts) based on the flags and ports you define within your Elm app."
-            )
 
 
 
@@ -63,8 +48,8 @@ crashOrOutputString elmVersion result =
             parsingError errorMessage
 
 
-init : Flags -> CliOptions -> ( Model, Cmd msg )
-init flags cliOptions =
+init : Flags -> ( Model, Cmd msg )
+init flags =
     case
         flags.elmProjectConfig
             |> Json.Decode.decodeValue ElmProjectConfig.decoder
@@ -76,8 +61,8 @@ init flags cliOptions =
             ( { elmVersion = ElmProjectConfig.Elm18 }, printAndExitFailure ("Couldn't parse elm project configuration file: " ++ error) )
 
 
-update : CliOptions -> Msg -> Model -> ( Model, Cmd Msg )
-update cliOptions msg model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         ReadSourceFiles sourceFileContents ->
             ( model, output model.elmVersion sourceFileContents )
@@ -87,22 +72,15 @@ type Msg
     = ReadSourceFiles (List SourceFile)
 
 
-type alias FlagsExtension =
+type alias Flags =
     { elmProjectConfig : Json.Decode.Value
     }
 
 
-type alias Flags =
-    Cli.Program.FlagsIncludingArgv FlagsExtension
-
-
-main : Cli.Program.StatefulProgram Model Msg CliOptions FlagsExtension
+main : Program Flags Model Msg
 main =
-    Cli.Program.stateful
-        { printAndExitFailure = printAndExitFailure
-        , printAndExitSuccess = printAndExitSuccess
-        , init = init
-        , config = programConfig
+    Platform.programWithFlags
+        { init = init
         , update = update
         , subscriptions = \_ -> readSourceFiles ReadSourceFiles
         }

@@ -2,6 +2,17 @@ const Elm = require("./Main.elm");
 import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
+const version = require("../package.json")["version"];
+
+if (process.argv[2] === "--version") {
+  console.log(version);
+  process.exit(0);
+} else if (process.argv.length > 2) {
+  console.error(
+    "`elm-typescript-interop` doesn't accept any CLI arguments, see github README."
+  );
+  process.exit(1);
+}
 
 const elmProjectConfig = elmConfigFile();
 
@@ -19,7 +30,6 @@ function elmConfigFile(): object {
   }
 }
 const program: any = Elm.Main.worker({
-  argv: process.argv,
   elmProjectConfig: elmProjectConfig
 });
 program.ports.print.subscribe((message: string) => console.log(message));
