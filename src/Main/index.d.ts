@@ -6,35 +6,30 @@ export namespace Main {
   export interface App {
     ports: {
       generatedFiles: {
-        subscribe(
-          callback: (data: { path: string; contents: string }[]) => void
-        ): void;
-      };
+        subscribe(callback: (data: { path: string; contents: string }[]) => void): void
+      }
       parsingError: {
-        subscribe(callback: (data: string) => void): void;
-      };
+        subscribe(callback: (data: string) => void): void
+      }
       requestReadSourceDirectories: {
-        subscribe(callback: (data: string[]) => void): void;
-      };
+        subscribe(callback: (data: string[]) => void): void
+      }
       readSourceFiles: {
-        send(data: { path: string; contents: string }[]): void;
-      };
+        send(data: { path: string; contents: string }[]): void
+      }
       print: {
-        subscribe(callback: (data: string) => void): void;
-      };
+        subscribe(callback: (data: string) => void): void
+      }
       printAndExitFailure: {
-        subscribe(callback: (data: string) => void): void;
-      };
+        subscribe(callback: (data: string) => void): void
+      }
       printAndExitSuccess: {
-        subscribe(callback: (data: string) => void): void;
-      };
+        subscribe(callback: (data: string) => void): void
+      }
     };
   }
 
   export function fullscreen(flags: { elmProjectConfig: unknown }): Main.App;
-  export function embed(
-    node: HTMLElement | null,
-    flags: { elmProjectConfig: unknown }
-  ): Main.App;
-  export function worker(flags: { elmProjectConfig: any }): Main.App;
+  export function embed(node: HTMLElement | null, flags: { elmProjectConfig: unknown }): Main.App;
+  export function worker(flags: { elmProjectConfig: unknown }): Main.App;
 }
