@@ -1,0 +1,1 @@
+I couldn't find a type annotation for the main function in `src/Main.elm`.

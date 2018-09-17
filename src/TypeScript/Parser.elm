@@ -93,14 +93,20 @@ extractMain context =
         moduleName =
             extractModuleName context.statements
     in
-    maybeFlagsType
-        |> Maybe.map
-            (\flagsType ->
-                { context = context
-                , flagsType = flagsType
-                }
-            )
-        |> Ok
+    case maybeFlagsType of
+        Just flagsType ->
+            { context = context
+            , flagsType = flagsType
+            }
+                |> Just
+                |> Ok
+
+        Nothing ->
+            if hasMainFunction context.statements then
+                "I couldn't find a type annotation for the main function in `" ++ context.filePath ++ "`." |> Err
+
+            else
+                Ok Nothing
 
 
 extractModuleName : List Ast.Expression.Statement -> List String
@@ -172,6 +178,21 @@ programFlagType statement =
 
         _ ->
             Nothing
+
+
+hasMainFunction : List Ast.Expression.Statement -> Bool
+hasMainFunction statements =
+    List.any isMainFunction statements
+
+
+isMainFunction : Ast.Expression.Statement -> Bool
+isMainFunction statement =
+    case statement of
+        Ast.Expression.FunctionDeclaration (Ast.Expression.Function "main" [] _) ->
+            True
+
+        _ ->
+            False
 
 
 parseSingle : SourceFile -> Result String TypeScript.Data.Program.Program
