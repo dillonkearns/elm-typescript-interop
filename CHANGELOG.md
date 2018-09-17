@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.12] - 2018-09-17
+
+### Changed
+
+- If you have a `main` function with no annotation you get an error message.
+
+### Fixed
+
+- Some command line arguments printed "TODO" instead of a clear error message.
+  The message now indicate that no arguments are accepted by the CLI.
+
 ## [0.0.11] - 2018-09-15
 
 ### Fixed
