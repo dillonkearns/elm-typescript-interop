@@ -74,7 +74,7 @@ suite =
                 \() ->
                     TypeConstructor [ "Json", "Decode", "Value" ] []
                         |> toTsTypeNoAlias
-                        |> expectOkValue "unknown"
+                        |> expectOkValue "any"
             , test "Json.Encode.Value" <|
                 \() ->
                     TypeConstructor [ "Json", "Encode", "Value" ] []
@@ -82,8 +82,11 @@ suite =
                         |> expectOkValue "unknown"
             , test "aliased Encode.Value" <|
                 \() ->
-                    TypeConstructor [ "Encode", "Value" ] []
-                        |> toTsTypeNoAlias
+                    toTsType
+                        ([ Aliases.alias stubContext [ "MyThing" ] (TypeConstructor [ "Json", "Encode", "Value" ] []) ]
+                            |> Aliases.aliasesFromList
+                        )
+                        (TypeConstructor [ "MyThing" ] [])
                         |> Expect.equal (Ok "unknown")
             ]
         , describe "alias lookup"
