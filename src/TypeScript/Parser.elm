@@ -234,10 +234,17 @@ statementsForSingle sourceFile =
                 , inputStream.position |> toString
                 , errorMessages |> String.join "\n"
                 ]
-                    |> String.Interpolate.interpolate
-                        "Could not parse file `{0}` at position {1}. Errors:\n{2}"
+                    |> String.Interpolate.interpolate parseFailureErrorNotice
             )
 
+parseFailureErrorNotice : String
+parseFailureErrorNotice =
+  """Could not parse file `{0}` at position {1}. Errors:
+{2}
+
+There are some parsing bugs for the Elm AST library I use.
+Try reproducing the parse error by pasting it into:
+https://tunguski.github.io/elm-ast/example/."""
 
 type alias SourceFile =
     { path : String, contents : String }
