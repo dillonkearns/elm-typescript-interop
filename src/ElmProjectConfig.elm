@@ -1,6 +1,7 @@
 module ElmProjectConfig exposing (ElmProjectConfig, ElmVersion(..), decoder)
 
 import Json.Decode as Decode exposing (Decoder)
+import List exposing (concat, member)
 import String.Interpolate exposing (interpolate)
 
 
@@ -29,13 +30,13 @@ parseVersion18 versionString =
     if versionString == elm18VersionString then
         Decode.succeed Elm18
 
-    else if versionString == elm19VersionString then
+    else if member versionString elm19VersionStrings then
         Decode.succeed Elm19
 
     else
         interpolate "Unsupported elm-version value: `{0}`. I only support the exact values [{1}]."
             [ versionString
-            , [ elm18VersionString, elm19VersionString ]
+            , concat [ [ elm18VersionString ], elm19VersionStrings ]
                 |> List.map toString
                 |> String.join ", "
             ]
@@ -47,6 +48,6 @@ elm18VersionString =
     "0.18.0 <= v < 0.19.0"
 
 
-elm19VersionString : String
-elm19VersionString =
-    "0.19.0"
+elm19VersionStrings : List String
+elm19VersionStrings =
+    [ "0.19.0", "0.19.1" ]
