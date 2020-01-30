@@ -36,6 +36,7 @@ deploy:
   provider: npm
   email: dillon@dillonkearns.com
   api_key: $NPM_TOKEN
+  edge: true
   skip_cleanup: true
   on:
     all_branches: true
