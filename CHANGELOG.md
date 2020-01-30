@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.0.16] - 2020-01-30
+## [0.0.17] - 2020-01-30
 
 ### Fixed
 - Support version flag 0.19.1, see https://github.com/dillonkearns/elm-typescript-interop/pull/23.
