@@ -7,7 +7,8 @@
     "test": "elm-test",
     "approve": "./approve",
     "all": "npm test && ./approve",
-    "build": "npx elm-typescript-interop && webpack --mode production"
+    "build": "npx elm-typescript-interop && webpack --mode production",
+    "prepare": "npm run build"
   },
   "keywords": [
     "elm",
